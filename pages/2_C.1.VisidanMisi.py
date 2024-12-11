@@ -48,10 +48,10 @@ try:
     ]
 
     # Tampilkan deskripsi survey dan grafik
-    c1, c2 = st.columns(2)
+    tab1, tab2 = st.tabs(["STT WASTUKANCANA", "TEKNIK INFORMATIKA"])
 
     # Bagian STTWASTUKANCANA
-    with c1:
+    with tab1:
         st.markdown("""
         **Survey Pemahaman Visi dan Misi STT Wastukancana**
         Survey ini bertujuan untuk mengetahui pemahaman responden mengenai visi dan misi yang ada di STT Wastukancana.
@@ -83,7 +83,7 @@ try:
                 st.plotly_chart(fig_scale_STTWASTUKANCANA, use_container_width=True)
 
     # Bagian TEKNIKINFORMATIKA
-    with c2:
+    with tab2:
         st.markdown("""
         **Survey Pemahaman Visi dan Misi Teknik Informatika**
         Survey ini bertujuan untuk mengetahui pemahaman responden mengenai visi dan misi yang ada di Program Studi Teknik Informatika.
