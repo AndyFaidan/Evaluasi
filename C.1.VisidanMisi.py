@@ -14,22 +14,22 @@ st.title("Dashboard Survei Visi dan Misi STT Wastukancana")
 
 # Pilih file dataset
 data_files = {
-    "UPPS": "C.1.HasilSurveyPemahamanVMTSUPPS2024.csv",
-    "SPS": "C.1.HasilSurveyPemahamanVMTSPS2024.csv"
+    "STTWASTUKANCANA": "C.1.HasilSurveyPemahamanVMTSUPPS2024.csv",
+    "TEKNIKINFORMATIKA": "C.1.HasilSurveyPemahamanVMTSPS2024.csv"
 }
 
 try:
     # Membaca data
-    data_upps = pd.read_csv(data_files["UPPS"])
-    data_sps = pd.read_csv(data_files["SPS"])
+    data_STTWASTUKANCANA = pd.read_csv(data_files["STTWASTUKANCANA"])
+    data_TEKNIKINFORMATIKA = pd.read_csv(data_files["TEKNIKINFORMATIKA"])
 
     # Membersihkan data
-    data_upps.columns = data_upps.columns.str.strip()
-    data_sps.columns = data_sps.columns.str.strip()
+    data_STTWASTUKANCANA.columns = data_STTWASTUKANCANA.columns.str.strip()
+    data_TEKNIKINFORMATIKA.columns = data_TEKNIKINFORMATIKA.columns.str.strip()
 
     # Filter berdasarkan status
-    status_upps = data_upps['1. Status Bpk/Ibu/Saudara/i:'].unique()
-    status_sps = data_sps['1. Status Bpk/Ibu/Saudara/i:'].unique()
+    status_STTWASTUKANCANA = data_STTWASTUKANCANA['1. Status Bpk/Ibu/Saudara/i:'].unique()
+    status_TEKNIKINFORMATIKA = data_TEKNIKINFORMATIKA['1. Status Bpk/Ibu/Saudara/i:'].unique()
 
     # Analisis Pemahaman Visi dan Misi
     st.subheader("Skala Pemahaman Visi dan Misi")
@@ -50,7 +50,7 @@ try:
     # Tampilkan deskripsi survey dan grafik
     c1, c2 = st.columns(2)
 
-    # Bagian UPPS
+    # Bagian STTWASTUKANCANA
     with c1:
         st.markdown("""
         **Survey Pemahaman Visi dan Misi STT Wastukancana**
@@ -58,31 +58,31 @@ try:
         """)
         
         st.write("Data STT WASTUKANCANA:")
-        st.dataframe(data_upps)
+        st.dataframe(data_STTWASTUKANCANA)
 
-        selected_status_upps = st.selectbox("Pilih Status (UPPS)", options=["All"] + list(status_upps))
+        selected_status_STTWASTUKANCANA = st.selectbox("Pilih Status (STTWASTUKANCANA)", options=["All"] + list(status_STTWASTUKANCANA))
         
-        if selected_status_upps != "All":  # Terapkan filter status
-            data_upps = data_upps[data_upps['1. Status Bpk/Ibu/Saudara/i:'] == selected_status_upps]
+        if selected_status_STTWASTUKANCANA != "All":  # Terapkan filter status
+            data_STTWASTUKANCANA = data_STTWASTUKANCANA[data_STTWASTUKANCANA['1. Status Bpk/Ibu/Saudara/i:'] == selected_status_STTWASTUKANCANA]
 
-        status_counts_upps = data_upps['1. Status Bpk/Ibu/Saudara/i:'].value_counts()
-        fig_status_upps = px.bar(status_counts_upps, x=status_counts_upps.index, y=status_counts_upps.values, 
-                                 labels={'x': 'Status', 'y': 'Jumlah'}, title="Distribusi Status UPPS")
-        st.plotly_chart(fig_status_upps, use_container_width=True)
+        status_counts_STTWASTUKANCANA = data_STTWASTUKANCANA['1. Status Bpk/Ibu/Saudara/i:'].value_counts()
+        fig_status_STTWASTUKANCANA = px.bar(status_counts_STTWASTUKANCANA, x=status_counts_STTWASTUKANCANA.index, y=status_counts_STTWASTUKANCANA.values, 
+                                 labels={'x': 'Status', 'y': 'Jumlah'}, title="Distribusi Status STTWASTUKANCANA")
+        st.plotly_chart(fig_status_STTWASTUKANCANA, use_container_width=True)
 
-        durasi_counts_upps = data_upps['2. Berapa lama Bpk/Ibu/Saudara/i bergabung atau mengenal STT Wastukancana?'].value_counts()
-        fig_durasi_upps = px.pie(durasi_counts_upps, names=durasi_counts_upps.index, values=durasi_counts_upps.values, 
-                                 title="Durasi Mengenal UPPS")
-        st.plotly_chart(fig_durasi_upps, use_container_width=True)
+        durasi_counts_STTWASTUKANCANA = data_STTWASTUKANCANA['2. Berapa lama Bpk/Ibu/Saudara/i bergabung atau mengenal STT Wastukancana?'].value_counts()
+        fig_durasi_STTWASTUKANCANA = px.pie(durasi_counts_STTWASTUKANCANA, names=durasi_counts_STTWASTUKANCANA.index, values=durasi_counts_STTWASTUKANCANA.values, 
+                                 title="Durasi Mengenal STTWASTUKANCANA")
+        st.plotly_chart(fig_durasi_STTWASTUKANCANA, use_container_width=True)
 
         for col in skala_cols:
-            if col in data_upps.columns:
-                st.write(f"**{col} (UPPS)**")
-                fig_scale_upps = px.histogram(data_upps, x=col, nbins=5, 
-                                              labels={col: "Skala"}, title=f"Distribusi {col} (UPPS)")
-                st.plotly_chart(fig_scale_upps, use_container_width=True)
+            if col in data_STTWASTUKANCANA.columns:
+                st.write(f"**{col} (STTWASTUKANCANA)**")
+                fig_scale_STTWASTUKANCANA = px.histogram(data_STTWASTUKANCANA, x=col, nbins=5, 
+                                              labels={col: "Skala"}, title=f"Distribusi {col} (STTWASTUKANCANA)")
+                st.plotly_chart(fig_scale_STTWASTUKANCANA, use_container_width=True)
 
-    # Bagian SPS
+    # Bagian TEKNIKINFORMATIKA
     with c2:
         st.markdown("""
         **Survey Pemahaman Visi dan Misi Teknik Informatika**
@@ -90,29 +90,29 @@ try:
         """)
         
         st.write("Data TEKNIK INFORMATIKA:")
-        st.dataframe(data_sps)
+        st.dataframe(data_TEKNIKINFORMATIKA)
 
-        selected_status_sps = st.selectbox("Pilih Status (SPS)", options=["All"] + list(status_sps))
+        selected_status_TEKNIKINFORMATIKA = st.selectbox("Pilih Status (TEKNIKINFORMATIKA)", options=["All"] + list(status_TEKNIKINFORMATIKA))
         
-        if selected_status_sps != "All":  # Terapkan filter status
-            data_sps = data_sps[data_sps['1. Status Bpk/Ibu/Saudara/i:'] == selected_status_sps]
+        if selected_status_TEKNIKINFORMATIKA != "All":  # Terapkan filter status
+            data_TEKNIKINFORMATIKA = data_TEKNIKINFORMATIKA[data_TEKNIKINFORMATIKA['1. Status Bpk/Ibu/Saudara/i:'] == selected_status_TEKNIKINFORMATIKA]
 
-        status_counts_sps = data_sps['1. Status Bpk/Ibu/Saudara/i:'].value_counts()
-        fig_status_sps = px.bar(status_counts_sps, x=status_counts_sps.index, y=status_counts_sps.values, 
-                                labels={'x': 'Status', 'y': 'Jumlah'}, title="Distribusi Status SPS")
-        st.plotly_chart(fig_status_sps, use_container_width=True)
+        status_counts_TEKNIKINFORMATIKA = data_TEKNIKINFORMATIKA['1. Status Bpk/Ibu/Saudara/i:'].value_counts()
+        fig_status_TEKNIKINFORMATIKA = px.bar(status_counts_TEKNIKINFORMATIKA, x=status_counts_TEKNIKINFORMATIKA.index, y=status_counts_TEKNIKINFORMATIKA.values, 
+                                labels={'x': 'Status', 'y': 'Jumlah'}, title="Distribusi Status TEKNIKINFORMATIKA")
+        st.plotly_chart(fig_status_TEKNIKINFORMATIKA, use_container_width=True)
 
-        durasi_counts_sps = data_sps['2. Berapa lama Bpk/Ibu/Saudara/i bergabung atau mengenal STT Wastukancana?'].value_counts()
-        fig_durasi_sps = px.pie(durasi_counts_sps, names=durasi_counts_sps.index, values=durasi_counts_sps.values, 
-                                title="Durasi Mengenal SPS")
-        st.plotly_chart(fig_durasi_sps, use_container_width=True)
+        durasi_counts_TEKNIKINFORMATIKA = data_TEKNIKINFORMATIKA['2. Berapa lama Bpk/Ibu/Saudara/i bergabung atau mengenal STT Wastukancana?'].value_counts()
+        fig_durasi_TEKNIKINFORMATIKA = px.pie(durasi_counts_TEKNIKINFORMATIKA, names=durasi_counts_TEKNIKINFORMATIKA.index, values=durasi_counts_TEKNIKINFORMATIKA.values, 
+                                title="Durasi Mengenal TEKNIKINFORMATIKA")
+        st.plotly_chart(fig_durasi_TEKNIKINFORMATIKA, use_container_width=True)
 
         for col in skala_cols:
-            if col in data_upps.columns:
-                st.write(f"**{col} (SPS)**")
-                fig_scale_upps = px.histogram(data_upps, x=col, nbins=5, 
-                                              labels={col: "Skala"}, title=f"Distribusi {col} (SPS)")
-                st.plotly_chart(fig_scale_upps, use_container_width=True)
+            if col in data_STTWASTUKANCANA.columns:
+                st.write(f"**{col} (TEKNIKINFORMATIKA)**")
+                fig_scale_STTWASTUKANCANA = px.histogram(data_STTWASTUKANCANA, x=col, nbins=5, 
+                                              labels={col: "Skala"}, title=f"Distribusi {col} (TEKNIKINFORMATIKA)")
+                st.plotly_chart(fig_scale_STTWASTUKANCANA, use_container_width=True)
 
 except FileNotFoundError as e:
     st.error(f"File tidak ditemukan: {e}")
