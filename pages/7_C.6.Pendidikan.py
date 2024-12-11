@@ -10,9 +10,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-import gdown
-import pandas as pd
-
 file_url = 'https://drive.google.com/uc?id=1e2DIdPTY2TE7LcHP0FC-E868FjGy0kZ5'
 file_path = 'k__jawaban.csv'
 
@@ -22,7 +19,6 @@ try:
     print("File berhasil diunduh dan dibaca!")
 except Exception as e:
     print(f"Gagal mengunduh file: {e}")
-
 
 # Membaca data dari file CSV
 df = pd.read_csv(file_path)
@@ -36,13 +32,13 @@ df = df.dropna(subset=['Tahun Akademik'])
 # Judul aplikasi
 st.title("Analisis Kepuasan Mahasiswa terhadap Dosen")
 
-# Sidebar untuk filter
-st.sidebar.title("Filter Data")
+# Bagian menu di body utama
+st.header("Filter Data")
 
 # Membuat range slider untuk filter Tahun Akademik
 min_tahun = int(df['Tahun Akademik'].min())
 max_tahun = int(df['Tahun Akademik'].max())
-tahun_akademik_range = st.sidebar.slider(
+tahun_akademik_range = st.slider(
     "Pilih Rentang Tahun Akademik",
     min_value=min_tahun,
     max_value=max_tahun,
@@ -51,11 +47,11 @@ tahun_akademik_range = st.sidebar.slider(
 
 # Filter untuk memilih Dosen Pengampuh
 dosen_options = ['All'] + list(df['Dosen Pengampuh'].unique())
-dosen_selected = st.sidebar.selectbox("Pilih Dosen Pengampuh", options=dosen_options)
+dosen_selected = st.selectbox("Pilih Dosen Pengampuh", options=dosen_options)
 
 # Filter untuk memilih Pertanyaan
 pertanyaan_options = ['All'] + list(df['Pertanyaan'].unique())
-pertanyaan_selected = st.sidebar.selectbox("Pilih Pertanyaan", options=pertanyaan_options)
+pertanyaan_selected = st.selectbox("Pilih Pertanyaan", options=pertanyaan_options)
 
 # Menyaring data berdasarkan pilihan filter
 df_filtered = df[
