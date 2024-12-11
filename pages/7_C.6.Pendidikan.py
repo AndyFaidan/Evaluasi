@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import gdown
 
 # Set page configuration
 st.set_page_config(
@@ -9,8 +10,22 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Membaca data dari file CSV (misalnya 'k__jawaban.csv')
-df = pd.read_csv('k__jawaban.csv')
+import gdown
+import pandas as pd
+
+file_url = 'https://drive.google.com/uc?id=1e2DIdPTY2TE7LcHP0FC-E868FjGy0kZ5'
+file_path = 'k__jawaban.csv'
+
+try:
+    gdown.download(file_url, file_path, quiet=False)
+    df = pd.read_csv(file_path)
+    print("File berhasil diunduh dan dibaca!")
+except Exception as e:
+    print(f"Gagal mengunduh file: {e}")
+
+
+# Membaca data dari file CSV
+df = pd.read_csv(file_path)
 
 # Pastikan kolom 'Tahun Akademik' bertipe numerik
 df['Tahun Akademik'] = pd.to_numeric(df['Tahun Akademik'], errors='coerce')
@@ -61,7 +76,7 @@ else:
     st.dataframe(df_filtered)
 
     # Menghitung rata-rata jawaban untuk setiap dosen dan tahun akademik yang difilter
-    kepuasan_dosen = df_filtered.groupby(["Tahun Akademik", "Dosen Pengampuh"])["Jawaban"].mean().reset_index()
+    kepuasan_dosen = df_filtered.groupby(["Tahun Akademik", "Dosen Pengampuh"])['Jawaban'].mean().reset_index()
 
     # Membuat visualisasi Line Chart menggunakan Plotly
     fig_line = px.line(
@@ -92,4 +107,3 @@ else:
 
     # Menampilkan grafik Donut Chart
     st.plotly_chart(fig_donut)
-
