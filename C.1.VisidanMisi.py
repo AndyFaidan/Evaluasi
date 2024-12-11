@@ -108,11 +108,11 @@ try:
         st.plotly_chart(fig_durasi_sps, use_container_width=True)
 
         for col in skala_cols:
-            if col in data_sps.columns:
+            if col in data_upps.columns:
                 st.write(f"**{col} (SPS)**")
-                fig_scale_sps = px.histogram(data_sps, x=col, nbins=5, 
-                                             labels={col: "Skala"}, title=f"Distribusi {col} (SPS)")
-                st.plotly_chart(fig_scale_sps, use_container_width=True)
+                fig_scale_upps = px.histogram(data_upps, x=col, nbins=5, 
+                                              labels={col: "Skala"}, title=f"Distribusi {col} (SPS)")
+                st.plotly_chart(fig_scale_upps, use_container_width=True)
 
 except FileNotFoundError as e:
     st.error(f"File tidak ditemukan: {e}")
