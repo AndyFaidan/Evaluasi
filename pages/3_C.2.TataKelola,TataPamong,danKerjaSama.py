@@ -18,7 +18,7 @@ def load_data(file_path):
     return pd.read_csv(file_path)
 
 # Tampilkan deskripsi survey dan grafik
-tab1, tab2 = st.tabs(["SARANA DOSEN", "SARANA MAHASISWA"])
+tab1, tab2 = st.tabs(["TATA KELOLA DOSEN & TENDIK", "TATA KELOLA MAHASISWA"])
 
 # Tab SARANA DOSEN
 with tab1:
