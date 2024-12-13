@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 from streamlit_apexjs import st_apexcharts
-import matplotlib.pyplot as plt
 import numpy as np
-import plotly.figure_factory as ff
 import altair as alt
 
 # Set page configuration
