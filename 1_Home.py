@@ -67,35 +67,14 @@ options = {
 }
 
 
-# Fungsi untuk membuat tile dengan height tetap
-def create_tile_with_metric(col, label, value, delta):
-    with col:
-        st.markdown(
-            f"""
-            <div style="height: 300px; display: flex; flex-direction: column; 
-                        justify-content: center; align-items: center; 
-                        border: 1px solid #e6e6e6; border-radius: 10px; padding: 20px;">
-                <div style="font-size: 18px; font-weight: bold; text-align: center;">
-                    {label}
-                </div>
-                <div style="font-size: 24px; font-weight: bold; color: #4CAF50; text-align: center;">
-                    {value}
-                </div>
-                <div style="font-size: 16px; color: #FF5733; text-align: center;">
-                    {delta}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+a, b = st.columns(2)
+c, d = st.columns(2)
 
-# Membuat layout kolom
-col1, col2, col3 = st.columns(3)
+a.metric("Temperature", "30°F", "-9°F", border=True)
+b.metric("Wind", "4 mph", "2 mph", border=True)
 
-# Menambahkan metric dalam tile
-create_tile_with_metric(col1, "Temperature", "30°F", "-9°F")
-create_tile_with_metric(col2, "Wind", "4 mph", "2 mph")
-create_tile_with_metric(col3, "Humidity", "77%", "5%")
+c.metric("Humidity", "77%", "5%", border=True)
+d.metric("Pressure", "30.34 inHg", "-2 inHg", border=True)
 
 
 # Membuat layout kolom
