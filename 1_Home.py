@@ -51,18 +51,23 @@ options = {
     "plotOptions": {
         "pie": {
             "donut": {
-                "size": "70%"
+                "size": "75%"
             }
         }
     },
     "labels": ["Mengerti", "Tidak Mengerti"],  # Menambahkan label untuk bagian-bagian
     "colors": ["#ADD8E6", "#00008B"]  # Biru muda untuk "Mengerti", Biru tua untuk "Tidak Mengerti"
 }
+col = st.columns((1.5, 4.5, 2), gap='medium')
 
-# Membuat donut chart berdasarkan rata-rata penilaian untuk File 1
-series_1 = [rata_rata_pertanyaan_1.mean(), 5 - rata_rata_pertanyaan_1.mean()]  # Menghitung rata-rata total untuk file pertama
-st_apexcharts(options, series_1, 'donut', '100%', 'Rata-Rata Pemahaman Visi dan Misi Program Studi Teknik Informatika')
+with col[0]:
+   
+    # Bar chart pertama
+    series_1 = [rata_rata_pertanyaan_1.mean(), 5 - rata_rata_pertanyaan_1.mean()]  # Menghitung rata-rata total untuk file pertama
+    st_apexcharts(options, series_1, 'donut', '100%', 'Visi dan Misi Teknik Informatika')
 
-# Membuat donut chart berdasarkan rata-rata penilaian untuk File 2
-series_2 = [rata_rata_pertanyaan_2.mean(), 5 - rata_rata_pertanyaan_2.mean()]  # Menghitung rata-rata total untuk file kedua
-st_apexcharts(options, series_2, 'donut', '100%', 'Rata-Rata Pemahaman Visi dan Misi STT Wastukancana')
+
+    # Bar chart kedua
+    series_2 = [rata_rata_pertanyaan_2.mean(), 5 - rata_rata_pertanyaan_2.mean()]  # Menghitung rata-rata total untuk file kedua
+    st_apexcharts(options, series_2, 'donut', '100%', 'Visi dan Misi STT Wastukancana')
+
