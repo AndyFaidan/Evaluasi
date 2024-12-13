@@ -85,7 +85,6 @@ with col[0]:
     st_apexcharts(options, series_2, 'donut', '100%', 'Visi dan Misi STT Wastukancana')
 
 with col[1]:
-    with st.container(border=True):
         # Load dataset
         data1 = load_data("C2.tatakeloladosendantendik-prep.csv")
 
@@ -132,7 +131,7 @@ with col[1]:
 
         # Show the chart in Streamlit
         st.altair_chart(chart, use_container_width=True)
-    with st.container(border=True):
+    
         data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
 
         # Ekstraksi angka dari kolom yang relevan (skor)
