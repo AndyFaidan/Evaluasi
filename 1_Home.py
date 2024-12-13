@@ -11,22 +11,30 @@ st.set_page_config(
 
 # Fungsi pembantu untuk memuat data survei
 @st.cache_data
-def load_survey_data():
-    survey_data = pd.read_csv("C.1.HasilSurveyPemahamanVMTSPS2024.csv")
-    # Mengonversi timestamp ke format datetime untuk pemrosesan yang lebih baik
-    survey_data['Timestamp'] = pd.to_datetime(survey_data['Timestamp'])
+def load_survey_data(file_path):
+    survey_data = pd.read_csv(file_path)  # Mengambil data dari file CSV
+    # Mengonversi timestamp ke format datetime dengan infer_format=True
+    survey_data['Timestamp'] = pd.to_datetime(survey_data['Timestamp'], errors='coerce', infer_datetime_format=True)
     return survey_data
 
-# Memuat data survei
-survey_df = load_survey_data()
+# Memuat data survei untuk dua file yang berbeda
+survey_df_1 = load_survey_data("C.1.HasilSurveyPemahamanVMTSPS2024.csv")  # File pertama
+survey_df_2 = load_survey_data("C.1.HasilSurveyPemahamanVMTSUPPS2024.csv")  # File kedua
 
-# Menghitung rata-rata respons untuk pertanyaan 5 hingga 9
-# Kolom-kolom ini sesuai dengan penilaian dari survei
-rata_rata_semua_pertanyaan = survey_df.iloc[:, 5:10].mean().mean()  # Menghitung rata-rata keseluruhan
+# Fungsi untuk mengonversi kolom menjadi numerik dan menangani nilai yang hilang
+def convert_to_numeric(df, columns):
+    for col in columns:
+        # Mengonversi menjadi numerik dan meng-coerce nilai yang tidak valid menjadi NaN
+        df[col] = pd.to_numeric(df[col], errors='coerce')  
+    return df
 
-# Menampilkan rata-rata keseluruhan
-st.subheader("Rata-Rata Pemahaman Visi dan Misi")
-st.write(f"Rata-rata pemahaman keseluruhan adalah: {rata_rata_semua_pertanyaan:.2f} dari 5")
+# Mengonversi kolom pertanyaan 5 hingga 9 menjadi numerik pada kedua file
+survey_df_1 = convert_to_numeric(survey_df_1, survey_df_1.columns[5:10])
+survey_df_2 = convert_to_numeric(survey_df_2, survey_df_2.columns[5:10])
+
+# Menghitung rata-rata untuk masing-masing dataset pada pertanyaan 5 hingga 9 untuk kedua file
+rata_rata_pertanyaan_1 = survey_df_1.iloc[:, 5:10].mean()
+rata_rata_pertanyaan_2 = survey_df_2.iloc[:, 5:10].mean()
 
 # Menyiapkan opsi donut chart dan seri untuk rata-rata penilaian
 options = {
@@ -51,22 +59,10 @@ options = {
     "colors": ["#ADD8E6", "#00008B"]  # Biru muda untuk "Mengerti", Biru tua untuk "Tidak Mengerti"
 }
 
-# Membuat seri untuk donut chart (menampilkan rata-rata penilaian dan bagian yang tersisa)
-series = [rata_rata_semua_pertanyaan, 5 - rata_rata_semua_pertanyaan]  # Mengasumsikan penilaian adalah dari 5
+# Membuat donut chart berdasarkan rata-rata penilaian untuk File 1
+series_1 = [rata_rata_pertanyaan_1.mean(), 5 - rata_rata_pertanyaan_1.mean()]  # Menghitung rata-rata total untuk file pertama
+st_apexcharts(options, series_1, 'donut', '100%', 'Rata-Rata Pemahaman Visi dan Misi Program Studi Teknik Informatika')
 
-# Menyusun layout dengan dua kolom
-col1, col2 = st.columns([1, 2])  # Kolom pertama lebih kecil untuk chart, kolom kedua untuk penjelasan
-
-# Container untuk donut chart di kiri layar (kolom 1)
-with col1:
-    st_apexcharts(options, series, 'donut', '100%', 'Rata-Rata Pemahaman Visi dan Misi')
-
-# Container untuk penjelasan di sebelah kanan (kolom 2)
-with col2:
-    st.subheader("Penjelasan:")
-    st.write(
-        "1. **Mengerti**: Bagian chart ini mewakili responden yang memahami visi dan misi Program Studi Teknik Informatika."
-    )
-    st.write(
-        "2. **Tidak Mengerti**: Bagian ini mewakili responden yang tidak memahami visi dan misi."
-    )
+# Membuat donut chart berdasarkan rata-rata penilaian untuk File 2
+series_2 = [rata_rata_pertanyaan_2.mean(), 5 - rata_rata_pertanyaan_2.mean()]  # Menghitung rata-rata total untuk file kedua
+st_apexcharts(options, series_2, 'donut', '100%', 'Rata-Rata Pemahaman Visi dan Misi STT Wastukancana')
