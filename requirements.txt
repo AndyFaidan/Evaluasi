@@ -2,3 +2,4 @@ streamlit==1.29.0
 plotly-express==0.4.1
 pandas
 gdown
+streamlit_apexjs
