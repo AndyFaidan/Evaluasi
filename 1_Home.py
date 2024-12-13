@@ -66,11 +66,36 @@ options = {
     "colors": ["#ADD8E6", "#00008B"]  # Biru muda untuk "Mengerti", Biru tua untuk "Tidak Mengerti"
 }
 
+# Menambahkan CSS untuk memberi border pada metric
+st.markdown("""
+    <style>
+    .metric-container {
+        border: 2px solid #000000;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# Membuat layout kolom
 a, b, c = st.columns(3)
 
-a.metric("Temperature", "30°F", "-9°F", border=True)
-b.metric("Wind", "4 mph", "2 mph", border=True)
-c.metric("Humidity", "77%", "5%", border=True)
+# Menggunakan CSS kelas untuk menambahkan border pada st.metric()
+with a:
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.metric("Temperature", "30°F", "-9°F")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with b:
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.metric("Wind", "4 mph", "2 mph")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with c:
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.metric("Humidity", "77%", "5%")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Membuat layout kolom
 col = st.columns((2, 7), gap='medium')
