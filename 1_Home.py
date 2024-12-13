@@ -85,87 +85,88 @@ with col[0]:
     st_apexcharts(options, series_2, 'donut', '100%', 'Visi dan Misi STT Wastukancana')
 
 with col[1]:
-        # Load dataset
-        data1 = load_data("C2.tatakeloladosendantendik-prep.csv")
-
-
-        # Ekstraksi angka dari kolom yang relevan
-        for col in data1.columns[1:-1]:  # Hindari kolom pertama (deskripsi) dan terakhir (status)
-            data1[col] = data1[col].astype(str).str.extract(r'(\d+)').astype(float)
-
-        # Remove question text from indicator names (before the question mark or text after it)
-        cleaned_columns = data1.columns[1:-1].str.replace(r"\?.*", "", regex=True)
-
-        # Assign cleaned column names back to the DataFrame
-        data1.columns = ['Deskripsi'] + cleaned_columns.tolist() + ['Status Bpk/Ibu/Saudara/i.']
-
-        # Creating a mapping of letters (a, b, c, etc.) to each indicator
-        indicator_mapping = {col: chr(97 + idx) for idx, col in enumerate(data1.columns[1:-1])}
-
-        # Map the indicator names to letters (a, b, c, etc.)
-        mapped_indicators = data1.columns[1:-1].map(indicator_mapping)
-
-        # Hitung rata-rata skor untuk setiap kolom di seluruh data
-        avg_scores_all = data1.iloc[:, 1:-1].mean()
-
-        # Convert the average scores to a DataFrame for easier plotting
-        avg_scores_all_df = pd.DataFrame({
-            'Indikator': mapped_indicators,
-            'Rata-Rata Skor': avg_scores_all.values,
-            'Full Question': data1.columns[1:-1]
-        })
-
-        # Create Altair bar chart with tooltips
-        chart = alt.Chart(avg_scores_all_df).mark_bar().encode(
-            x=alt.X('Indikator:N', title='Indikator'),  # Nominal scale for the indicators
-            y=alt.Y('Rata-Rata Skor:Q', title='Rata-Rata Skor'),  # Quantitative scale for the average scores
-            color=alt.Color('Indikator:N', scale=alt.Scale(scheme='category20')),  # Use 'category20' for colors
-            tooltip=['Rata-Rata Skor:Q', 'Full Question:N']  # Only show the score and full question in tooltip
-        ).properties(
-            title="Tata Kelola Dosen & Tenaga Pendidik",
-            width=400,
-            height=300
-        ).configure_title(
-            anchor='middle'  # This centers the title
-        )
-
-        # Show the chart in Streamlit
-        st.altair_chart(chart, use_container_width=True)
     
-        data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
+    # Load dataset
+    data1 = load_data("C2.tatakeloladosendantendik-prep.csv")
 
-        # Ekstraksi angka dari kolom yang relevan (skor)
-        # Menghapus kolom pertama (Deskripsi) dan memproses skor dari kolom kedua dan seterusnya
-        for col in data2.columns[1:]:  # Mulai dari kolom kedua yang berisi skor
-            data2[col] = data2[col].apply(lambda x: pd.to_numeric(x, errors='coerce'))
 
-        # Hitung rata-rata skor untuk setiap kolom (pertanyaan)
-        avg_scores2 = data2.iloc[:, 1:].mean()
+    # Ekstraksi angka dari kolom yang relevan
+    for col in data1.columns[1:-1]:  # Hindari kolom pertama (deskripsi) dan terakhir (status)
+        data1[col] = data1[col].astype(str).str.extract(r'(\d+)').astype(float)
 
-        # Membuat DataFrame dengan rata-rata skor dan nama indikator
-        avg_scores2_df = pd.DataFrame({
-            'Indikator': data2.columns[1:],  # Nama kolom sebagai indikator
-            'Rata-Rata Skor': avg_scores2.values
-        })
+    # Remove question text from indicator names (before the question mark or text after it)
+    cleaned_columns = data1.columns[1:-1].str.replace(r"\?.*", "", regex=True)
 
-        #Membuat peta (mapping) untuk mengganti nama indikator dengan a, b, c, d, ...
-        indicator_mapping = {col: chr(97 + idx) for idx, col in enumerate(data2.columns[1:])}
+    # Assign cleaned column names back to the DataFrame
+    data1.columns = ['Deskripsi'] + cleaned_columns.tolist() + ['Status Bpk/Ibu/Saudara/i.']
 
-        # Ganti nama indikator dengan huruf (a, b, c, d, ...)
-        avg_scores2_df['Indikator'] = avg_scores2_df['Indikator'].map(indicator_mapping)
+    # Creating a mapping of letters (a, b, c, etc.) to each indicator
+    indicator_mapping = {col: chr(97 + idx) for idx, col in enumerate(data1.columns[1:-1])}
 
-        # Membuat Plotly Express Line Chart interaktif
-        fig = px.line(avg_scores2_df, x='Indikator', y='Rata-Rata Skor',
-                    labels={'Rata-Rata Skor': 'Rata-Rata Skor', 'Indikator': 'Indikator'},
-                    markers=True)
+    # Map the indicator names to letters (a, b, c, etc.)
+    mapped_indicators = data1.columns[1:-1].map(indicator_mapping)
 
-        # Menyesuaikan layout untuk memusatkan title
-        fig.update_layout(
-            title="Tata Kelola Mahasiswa",
-            title_x=0.5,  # Memusatkan title
-            title_y=1,    # Posisi title di atas grafik
-            title_xanchor='center',  # Memastikan title di pusat secara horizontal
-        )
+    # Hitung rata-rata skor untuk setiap kolom di seluruh data
+    avg_scores_all = data1.iloc[:, 1:-1].mean()
 
-        # Menampilkan chart di Streamlit
-        st.plotly_chart(fig, use_container_width=True)
+    # Convert the average scores to a DataFrame for easier plotting
+    avg_scores_all_df = pd.DataFrame({
+        'Indikator': mapped_indicators,
+        'Rata-Rata Skor': avg_scores_all.values,
+        'Full Question': data1.columns[1:-1]
+    })
+
+    # Create Altair bar chart with tooltips
+    chart = alt.Chart(avg_scores_all_df).mark_bar().encode(
+        x=alt.X('Indikator:N', title='Indikator'),  # Nominal scale for the indicators
+        y=alt.Y('Rata-Rata Skor:Q', title='Rata-Rata Skor'),  # Quantitative scale for the average scores
+        color=alt.Color('Indikator:N', scale=alt.Scale(scheme='category20')),  # Use 'category20' for colors
+        tooltip=['Rata-Rata Skor:Q', 'Full Question:N']  # Only show the score and full question in tooltip
+    ).properties(
+        title="Tata Kelola Dosen & Tenaga Pendidik",
+        width=400,
+        height=300
+    ).configure_title(
+        anchor='middle'  # This centers the title
+    )
+
+    # Show the chart in Streamlit
+    st.altair_chart(chart, use_container_width=True)
+
+    data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
+
+    # Ekstraksi angka dari kolom yang relevan (skor)
+    # Menghapus kolom pertama (Deskripsi) dan memproses skor dari kolom kedua dan seterusnya
+    for col in data2.columns[1:]:  # Mulai dari kolom kedua yang berisi skor
+        data2[col] = data2[col].apply(lambda x: pd.to_numeric(x, errors='coerce'))
+
+    # Hitung rata-rata skor untuk setiap kolom (pertanyaan)
+    avg_scores2 = data2.iloc[:, 1:].mean()
+
+    # Membuat DataFrame dengan rata-rata skor dan nama indikator
+    avg_scores2_df = pd.DataFrame({
+        'Indikator': data2.columns[1:],  # Nama kolom sebagai indikator
+        'Rata-Rata Skor': avg_scores2.values
+    })
+
+    #Membuat peta (mapping) untuk mengganti nama indikator dengan a, b, c, d, ...
+    indicator_mapping = {col: chr(97 + idx) for idx, col in enumerate(data2.columns[1:])}
+
+    # Ganti nama indikator dengan huruf (a, b, c, d, ...)
+    avg_scores2_df['Indikator'] = avg_scores2_df['Indikator'].map(indicator_mapping)
+
+    # Membuat Plotly Express Line Chart interaktif
+    fig = px.line(avg_scores2_df, x='Indikator', y='Rata-Rata Skor',
+                labels={'Rata-Rata Skor': 'Rata-Rata Skor', 'Indikator': 'Indikator'},
+                markers=True)
+
+    # Menyesuaikan layout untuk memusatkan title
+    fig.update_layout(
+        title="Tata Kelola Mahasiswa",
+        title_x=0.5,  # Memusatkan title
+        title_y=1,    # Posisi title di atas grafik
+        title_xanchor='center',  # Memastikan title di pusat secara horizontal
+    )
+
+    # Menampilkan chart di Streamlit
+    st.plotly_chart(fig, use_container_width=True)
