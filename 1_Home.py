@@ -66,36 +66,37 @@ options = {
     "colors": ["#ADD8E6", "#00008B"]  # Biru muda untuk "Mengerti", Biru tua untuk "Tidak Mengerti"
 }
 
-# Menambahkan CSS untuk memberi border pada metric
-st.markdown("""
-    <style>
-    .metric-container {
-        border: 2px solid #000000;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #f0f0f0;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+
+# Fungsi untuk membuat tile dengan height tetap
+def create_tile_with_metric(col, label, value, delta):
+    with col:
+        st.markdown(
+            f"""
+            <div style="height: 300px; display: flex; flex-direction: column; 
+                        justify-content: center; align-items: center; 
+                        border: 1px solid #e6e6e6; border-radius: 10px; padding: 20px;">
+                <div style="font-size: 18px; font-weight: bold; text-align: center;">
+                    {label}
+                </div>
+                <div style="font-size: 24px; font-weight: bold; color: #4CAF50; text-align: center;">
+                    {value}
+                </div>
+                <div style="font-size: 16px; color: #FF5733; text-align: center;">
+                    {delta}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 # Membuat layout kolom
-a, b, c = st.columns(3)
+col1, col2, col3 = st.columns(3)
 
-# Menggunakan CSS kelas untuk menambahkan border pada st.metric()
-with a:
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-    st.metric("Temperature", "30°F", "-9°F")
-    st.markdown('</div>', unsafe_allow_html=True)
+# Menambahkan metric dalam tile
+create_tile_with_metric(col1, "Temperature", "30°F", "-9°F")
+create_tile_with_metric(col2, "Wind", "4 mph", "2 mph")
+create_tile_with_metric(col3, "Humidity", "77%", "5%")
 
-with b:
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-    st.metric("Wind", "4 mph", "2 mph")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with c:
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
-    st.metric("Humidity", "77%", "5%")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Membuat layout kolom
 col = st.columns((2, 7), gap='medium')
