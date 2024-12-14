@@ -10,7 +10,7 @@ st.set_page_config(
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h1 style="text-align: center;">Dashboard Tata Kelola, Tata Pamong & Kerja Sama</h1>
+    <h2 style="text-align: center;">📊Dashboard Tata Kelola, Tata Pamong & Kerja Sama</h2>
 """, unsafe_allow_html=True)
 
 st.divider()
