@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Judul aplikasi
-st.title("📊 Dashboard Tata Kelola Pamong Dan Kerja Sama")
+st.title("Dashboard Tata Kelola,Tata Pamong Dan Kerja Sama")
 
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
