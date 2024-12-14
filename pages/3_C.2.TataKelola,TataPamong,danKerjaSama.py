@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Judul aplikasi
-st.title("Dashboard Tata Kelola,Tata Pamong Dan Kerja Sama")
+st.title("📊 Dashboard Survei Visi dan Misi STT Wastukancana")
 
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
@@ -25,7 +25,7 @@ def clean_data(data, start_col=1):
 # Tampilkan deskripsi survei dan grafik
 tab1, tab2 = st.tabs(["👨‍🏫 TATA KELOLA DOSEN & TENAGA PENDIDIK", "🎓 TATA KELOLA MAHASISWA"])
 
-# Tab TATA KELOLA DOSENS
+# Tab SARANA DOSENS
 with tab1:
     
     # Load data
@@ -63,20 +63,24 @@ with tab1:
     letters = [chr(i) for i in range(97, 97 + len(avg_scores1))]  # Menghasilkan list ['a', 'b', 'c', ...]
     avg_scores1['Indikator'] = letters  # Menggunakan huruf untuk sumbu X
 
+        # Tambahkan kolom 'Pertanyaan' untuk menampilkan pertanyaan di hover
+    avg_scores1['Pertanyaan'] = filtered_data1.columns[1:-1]
+
     # Visualisasi Bar Chart untuk Rata-Rata Skor
     fig_bar = px.bar(
         avg_scores1,
+        title='Distribusi Rata-Rata Skor Berdasarkan Indikator',
         x='Indikator',
         y='Rata-Rata Skor',
         labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
-        title=f"Rata-Rata Skor untuk Status: {status_filter}",
         color='Rata-Rata Skor',
         color_continuous_scale='Blues',
-        height=700
+        height=700,
+        hover_data={'Indikator': True, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Menambahkan pertanyaan ke tooltip
     )
         # Mengatur posisi judul agar berada di tengah
     fig_bar.update_layout(
-        title_x=0.3  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
+        title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
     )
 
     # Tambahkan garis rata-rata sebagai referensi
@@ -87,13 +91,16 @@ with tab1:
     
 
     # Membuat layout kolom
-    col = st.columns((2, 4 ,2), gap='medium')
+    col = st.columns((1.5, 4 ,2), gap='medium')
 
     with col[1]:
         # Tampilkan Bar Chart
         st.plotly_chart(fig_bar, use_container_width=True, use_container_high=True)
 
     with col[2]:
+
+
+
         st.data_editor(
             avg_scores1,
             column_config={
@@ -108,6 +115,21 @@ with tab1:
             hide_index=True,
             use_container_width=True  # Menggunakan lebar kontainer penuh untuk tabel
         )
+
+        fig_pie_simple = px.pie(
+            avg_scores1,
+            names='Indikator',  # Kategori
+            values='Rata-Rata Skor',  # Nilai kontribusi
+            hole=0.5, 
+            title='Distribusi Rata-Rata Skor per Indikator',
+            color_discrete_sequence=px.colors.sequential.Blues,  # Warna gradasi biru
+            
+        )
+
+        # Menampilkan Pie Chart
+        st.plotly_chart(fig_pie_simple, use_container_width=True)
+
+
 
     # Hitung rata-rata skor untuk pertanyaan yang dipilih
     avg_score = filtered_data2[pertanyaan_filter].mean()
@@ -179,7 +201,7 @@ with tab1:
         
 
 
-# Tab TATA KELOLA MAHASISWA
+# Tab SARANA MAHASISWA
 with tab2:
         # Load dataset
     data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
@@ -200,7 +222,7 @@ with tab2:
         avg_scores2,
         x='Letter',  # Sumbu X menggunakan huruf
         y='Rata-Rata Skor',
-        title="🎓 Rata-Rata Skor untuk Setiap Pertanyaan (TATA KELOLA MAHASISWA)",
+        title="🎓 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA)",
         color='Rata-Rata Skor',  # Use 'color' for categorical coloring
         height=500,
         hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Menampilkan informasi saat kursor disorot
