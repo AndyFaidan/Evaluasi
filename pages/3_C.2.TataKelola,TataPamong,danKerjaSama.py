@@ -8,8 +8,12 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Judul aplikasi
-st.title("Dashboard Tata Kelola, Tata Pamong & Kerja Sama")
+# Menampilkan judul aplikasi di tengah
+st.markdown("""
+    <h1 style="text-align: center;">Dashboard Tata Kelola, Tata Pamong & Kerja Sama</h1>
+""", unsafe_allow_html=True)
+
+st.divider()
 
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
