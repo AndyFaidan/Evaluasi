@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Judul aplikasi
-st.title("📊 Dashboard Survei Visi dan Misi STT Wastukancana")
+st.title("Dashboard Tata Kelola, Tata Pamong & Kerja Sama")
 
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
