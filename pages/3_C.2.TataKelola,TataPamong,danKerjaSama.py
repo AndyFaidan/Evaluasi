@@ -13,8 +13,6 @@ st.markdown("""
     <h2 style="text-align: center;">📊Dashboard Tata Kelola, Tata Pamong & Kerja Sama</h2>
 """, unsafe_allow_html=True)
 
-st.divider()
-
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
 def load_data(file_path):
