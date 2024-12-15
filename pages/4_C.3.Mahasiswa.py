@@ -207,6 +207,8 @@ with col[1]:
     fig_donut.update_layout(
         title_x=0.2,  # Centers the title
         showlegend=False  # Hides the legend
+        legend_y=-0.2,  # Moves the legend below the chart
+        legend_x=1.5,  # Centers the legend horizontally
     )
 
     # Display the donut chart
