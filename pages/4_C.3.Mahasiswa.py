@@ -205,7 +205,7 @@ with col[1]:
 
         # Update layout to center the title and hide the legend
     fig_donut.update_layout(
-        title_x=0.2,  # Centers the title
+        title_x=-0.1,  # Centers the title
         showlegend=False  # Hides the legend
     )
 
