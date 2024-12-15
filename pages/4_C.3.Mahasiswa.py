@@ -164,7 +164,7 @@ fulfillment_data = pd.DataFrame({
 })
 
 # Membuat layout kolom
-col = st.columns((3, 3 ,3), gap='medium')
+col = st.columns((2.5, 2.5 ,4), gap='medium')
 
 
 with col[0]:
