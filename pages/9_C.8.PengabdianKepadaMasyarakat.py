@@ -4,47 +4,191 @@ import plotly.express as px
 
 # Set page configuration
 st.set_page_config(
-    page_title="Dashboard Pengabdian pada Masyarakat",
+    page_title="Pengabdian Kepada Masyarakat",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# Judul aplikasi
-st.title("Dashboard Survei Pengabdian pada Masyarakat STT Wastukancana")
+# Menampilkan judul aplikasi di tengah
+st.markdown("""
+    <h2 style="text-align: center;">📊Pengabdian Kepada Masyarakat</h2>
+""", unsafe_allow_html=True)
 
-# Load the data
-@st.cache
-def load_data():
-    # Replace 'pengabdian-prep.csv' with the actual path to your CSV file
-    data = pd.read_csv('pengabdian-prep.csv', header=None)
+st.divider()
+# Fungsi untuk memuat data dengan caching
+@st.cache_data
+def load_data(file_path):
+    return pd.read_csv(file_path)
+
+# Fungsi untuk membersihkan data
+def clean_data(data, start_col=1):
+    for col in data.columns[start_col:]:
+        data[col] = data[col].astype(str).str.extract(r'(\d+)').astype(float)
     return data
 
 # Load data
-data_pengabdian = load_data()
+data1 = load_data("pengabdian-prep.csv")
 
-# Assign column names
-data_pengabdian.columns = [
-    "Distribusi informasi oleh Pusat PPM tentang jenis hibah untuk pengabdian pada masyarakat telah terakses oleh civitas akademika.",
-    "Prosedur kegiatan pengabdian pada masyarakat internal sesuai dengan SOP yang telah ditetapkan.",
-    "Prosedur kegiatan hibah pengabdian pada masyarakat eksternal sesuai dengan SOP yang telah ditetapkan."
-]
+# Calculate average scores for each question
+avg_scores = data1.mean()
 
-# Tampilkan deskripsi survey dan grafik
-st.subheader("Survey Pengabdian pada Masyarakat")
-st.write("""
-Survey ini bertujuan untuk mengetahui sejauh mana civitas akademika memahami prosedur dan distribusi informasi mengenai pengabdian pada masyarakat di STT Wastukancana.
-""")
+# Prepare the indicator names (letters for X-axis)
+questions = data1.columns.tolist()  # Assuming questions are column names
+letters = [chr(i) for i in range(97, 97 + len(avg_scores))]  # ['a', 'b', 'c', ...]
 
-# Show the data in the app
-st.write("Data Pengabdian:")
-st.dataframe(data_pengabdian)
+# Create a DataFrame with letters as 'Indikator', average scores, and questions
+avg_scores_df = pd.DataFrame({
+    'Indikator': letters,
+    'Pertanyaan': questions,
+    'Rata-Rata Skor': avg_scores.values
+})
 
-# Visualisasi Distribusi Skala
-st.subheader("Distribusi Skala Pengabdian pada Masyarakat")
+col1, col2, col3 = st.columns(3)
 
-# Display histograms for each question
-for col in data_pengabdian.columns:
-    st.write(f"**Distribusi {col}:**")
-    fig = px.histogram(data_pengabdian, x=col, nbins=5, labels={col: "Skala"}, title=f"Distribusi {col}")
-    st.plotly_chart(fig, use_container_width=True)
+        # Calculate metrics
+min_score = avg_scores_df['Rata-Rata Skor'].min()
+max_score = avg_scores_df['Rata-Rata Skor'].max()
+mean_score = avg_scores_df['Rata-Rata Skor'].mean()
+
+    
+    # Display metrics with individual borders
+st.markdown("""<style>
+    .metric-box {
+        text-align: center;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+    }
+    .metric-box h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+    .metric-box p {
+        margin: 5px 0 0;
+        font-size: 1rem;
+        color: #555;
+    }
+    </style>""", unsafe_allow_html=True)
+with col1:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Minimum Skor</p>
+        </div>""".format(min_score), unsafe_allow_html=True)
+with col2:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Rata-Rata Skor</p>
+        </div>""".format(mean_score), unsafe_allow_html=True)
+with col3:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Maksimum Skor</p>
+        </div>""".format(max_score), unsafe_allow_html=True)
+
+
+st.data_editor(
+        avg_scores_df,
+        column_config={
+            "Rata-Rata Skor": st.column_config.ProgressColumn(
+                "Rata-Rata Skor",
+                help="Skor rata-rata berdasarkan indikator",
+                format="{:.2f}",  # Format angka dengan 2 desimal
+                min_value=0,  # Skor minimal
+                max_value=5,  # Skor maksimal (asumsi skor 1-5)
+            ),
+        },
+        hide_index=True,
+        use_container_width=True  # Menggunakan lebar kontainer penuh untuk tabel
+    )
+selected_question_index = st.selectbox("Pilih Pertanyaan", range(len(questions)), format_func=lambda x: questions[x])
+
+# Get the average score for the selected question
+selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index]
+fulfilled_percentage = (selected_question_avg_score / 5) * 100
+not_fulfilled_percentage = 100 - fulfilled_percentage
+
+# Prepare data for the donut chart
+fulfillment_data = pd.DataFrame({
+    'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+    'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+})
+
+col1, col2, col3 = st.columns(3)
+
+
+with col1:
+    # Create the donut chart
+    fig_donut = px.pie(
+        fulfillment_data,
+        values='Persentase',
+        names='Status',
+        hole=0.4,
+        title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+        color_discrete_sequence=px.colors.sequential.Sunset
+    )
+    # Update layout to center the title and position the legend at the bottom
+    fig_donut.update_layout(
+        title_x=0.1,  # Centers the title
+        legend_title="Indikator",  # Title for the legend
+        legend_orientation="h",  # Horizontal legend
+        legend_yanchor="bottom",  # Aligns legend at the bottom
+        legend_y=-0.2,  # Moves the legend below the chart
+        legend_x=0.5,  # Centers the legend horizontally
+        legend_xanchor="center"  # Ensures that the legend is anchored in the center
+    )
+    # Display the donut chart
+    st.plotly_chart(fig_donut)
+    
+
+with col2:
+    # Plot a bar chart for average scores
+    fig_bar = px.bar(
+        avg_scores_df,
+        x='Indikator',
+        y='Rata-Rata Skor',
+        labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
+        title="Rata-Rata Skor untuk Setiap Indikator",
+        color='Rata-Rata Skor',
+        color_continuous_scale='sunset',
+        height=500,
+        hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
+    )
+            # Mengatur posisi judul agar berada di tengah
+    fig_bar.update_layout(
+        title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
+    )
+
+    # Display the bar chart
+    st.plotly_chart(fig_bar)
+
+with col3:
+    # Create a donut chart for score distribution
+    fig_donut = px.pie(
+        avg_scores_df,
+        values='Rata-Rata Skor',
+        names='Indikator',
+        hole=0.4,
+        title="Distribusi Skor Rata-Rata Per Indikator",
+        color_discrete_sequence=px.colors.sequential.Purp
+    )
+
+    # Update layout to center the title and position the legend at the bottom
+    fig_donut.update_layout(
+        title_x=0.2,  # Centers the title
+        legend_title="Indikator",  # Title for the legend
+        legend_orientation="h",  # Horizontal legend
+        legend_yanchor="bottom",  # Aligns legend at the bottom
+        legend_y=-0.2,  # Moves the legend below the chart
+        legend_x=0.5,  # Centers the legend horizontally
+        legend_xanchor="center"  # Ensures that the legend is anchored in the center
+    )
+
+    # Display the donut chart
+    st.plotly_chart(fig_donut)
+
+
+
+
 
