@@ -197,18 +197,21 @@ with col[1]:
     fig_donut = px.pie(
         avg_scores_df,
         values='Rata-Rata Skor',
-        names='Indikator',
         hole=0.4,
         title="Distribusi Skor Rata-Rata Per Indikator",
         color_discrete_sequence=px.colors.sequential.Sunset
     )
 
-        # Update layout to center the title and hide the legend
+    # Update layout to center the title and position the legend at the bottom
     fig_donut.update_layout(
-        title_x=-0.5,  # Centers the title
-        showlegend=False  # Hides the legend
+        title_x=0,  # Centers the title
+        legend_title="Indikator",  # Title for the legend
+        legend_orientation="h",  # Horizontal legend
+        legend_yanchor="bottom",  # Aligns legend at the bottom
+        legend_y=-0.1,  # Moves the legend below the chart
+        legend_x=0.4,  # Centers the legend horizontally
+        legend_xanchor="center"  # Ensures that the legend is anchored in the center
     )
-
     # Display the donut chart
     st.plotly_chart(fig_donut)
 
