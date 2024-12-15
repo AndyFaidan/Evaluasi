@@ -204,10 +204,19 @@ with tab1:
 
 
 # Tab SARANA MAHASISWA
+# Tab SARANA MAHASISWA
 with tab2:
-    # Load dataset
-    data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
-    data2 = clean_data(data2)
+    # Load dataset dengan header di baris pertama dan kedua
+    def load_data_with_multi_header(file_path):
+        # Membaca file dengan header di baris pertama dan kedua
+        data = pd.read_csv(file_path, header=[0, 1])
+        # Menyesuaikan header menjadi kolom tunggal
+        data.columns = ['_'.join(col).strip() for col in data.columns.values]
+        return data
+
+    # Load dan bersihkan data
+    data2 = load_data_with_multi_header("C2.tatakelolamhs-preprossesing.csv")
+    data2 = clean_data(data2)  # Jika ada fungsi clean_data, tetap digunakan
 
     # Hitung rata-rata skor untuk setiap pertanyaan
     avg_scores2 = data2.iloc[:, 1:].mean().reset_index()  # Mengambil rata-rata untuk setiap pertanyaan
@@ -267,16 +276,6 @@ with tab2:
         color_discrete_sequence=["#36A2EB", "#FFCE56"]  # Warna: Biru untuk Terpenuhi, Kuning untuk Belum Terpenuhi
     )
 
-    # Update layout untuk Donut Chart
-    fig_donut.update_layout(
-        title_x=0.5,  # Center the title
-        legend_title="Kategori",
-        legend_orientation="h",  # Horizontal legend
-        legend_y=-0.1,  # Move legend below the chart
-        legend_x=0.5,  # Center legend horizontally
-        legend_xanchor="center"
-    )
-
     # Tampilkan nilai rata-rata dan Donut Chart
     st.metric(f"Rata-Rata Skor untuk {selected_question}", f"{selected_value:.2f} dari 5")
     st.plotly_chart(fig_donut, use_container_width=True)
@@ -284,5 +283,3 @@ with tab2:
     # Tampilkan data dalam bentuk tabel
     st.subheader("📋 Data Rata-Rata Skor:")
     st.dataframe(avg_scores2)
-
-
