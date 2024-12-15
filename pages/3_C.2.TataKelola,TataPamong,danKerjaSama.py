@@ -239,6 +239,16 @@ with tab2:
         hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Menampilkan informasi saat kursor disorot
     )
 
+    # Visualisasi data dengan Line Chart
+    fig_line = px.line(
+        avg_scores2,
+        x='Letter',  # Sumbu X menggunakan huruf
+        y='Rata-Rata Skor',
+        title="\ud83c\udf93 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA) - Line Chart",
+        markers=True,  # Menambahkan titik pada setiap nilai
+        height=500
+    )
+
     # Tambahkan garis rata-rata sebagai referensi
     avg_line = avg_scores2['Rata-Rata Skor'].mean()
     fig2.add_hline(y=avg_line, line_dash="dash", line_color="red", 
