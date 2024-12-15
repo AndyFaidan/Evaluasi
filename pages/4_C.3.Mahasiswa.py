@@ -164,10 +164,10 @@ fulfillment_data = pd.DataFrame({
 })
 
 # Membuat layout kolom
-col = st.columns((3, 3 ,5), gap='medium')
+col1, col2, col3 = st.columns(3)
 
 
-with col[0]:
+with col1:
     # Create the donut chart
     fig_donut = px.pie(
         fulfillment_data,
@@ -177,25 +177,21 @@ with col[0]:
         title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
         color_discrete_sequence=px.colors.sequential.Sunset
     )
-
     # Update layout to center the title and position the legend at the bottom
     fig_donut.update_layout(
-        title_x=0.1,  # Title aligned to the left (0 is full left)
-        title_y=0.9,  # Adjusts vertical positioning of the title (optional)
+        title_x=0,  # Centers the title
         legend_title="Indikator",  # Title for the legend
         legend_orientation="h",  # Horizontal legend
         legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=-0.3,  # Moves the legend below the chart
-        legend_x=0.1,  # Moves the legend more to the left
-        legend_xanchor="left",  # Ensures that the legend is anchored on the left
-        margin=dict(l=50, r=50, t=50, b=50)  # Adjust margins if necessary to make space
+        legend_y=-0.4,  # Moves the legend below the chart
+        legend_x=0.4,  # Centers the legend horizontally
+        legend_xanchor="right"  # Ensures that the legend is anchored in the center
     )
-
     # Display the donut chart
     st.plotly_chart(fig_donut)
 
 
-with col[1]:
+with col2:
     
     # Create a donut chart for score distribution
     fig_donut = px.pie(
@@ -212,14 +208,14 @@ with col[1]:
         legend_title="Indikator",  # Title for the legend
         legend_orientation="h",  # Horizontal legend
         legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=-0.1,  # Moves the legend below the chart
-        legend_x=0.1,  # Centers the legend horizontally
+        legend_y=1,  # Moves the legend below the chart
+        legend_x=0.4,  # Centers the legend horizontally
         legend_xanchor="center"  # Ensures that the legend is anchored in the center
     )
     # Display the donut chart
     st.plotly_chart(fig_donut)
 
-with col[2]:
+with col3:
  
     # Plot a bar chart for average scores
     fig_bar = px.bar(
@@ -240,6 +236,12 @@ with col[2]:
 
     # Display the bar chart
     st.plotly_chart(fig_bar)
+
+
+
+
+
+
 
 
 
