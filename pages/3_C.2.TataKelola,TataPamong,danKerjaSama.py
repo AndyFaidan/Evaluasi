@@ -203,13 +203,11 @@ with tab1:
         
 
 
-# Tab SARANA MAHASISWA# Tab SARANA MAHASISWA
+# Tab SARANA MAHASISWA
 with tab2:
     # Load dataset dengan header di baris pertama dan kedua
     def load_data_with_multi_header(file_path):
-        # Membaca file dengan header di baris pertama dan kedua
-        data = pd.read_csv(file_path, header=[0, 1])
-        # Menyesuaikan header menjadi kolom tunggal
+        data = pd.read_csv(file_path, header=[0, 1], encoding="utf-8")  # Pastikan encoding UTF-8
         data.columns = ['_'.join(col).strip() for col in data.columns.values]
         return data
 
@@ -218,68 +216,174 @@ with tab2:
     data2 = clean_data(data2)  # Jika ada fungsi clean_data, tetap digunakan
 
     # Hitung rata-rata skor untuk setiap pertanyaan
-    avg_scores2 = data2.iloc[:, 1:].mean().reset_index()  # Mengambil rata-rata untuk setiap pertanyaan
+    avg_scores2 = data2.iloc[:, 1:].mean().reset_index()
     avg_scores2.columns = ['Pertanyaan', 'Rata-Rata Skor']
 
     # Menyiapkan huruf untuk sumbu X (a, b, c, ...)
-    letters = [chr(i) for i in range(97, 97 + len(avg_scores2))]  # Menghasilkan list ['a', 'b', 'c', ...]
+    letters = [chr(i) for i in range(97, 97 + len(avg_scores2))]
     avg_scores2['Letter'] = letters
 
-    # Visualisasi data dengan Area Chart
-    fig2 = px.bar(
-        avg_scores2,
-        x='Letter',  # Sumbu X menggunakan huruf
-        y='Rata-Rata Skor',
-        title="🎓 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA)",
-        color='Rata-Rata Skor',  # Pewarnaan berdasarkan skor
-        height=500,
-        hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Informasi saat kursor disorot
-    )
+            # Calculate metrics
+    min_score = avg_scores2['Rata-Rata Skor'].min()
+    max_score = avg_scores2['Rata-Rata Skor'].max()
+    mean_score = avg_scores2['Rata-Rata Skor'].mean()
 
-    # Tambahkan garis rata-rata sebagai referensi
-    avg_line = avg_scores2['Rata-Rata Skor'].mean()
-    fig2.add_hline(
-        y=avg_line,
-        line_dash="dash",
-        line_color="red",
-        annotation_text=f"Rata-rata {avg_line:.2f}",
-        annotation_position="top left"
-    )
+        
+        # Display metrics with individual borders
+    st.markdown("""<style>
+        .metric-box {
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f5bf4a ;
+        }
+        .metric-box h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: black;
+        }
+        .metric-box p {
+            margin: 5px 0 0;
+            font-size: 1rem;
+            color: black ;
+        }
+        </style>""", unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("""<div class="metric-box">
+        <h3>{:.2f}</h3>
+        <p>Minimum Skor</p>
+        </div>""".format(min_score), unsafe_allow_html=True)
+    with col2:       
+        st.markdown("""<div class="metric-box">
+        <h3>{:.2f}</h3>
+        <p>Rata-Rata Skor</p>
+        </div>""".format(mean_score), unsafe_allow_html=True)
+    with col3:
+        st.markdown("""<div class="metric-box">
+        <h3>{:.2f}</h3>
+        <p>Maksimum Skor</p>
+        </div>""".format(max_score), unsafe_allow_html=True)
 
-    # Tampilkan grafik
-    st.plotly_chart(fig2, use_container_width=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        # Visualisasi Bar Chart
+        fig_bar = px.bar(
+            avg_scores2,
+            x='Letter',
+            y='Rata-Rata Skor',
+            title="Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA)",
+            color='Rata-Rata Skor',
+            height=500,
+            hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}
+        )
 
-    # Pilih pertanyaan tertentu untuk ditampilkan
+        # Tampilkan grafik
+        st.plotly_chart(fig_bar, use_container_width=True)
+    with col2:
+        # Visualisasi Line Chart
+        fig_line = px.line(
+            avg_scores2,
+            x='Letter',
+            y='Rata-Rata Skor',
+            title="Rata-Rata Skor (SARANA MAHASISWA) - Line Chart",
+            markers=True,
+            height=500
+        )
+        
+        st.plotly_chart(fig_line, use_container_width=True)
+
+    
+
+ # Pilih pertanyaan tertentu untuk ditampilkan
     selected_question = st.selectbox("🔍 Pilih Pertanyaan untuk Melihat Detail:", avg_scores2['Pertanyaan'])
     selected_value = avg_scores2[avg_scores2['Pertanyaan'] == selected_question]['Rata-Rata Skor'].values[0]
 
-    # Tampilkan nilai terpilih
-    st.metric(f"Skor untuk {selected_question}", f"{selected_value:.2f}")
+    col1,col2 = st.columns(2)
 
-    # Menghitung persentase skor untuk pertanyaan yang dipilih (skala 1-5)
-    percentage_score = (selected_value / 5) * 100  # Konversi ke persentase (1-5 skala)
+    with col1:
+        # Tampilkan tabel
+        st.data_editor(
+            avg_scores2,
+            column_config={
+                "Rata-Rata Skor": st.column_config.ProgressColumn(
+                    "Rata-Rata Skor",
+                    help="Skor rata-rata berdasarkan indikator",
+                    min_value=0,
+                    max_value=5
+                ),
+            },
+            hide_index=True,
+            use_container_width=True
+        )
+    
+    with col2:
 
-    # Data untuk Donut Chart
-    donut_data = pd.DataFrame({
-        "Kategori": ["Terpenuhi", "Belum Terpenuhi"],
-        "Persentase": [percentage_score, 100 - percentage_score]
-    })
+        col1,col2 = st.columns(2)
 
-    # Visualisasi Donut Chart dengan Plotly
-    fig_donut = px.pie(
-        donut_data,
-        names='Kategori',
-        values='Persentase',
-        title=f"Persentase Skor untuk '{selected_question}' (Skala 1-5)",
-        hole=0.5,  # Membuat tampilan menjadi donut chart
-        color_discrete_sequence=["#36A2EB", "#FFCE56"]  # Warna: Biru untuk Terpenuhi, Kuning untuk Belum Terpenuhi
-    )
+                # Display metrics with individual borders
+        st.markdown("""<style>
+            .metric-box {
+                text-align: center;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 10px;
+                background-color: #f5bf4a;
+            }
+            .metric-box h3 {
+                margin: 0;
+                font-size: 1.5rem;
+                color: black;
+            }
+            .metric-box p {
+                margin: 5px 0 0;
+                font-size: 1rem;
+                color: black;
+            }
+        </style>""", unsafe_allow_html=True)
 
-    # Tampilkan nilai rata-rata dan Donut Chart
-    st.metric(f"Rata-Rata Skor untuk {selected_question}", f"{selected_value:.2f} dari 5")
-    st.plotly_chart(fig_donut, use_container_width=True)
+        # Tampilkan nilai terpilih dengan border
+        with col1:
+            st.markdown(f"""
+                <div class="metric-box">
+                    <p style="font-size: 24px; margin: 0;"><b>{selected_value:.2f}</b></p>
+                    <p>🎯 Skor untuk {selected_question}</p>
+                    <small style="color: #888;">(Persentase: {percentage_score:.1f}%)</small>
+                </div>
+            """, unsafe_allow_html=True)
 
-    # Tampilkan data dalam bentuk tabel
-    st.subheader("📋 Data Rata-Rata Skor:")
-    st.dataframe(avg_scores2)
+
+        with col2:
+            st.markdown(f"""
+                <div class="metric-box">
+                    <p style="font-size: 24px; margin: 0;"><b>{selected_value:.2f}</b></p>
+                    <p>🎯 Skor untuk {selected_question}</p>
+                    <small style="color: #888;">(Persentase: {percentage_score:.1f}%)</small>
+                </div>
+            """, unsafe_allow_html=True)
+
+
+
+        # Data untuk Donut Chart
+        donut_data = pd.DataFrame({
+            "Kategori": ["Terpenuhi", "Belum Terpenuhi"],
+            "Persentase": [percentage_score, 100 - percentage_score]
+        })
+
+        # Visualisasi Donut Chart dengan Plotly
+        fig_donut = px.pie(
+            donut_data,
+            names='Kategori',
+            values='Persentase',
+            title=f"Persentase Skor untuk '{selected_question}' (Skala 1-5)",
+            hole=0.5,  # Membuat tampilan menjadi donut chart
+            color_discrete_sequence=["#36A2EB", "#FFCE56"]  # Warna: Biru untuk Terpenuhi, Kuning untuk Belum Terpenuhi
+        )
+
+        
+        st.plotly_chart(fig_donut, use_container_width=True)
 
