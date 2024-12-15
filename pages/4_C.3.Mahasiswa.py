@@ -164,7 +164,7 @@ fulfillment_data = pd.DataFrame({
 })
 
 # Membuat layout kolom
-col = st.columns((2.5, 2.5 ,4), gap='medium')
+col = st.columns((2, 2 ,5), gap='medium')
 
 
 with col[0]:
@@ -183,8 +183,8 @@ with col[0]:
         legend_title="Indikator",  # Title for the legend
         legend_orientation="h",  # Horizontal legend
         legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=-0.4,  # Moves the legend below the chart
-        legend_x=1.5,  # Centers the legend horizontally
+        legend_y=-0.5,  # Moves the legend below the chart
+        legend_x=0.5,  # Centers the legend horizontally
         legend_xanchor="center"  # Ensures that the legend is anchored in the center
     )
     # Display the donut chart
@@ -197,23 +197,20 @@ with col[1]:
     fig_donut = px.pie(
         avg_scores_df,
         values='Rata-Rata Skor',
+        names='Indikator',
         hole=0.4,
         title="Distribusi Skor Rata-Rata Per Indikator",
         color_discrete_sequence=px.colors.sequential.Sunset
     )
-    
-    # Update layout to center the title and position the legend at the bottom
+
+        # Update layout to center the title and hide the legend
     fig_donut.update_layout(
-        title_x=0.1,  # Centers the title
-        legend_orientation="h",  # Horizontal legend
-        legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=-0.2,  # Moves the legend below the chart
-        legend_x=2.5,  # Centers the legend horizontally
-        legend_xanchor="center"  # Ensures that the legend is anchored in the center
+        title_x=0.2,  # Centers the title
+        showlegend=False  # Hides the legend
     )
+
     # Display the donut chart
     st.plotly_chart(fig_donut)
-
 
 with col[2]:
  
