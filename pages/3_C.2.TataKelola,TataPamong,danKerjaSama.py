@@ -207,7 +207,7 @@ with tab1:
 # Tab SARANA MAHASISWA
 with tab2:
     # Load dataset dengan header di baris pertama dan kedua
-    def load_data_with_multi_header(file_path):
+    def load_data_with_multi_header(file_path):0
         # Membaca file dengan header di baris pertama dan kedua
         data = pd.read_csv(file_path, header=[0, 1]
         # Menyesuaikan header menjadi kolom tunggal
