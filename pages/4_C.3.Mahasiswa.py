@@ -197,7 +197,6 @@ with col[1]:
     fig_donut = px.pie(
         avg_scores_df,
         values='Rata-Rata Skor',
-        names='Indikator',
         hole=0.4,
         title="Distribusi Skor Rata-Rata Per Indikator",
         color_discrete_sequence=px.colors.sequential.Sunset
