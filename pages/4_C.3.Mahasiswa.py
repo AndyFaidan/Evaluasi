@@ -183,7 +183,7 @@ with col[0]:
         legend_title="Indikator",  # Title for the legend
         legend_orientation="h",  # Horizontal legend
         legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=-0.5,  # Moves the legend below the chart
+        legend_y=-0.1,  # Moves the legend below the chart
         legend_x=1.5,  # Centers the legend horizontally
         legend_xanchor="center"  # Ensures that the legend is anchored in the center
     )
@@ -205,7 +205,7 @@ with col[1]:
 
         # Update layout to center the title and hide the legend
     fig_donut.update_layout(
-        title_x=-0.1,  # Centers the title
+        title_x=-0.5,  # Centers the title
         showlegend=False  # Hides the legend
     )
 
