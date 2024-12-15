@@ -207,8 +207,8 @@ with col[1]:
         title_x=0.1,  # Centers the title
         legend_orientation="h",  # Horizontal legend
         legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=-0.4,  # Moves the legend below the chart
-        legend_x=1.5,  # Centers the legend horizontally
+        legend_y=-0.2,  # Moves the legend below the chart
+        legend_x=2.5,  # Centers the legend horizontally
         legend_xanchor="center"  # Ensures that the legend is anchored in the center
     )
     # Display the donut chart
