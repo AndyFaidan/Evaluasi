@@ -88,7 +88,7 @@ with col3:
             <p>Maksimum Skor</p>
         </div>""".format(max_score), unsafe_allow_html=True)
 
-selected_question_index = st.selectbox("Pilih Pertanyaan", range(len(questions)), format_func=lambda x: questions[x])
+selected_question_index = st.selectbox("🔎Pilih Pertanyaan", range(len(questions)), format_func=lambda x: questions[x])
 
 # Get the average score for the selected question
 selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index]
