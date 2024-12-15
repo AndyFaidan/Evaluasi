@@ -214,7 +214,11 @@ with tab2:
         data.columns = ['_'.join(col).strip() for col in data.columns.values]
         return data
 
-        # Hitung rata-rata skor untuk setiap pertanyaan
+            # Load dataset
+    data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
+    data2 = clean_data(data2)
+
+    # Hitung rata-rata skor untuk setiap pertanyaan
     avg_scores2 = data2.iloc[:, 1:].mean().reset_index()  # Mengambil rata-rata untuk setiap pertanyaan
     avg_scores2.columns = ['Pertanyaan', 'Rata-Rata Skor']
 
