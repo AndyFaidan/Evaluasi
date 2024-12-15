@@ -214,67 +214,37 @@ with tab2:
         data.columns = ['_'.join(col).strip() for col in data.columns.values]
         return data
 
-    # Load dan bersihkan data
-    data2 = load_data_with_multi_header("C2.tatakelolamhs-preprossesing.csv")
-    data2 = clean_data(data2)  # Jika ada fungsi clean_data, tetap digunakan
-
-    # Hitung rata-rata skor untuk setiap pertanyaan
+        # Hitung rata-rata skor untuk setiap pertanyaan
     avg_scores2 = data2.iloc[:, 1:].mean().reset_index()  # Mengambil rata-rata untuk setiap pertanyaan
     avg_scores2.columns = ['Pertanyaan', 'Rata-Rata Skor']
 
     # Menyiapkan huruf untuk sumbu X (a, b, c, ...)
     letters = [chr(i) for i in range(97, 97 + len(avg_scores2))]  # Menghasilkan list ['a', 'b', 'c', ...]
+
+    # Menambahkan huruf pada sumbu X
     avg_scores2['Letter'] = letters
 
-    # Visualisasi data dengan Bar Chart
-    fig_bar = px.bar(
-        avg_scores2,
-        x='Letter',  # Sumbu X menggunakan huruf
-        y='Rata-Rata Skor',
-        title="\ud83c\udf93 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA) - Bar Chart",
-        color='Rata-Rata Skor',  # Pewarnaan berdasarkan skor
-        height=500,
-        hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Informasi saat kursor disorot
-    )
-
-    # Visualisasi data dengan Line Chart
-    fig_line = px.line(
-        avg_scores2,
-        x='Letter',  # Sumbu X menggunakan huruf
-        y='Rata-Rata Skor',
-        title="\ud83c\udf93 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA) - Line Chart",
-        markers=True,  # Menambahkan titik pada setiap nilai
-        height=500
-    )
-
     # Visualisasi data dengan Area Chart
-    fig_area = px.area(
+    fig2 = px.bar(
         avg_scores2,
-        x='Letter',
+        x='Letter',  # Sumbu X menggunakan huruf
         y='Rata-Rata Skor',
-        title="\ud83c\udf93 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA) - Area Chart",
+        title="🎓 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA)",
+        color='Rata-Rata Skor',  # Use 'color' for categorical coloring
         height=500,
-        color_discrete_sequence=["#636EFA"]  # Warna area
+        hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Menampilkan informasi saat kursor disorot
     )
 
-    # Tambahkan garis rata-rata sebagai referensi pada setiap chart
+    # Tambahkan garis rata-rata sebagai referensi
     avg_line = avg_scores2['Rata-Rata Skor'].mean()
-    for fig in [fig_bar, fig_line, fig_area]:
-        fig.add_hline(
-            y=avg_line,
-            line_dash="dash",
-            line_color="red",
-            annotation_text=f"Rata-rata {avg_line:.2f}",
-            annotation_position="top left"
-        )
+    fig2.add_hline(y=avg_line, line_dash="dash", line_color="red", 
+                annotation_text=f"Rata-rata {avg_line:.2f}", annotation_position="top left")
 
     # Tampilkan grafik
-    st.plotly_chart(fig_bar, use_container_width=True)
-    st.plotly_chart(fig_line, use_container_width=True)
-    st.plotly_chart(fig_area, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
     # Pilih pertanyaan tertentu untuk ditampilkan
-    selected_question = st.selectbox("\ud83d\udd0d Pilih Pertanyaan untuk Melihat Detail:", avg_scores2['Pertanyaan'])
+    selected_question = st.selectbox("🔍 Pilih Pertanyaan untuk Melihat Detail:", avg_scores2['Pertanyaan'])
     selected_value = avg_scores2[avg_scores2['Pertanyaan'] == selected_question]['Rata-Rata Skor'].values[0]
 
     # Tampilkan nilai terpilih
@@ -304,5 +274,6 @@ with tab2:
     st.plotly_chart(fig_donut, use_container_width=True)
 
     # Tampilkan data dalam bentuk tabel
-    st.subheader("\ud83d\udccb Data Rata-Rata Skor:")
+    st.subheader("📋 Data Rata-Rata Skor:")
     st.dataframe(avg_scores2)
+
