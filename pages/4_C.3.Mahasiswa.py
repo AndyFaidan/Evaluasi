@@ -213,7 +213,7 @@ with col[1]:
         legend_orientation="v" if show_legend else None,  # Vertical legend if visible
         legend_yanchor="top" if show_legend else None,  # Position the legend to the top if visible
         legend_y=0.5 if show_legend else None,  # Adjust legend position vertically if visible
-        legend_x=1.1 if show_legend else None,  # Adjust legend position horizontally if visible
+        legend_x=1.5 if show_legend else None,  # Adjust legend position horizontally if visible
     )
     
     # Display the donut chart
