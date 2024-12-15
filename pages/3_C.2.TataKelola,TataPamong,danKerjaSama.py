@@ -205,7 +205,7 @@ with tab1:
 
 # Tab SARANA MAHASISWA
 with tab2:
-        # Load dataset
+    # Load dataset
     data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
     data2 = clean_data(data2)
 
@@ -215,8 +215,6 @@ with tab2:
 
     # Menyiapkan huruf untuk sumbu X (a, b, c, ...)
     letters = [chr(i) for i in range(97, 97 + len(avg_scores2))]  # Menghasilkan list ['a', 'b', 'c', ...]
-
-    # Menambahkan huruf pada sumbu X
     avg_scores2['Letter'] = letters
 
     # Visualisasi data dengan Area Chart
@@ -225,15 +223,20 @@ with tab2:
         x='Letter',  # Sumbu X menggunakan huruf
         y='Rata-Rata Skor',
         title="🎓 Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA)",
-        color='Rata-Rata Skor',  # Use 'color' for categorical coloring
+        color='Rata-Rata Skor',  # Pewarnaan berdasarkan skor
         height=500,
-        hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Menampilkan informasi saat kursor disorot
+        hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}  # Informasi saat kursor disorot
     )
 
     # Tambahkan garis rata-rata sebagai referensi
     avg_line = avg_scores2['Rata-Rata Skor'].mean()
-    fig2.add_hline(y=avg_line, line_dash="dash", line_color="red", 
-                annotation_text=f"Rata-rata {avg_line:.2f}", annotation_position="top left")
+    fig2.add_hline(
+        y=avg_line,
+        line_dash="dash",
+        line_color="red",
+        annotation_text=f"Rata-rata {avg_line:.2f}",
+        annotation_position="top left"
+    )
 
     # Tampilkan grafik
     st.plotly_chart(fig2, use_container_width=True)
@@ -262,6 +265,16 @@ with tab2:
         title=f"Persentase Skor untuk '{selected_question}' (Skala 1-5)",
         hole=0.5,  # Membuat tampilan menjadi donut chart
         color_discrete_sequence=["#36A2EB", "#FFCE56"]  # Warna: Biru untuk Terpenuhi, Kuning untuk Belum Terpenuhi
+    )
+
+    # Update layout untuk Donut Chart
+    fig_donut.update_layout(
+        title_x=0.5,  # Center the title
+        legend_title="Kategori",
+        legend_orientation="h",  # Horizontal legend
+        legend_y=-0.1,  # Move legend below the chart
+        legend_x=0.5,  # Center legend horizontally
+        legend_xanchor="center"
     )
 
     # Tampilkan nilai rata-rata dan Donut Chart
