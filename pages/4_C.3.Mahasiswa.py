@@ -202,17 +202,23 @@ with col[1]:
         title="Distribusi Skor Rata-Rata Per Indikator",
         color_discrete_sequence=px.colors.sequential.Sunset
     )
-
-        # Update layout to center the title and hide the legend
+    
+    # Set the legend visibility (True/False)
+    show_legend = False  # Set to True if you want to show the legend
+    
+    # Update layout to center the title and adjust the legend visibility and position
     fig_donut.update_layout(
         title_x=0.2,  # Centers the title
-        showlegend=False  # Hides the legend
-        legend_y=-0.2,  # Moves the legend below the chart
-        legend_x=1.5,  # Centers the legend horizontally
+        showlegend=show_legend,  # Conditionally show the legend
+        legend_orientation="v" if show_legend else None,  # Vertical legend if visible
+        legend_yanchor="top" if show_legend else None,  # Position the legend to the top if visible
+        legend_y=0.5 if show_legend else None,  # Adjust legend position vertically if visible
+        legend_x=1.1 if show_legend else None,  # Adjust legend position horizontally if visible
     )
-
+    
     # Display the donut chart
     st.plotly_chart(fig_donut)
+
 
 with col[2]:
  
