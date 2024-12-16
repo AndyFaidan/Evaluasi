@@ -68,38 +68,84 @@ filtered_data = filtered_data if selected_matakuliah == 'All' else filtered_data
 if filtered_data.empty:
     st.warning("Tidak ada data yang sesuai dengan filter.")
 else:
-    # Menampilkan metrik untuk setiap kompetensi
+    # Menampilkan metrik untuk setiap kompetensi dalam 4 kolom
     kompetensi_list = ['Pedagogik', 'Profesional', 'Kepribadian', 'Sosial']
 
-    for kompetensi in kompetensi_list:
+    # Membuat layout dengan 4 kolom
+    cols = st.columns(4)
+
+    for idx, kompetensi in enumerate(kompetensi_list):
         kompetensi_data = filtered_data[filtered_data['Kompetensi'] == kompetensi]
         avg_value = kompetensi_data['Rata-rata per Kompetensi'].mean()
 
-        # Menampilkan metrik untuk kompetensi tertentu
-        st.radial(
-            label=f"Rata-rata Nilai {kompetensi}",
-            value=f"{avg_value:.2f}",
-            delta=None,  # Nilai perubahan, kosongkan jika tidak perlu
-            help=f"Rata-rata nilai untuk kompetensi {kompetensi}"
+        with cols[idx]:
+            # Menampilkan metrik dengan styling tambahan menggunakan HTML dan CSS
+            st.markdown("""
+            <style>
+                .metric-container {
+                    display: flex;
+                    flex-direction: column;  /* Mengubah arah flex menjadi kolom */
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px;
+                    background-color: #f5bf4a;
+                    border-radius: 10px;
+                    border: 2px solid #ddd;
+                    margin-bottom: 10px;
+                }
+                .metric-label {
+                    font-size: 1rem;
+                    color: black;
+                    margin-bottom: 10px;  /* Memberikan jarak antara label dan nilai */
+                }
+                .metric-text {
+                    font-size: 2rem;
+                    color: black;
+                }
+            </style>
+            """, unsafe_allow_html=True)
+
+            # Tampilan menggunakan flexbox dengan arah kolom untuk menampilkan label di atas nilai
+            st.markdown(f"""
+            <div class="metric-container">
+                <div class="metric-label">Rata-rata Nilai {kompetensi}</div>
+                <div class="metric-text">{avg_value:.2f}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Tampilkan tabel dengan kolom Progress (Rata-rata per Kompetensi)
+        st.data_editor(
+            filtered_data[['Tahun Akademik', 'Nama Dosen', 'Matakuliah', 'Kompetensi', 'Rata-rata per Kompetensi', 'Kategori per Kompetensi']],
+            column_config={
+                "Rata-rata per Kompetensi": st.column_config.ProgressColumn(
+                    "Rata-rata per Kompetensi",
+                    help="Menampilkan nilai rata-rata kompetensi",
+                    min_value=0,
+                    max_value=5,  # Sesuaikan dengan rentang nilai kompetensi
+                    format="%.2f",  # Format nilai
+                ),
+            },
+            hide_index=True,
         )
 
-    # Tampilkan tabel dengan kolom Progress (Rata-rata per Kompetensi)
-    st.data_editor(
-        filtered_data[['Tahun Akademik', 'Nama Dosen', 'Matakuliah', 'Kompetensi', 'Rata-rata per Kompetensi', 'Kategori per Kompetensi']],
-        column_config={
-            "Rata-rata per Kompetensi": st.column_config.ProgressColumn(
-                "Rata-rata per Kompetensi",
-                help="Menampilkan nilai rata-rata kompetensi",
-                min_value=0,
-                max_value=5,  # Sesuaikan dengan rentang nilai kompetensi
-                format="%.2f",  # Format nilai
-            ),
-        },
-        hide_index=True,
-    )
+    with col2:
+        # Menambahkan hole untuk membuatnya donut chart dan memilih warna
+        piechart = px.pie(
+            filtered_data,
+            names='Kompetensi',                # Kolom Kompetensi
+            values='Rata-rata per Kompetensi', # Kolom Rata-rata per Kompetensi
+            title='Persentase Rata-rata Nilai per Kompetensi',
+            labels={'Rata-rata per Kompetensi': 'Rata-rata Nilai'},
+            hole=0.3,                          # Membuat hole (donut chart)
+            color_discrete_sequence=px.colors.sequential.turbid
+        )
 
-    # Plot grafik barchart dengan plotly.express
-    st.subheader('Rata-rata Nilai Kompetensi per Tahun Akademik')
+        # Menampilkan pie chart
+        st.plotly_chart(piechart)
+
     barchart = px.bar(
         filtered_data,
         x='Rata-rata per Kompetensi',
@@ -116,17 +162,5 @@ else:
     )
     st.plotly_chart(barchart)
 
-    # Menambahkan hole untuk membuatnya donut chart dan memilih warna
-    piechart = px.pie(
-        filtered_data,
-        names='Kompetensi',                # Kolom Kompetensi
-        values='Rata-rata per Kompetensi', # Kolom Rata-rata per Kompetensi
-        title='Persentase Rata-rata Nilai per Kompetensi',
-        labels={'Rata-rata per Kompetensi': 'Rata-rata Nilai'},
-        hole=0.3,                          # Membuat hole (donut chart)
-        color_discrete_sequence=px.colors.sequential.turbid
-    )
-
-    # Menampilkan pie chart
-    st.plotly_chart(piechart)
+    
 
