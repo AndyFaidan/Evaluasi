@@ -65,6 +65,20 @@ with tab1:
     # Mengubah nama kolom pertanyaan (kecuali kolom status) menjadi huruf
     avg_scoresbar.columns = ['1. Status Bpk/Ibu/Saudara/i:'] + letters
 
+            # Menghitung skor rata-rata untuk pertanyaan yang dipilih
+    selected_question_avg_score = filtered_data1[pertanyaan_filter].mean()
+
+        # Hitung persentase terpenuhi dan tidak terpenuhi
+    fulfilled_percentage = (selected_question_avg_score / 5) * 100
+    not_fulfilled_percentage = 100 - fulfilled_percentage
+
+        # Siapkan data untuk donut chart
+    fulfillment_data = pd.DataFrame({
+            'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+            'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+        })
+
+
     col1, col2, col3 = st.columns(3)
 
     # Calculate metrics
@@ -150,37 +164,30 @@ with tab1:
 
     with col2:
        
-            # Hitung jumlah dan persentase untuk setiap kategori dalam pertanyaan yang difilter berdasarkan status
-        filtered_counts_by_status = filtered_data2.groupby('1. Status Bpk/Ibu/Saudara/i:')[pertanyaan_filter].value_counts().unstack(fill_value=0)
-        filtered_percentages_by_status = filtered_counts_by_status.div(filtered_counts_by_status.sum(axis=1), axis=0) * 100
 
-        # Menampilkan tingkat keberhasilan untuk setiap status
-        status_success_rate = filtered_percentages_by_status.apply(lambda row: row.max(), axis=1)
-
+        # Membuat donut chart
         fig_donut = px.pie(
-            avg_scores,
-            values='Rata-Rata Skor',  # Nilai skor rata-rata
-            names='Indikator',  # Nama indikator
-            hole=0.4,  # Membuat hole di tengah chart untuk efek donut
-            title="Distribusi Skor Rata-Rata Per Indikator",  # Judul chart
-            color_discrete_sequence=px.colors.sequential.Purp  # Warna untuk donut chart
+            fulfillment_data,
+            values='Persentase',  # Nilai persentase
+            names='Status',  # Nama kategori
+            hole=0.4,  # Membuat efek donut
+            title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk '{pertanyaan_filter}'",  # Judul chart
+            color_discrete_sequence=px.colors.sequential.Sunset  # Warna chart
         )
 
-        # Update layout untuk memusatkan judul dan posisi legenda di bagian bawah
+        # Update layout untuk judul dan posisi legenda
         fig_donut.update_layout(
-            title_x=0.2,  # Menempatkan judul di tengah
-            legend_title="Indikator",  # Menambahkan judul untuk legenda
-            legend_orientation="h",  # Mengatur legenda secara horizontal
+            title_x=0.5,  # Memusatkan judul
+            legend_title="Status",  # Menambahkan judul untuk legenda
+            legend_orientation="h",  # Membuat legenda horizontal
             legend_yanchor="bottom",  # Menempatkan legenda di bawah
-            legend_y=-0.5,  # Menurunkan posisi legenda
-            legend_x=0.5,  # Memusatkan posisi legenda secara horizontal
+            legend_y=-0.3,  # Menurunkan posisi legenda
+            legend_x=0.5,  # Memusatkan legenda secara horizontal
             legend_xanchor="center"  # Menjaga posisi legenda tetap di tengah
         )
 
         # Menampilkan donut chart di Streamlit
         st.plotly_chart(fig_donut)
-
-   
 
     col1, col2 = st.columns(2)
 
