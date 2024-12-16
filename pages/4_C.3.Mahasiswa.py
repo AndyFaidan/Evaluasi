@@ -165,9 +165,9 @@ fulfillment_data = pd.DataFrame({
 
 
 
-col = st.columns((2, 5))
+col1,col2 = st.columns(2)
 
-with col[0]:
+with col1:
     # Create the donut chart
     fig_donut = px.pie(
         fulfillment_data,
@@ -190,7 +190,7 @@ with col[0]:
     # Display the donut chart
     st.plotly_chart(fig_donut)
 
-with col[1]:
+with col2:
  
     # Plot a bar chart for average scores
     fig_bar = px.bar(
