@@ -192,21 +192,16 @@ with col1:
 
 with col2:
  
-    # Plot a bar chart for average scores
-    fig_bar = px.bar(
-        avg_scores_df,
-        x='Indikator',
-        y='Rata-Rata Skor',
-        labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
-        title="Rata-Rata Skor untuk Setiap Indikator",
-        color='Rata-Rata Skor',
-        color_continuous_scale='sunset',
-        height=400,
-        hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
-    )
-            # Mengatur posisi judul agar berada di tengah
-    fig_bar.update_layout(
-        title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
+        # Update layout to center the title and position the legend at the bottom
+    fig_donut.update_layout(
+        title_x=0.5,  # Centers the title
+        title_y=0.95,  # Position the title closer to the top
+        legend_title="Indikator",  # Title for the legend
+        legend_orientation="h",  # Horizontal legend
+        legend_yanchor="top",  # Aligns legend at the top of the legend box
+        legend_y=-0.4,  # Moves the legend below the chart
+        legend_x=0.5,  # Centers the legend horizontally
+        legend_xanchor="center"  # Ensures that the legend is anchored in the center
     )
 
     # Display the bar chart
