@@ -191,7 +191,7 @@ with col1:
     st.plotly_chart(fig_donut)
 
 
-with col2:
+with col3:
     
     # Create a donut chart for score distribution
     fig_donut = px.pie(
@@ -215,7 +215,7 @@ with col2:
     # Display the donut chart
     st.plotly_chart(fig_donut)
 
-with col3:
+with col2:
  
     # Plot a bar chart for average scores
     fig_bar = px.bar(
