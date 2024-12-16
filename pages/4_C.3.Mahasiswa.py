@@ -163,10 +163,9 @@ fulfillment_data = pd.DataFrame({
     'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
 })
 
-# Membuat layout kolom
+
+
 col = st.columns((2, 7), gap='medium')
-
-
 
 with col[0]:
     # Create the donut chart
@@ -190,8 +189,6 @@ with col[0]:
     )
     # Display the donut chart
     st.plotly_chart(fig_donut)
-
-
 
 with col[1]:
  
