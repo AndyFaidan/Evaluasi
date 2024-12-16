@@ -164,10 +164,11 @@ fulfillment_data = pd.DataFrame({
 })
 
 # Membuat layout kolom
-col1, col2, col3 = st.columns(3)
+col = st.columns((2, 7), gap='medium')
 
 
-with col1:
+
+with col[0]:
     # Create the donut chart
     fig_donut = px.pie(
         fulfillment_data,
@@ -191,31 +192,8 @@ with col1:
     st.plotly_chart(fig_donut)
 
 
-with col3:
-    
-    # Create a donut chart for score distribution
-    fig_donut = px.pie(
-        avg_scores_df,
-        values='Rata-Rata Skor',
-        hole=0.4,
-        title="Distribusi Skor Rata-Rata Per Indikator",
-        color_discrete_sequence=px.colors.sequential.Sunset
-    )
 
-    # Update layout to center the title and position the legend at the bottom
-    fig_donut.update_layout(
-        title_x=0.3,  # Centers the title
-        legend_title="Indikator",  # Title for the legend
-        legend_orientation="h",  # Horizontal legend
-        legend_yanchor="bottom",  # Aligns legend at the bottom
-        legend_y=1,  # Moves the legend below the chart
-        legend_x=0.4,  # Centers the legend horizontally
-        legend_xanchor="center"  # Ensures that the legend is anchored in the center
-    )
-    # Display the donut chart
-    st.plotly_chart(fig_donut)
-
-with col2:
+with col[1]:
  
     # Plot a bar chart for average scores
     fig_bar = px.bar(
