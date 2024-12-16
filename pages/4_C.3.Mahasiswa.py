@@ -165,7 +165,7 @@ fulfillment_data = pd.DataFrame({
 
 
 
-col = st.columns((2, 5), gap='medium')
+col = st.columns((2, 5))
 
 with col[0]:
     # Create the donut chart
