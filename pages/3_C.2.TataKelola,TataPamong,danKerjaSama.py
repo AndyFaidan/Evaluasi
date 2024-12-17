@@ -10,7 +10,8 @@ st.set_page_config(
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">📊Dashboard Tata Kelola, Tata Pamong & Kerja Sama</h2>
+    <h2 style="text-align: center;">📊Survey Kepuasan Dosen, Tenaga Kependidikan Dan Mahasiswa Terhadap Tata Kelola Organisasi UPPS dan PS
+</h2>
 """, unsafe_allow_html=True)
 
 # Fungsi untuk memuat data dengan caching
