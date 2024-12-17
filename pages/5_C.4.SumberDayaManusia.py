@@ -156,10 +156,10 @@ with tab1:
             )
             st.plotly_chart(barchart)
 
-    with tab2:
+with tab2:
 
      # Load data
-        data1 = load_data("C.4-Kepuasan-tendik-prep.csv")
+    data1 = load_data("C.4-Kepuasan-tendik-prep.csv")
 
     # Calculate average scores for each question
     avg_scores = data1.mean()
