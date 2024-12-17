@@ -18,7 +18,7 @@ def load_data(file_path):
     return pd.read_csv(file_path)
 
 # Tampilkan deskripsi survei dan grafik
-tab1, tab2 = st.tabs(["👨‍🏫 Survey Pemahaman Visi & Misi STT Wastukancana", "🎓 Survey Pemahaman Visi & Misi Teknik Informatika"])
+tab1, tab2 = st.tabs(["👨‍🏫 Survey Kepuasan Dosen", "🎓 Survey Kepuasan Tenaga Pendidik"])
 
 with tab1:
 
