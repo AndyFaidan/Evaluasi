@@ -11,7 +11,8 @@ st.set_page_config(
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">📊Layanan Mahasiswa</h2>
+    <h2 style="text-align: center;">📊 Survey Evaluasi Kepuasan Dosen Dan Tenaga Kependidikan Dan Mahasiswa Terhadap Ketersediaan Dan Keteraksesan Sarana Prasarana
+</h2>
 """, unsafe_allow_html=True)
 
 st.divider()
