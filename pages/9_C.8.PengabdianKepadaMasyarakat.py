@@ -11,7 +11,7 @@ st.set_page_config(
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">📊Pengabdian Kepada Masyarakat</h2>
+    <h2 style="text-align: center;">📊Survey Kepuasan Dosen Terhadap Pengelolaan Kegiatan PKM</h2>
 """, unsafe_allow_html=True)
 
 st.divider()
