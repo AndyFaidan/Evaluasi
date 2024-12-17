@@ -154,17 +154,4 @@ with tab1:
             )
             st.plotly_chart(barchart)
 
-            # Menambahkan hole untuk membuatnya donut chart dan memilih warna
-            piechart = px.pie(
-                filtered_data,
-                names='Kompetensi',                # Kolom Kompetensi
-                values='Rata-rata per Kompetensi', # Kolom Rata-rata per Kompetensi
-                title='Persentase Rata-rata Nilai per Kompetensi',
-                labels={'Rata-rata per Kompetensi': 'Rata-rata Nilai'},
-                hole=0.3,                          # Membuat hole (donut chart)
-                color_discrete_sequence=px.colors.sequential.turbid
-                )
-
-            # Menampilkan pie chart
-            st.plotly_chart(piechart)
 
