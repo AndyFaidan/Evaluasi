@@ -149,6 +149,12 @@ with col1:
             title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
             color_discrete_sequence=px.colors.sequential.Sunset
         )
+        # Update layout to center the title and position the legend at the bottom
+        fig_donut.update_layout(
+            legend_title="Indikator",  # Title for the legend
+            legend_orientation="h",  # Horizontal legend
+            legend_yanchor="middle",  # Aligns legend at the bottom
+        )
         # Display the donut chart
         st.plotly_chart(fig_donut)
     
@@ -166,10 +172,6 @@ with col2:
             color_continuous_scale='sunset',
             height=450,
             hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
-        )
-                # Mengatur posisi judul agar berada di tengah
-        fig_bar.update_layout(
-            title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
         )
 
         # Display the bar chart
