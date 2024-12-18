@@ -222,7 +222,7 @@ with col3:
         )
 
         # Tampilkan diagram pie
-        st.plotly_chart(fig_donut)
+        st.plotly_chart(fig_donut, use_container_width=True)
 
 
 # Tampilkan data editor dengan kolom kategori
