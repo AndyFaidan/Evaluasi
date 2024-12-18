@@ -62,6 +62,9 @@ with tab1:
         'Rata-Rata Skor': avg_scores.values
     })
 
+        # Terapkan fungsi kategori ke setiap nilai skor rata-rata
+    avg_scores_df['Kategori'] = avg_scores_df['Rata-Rata Skor'].apply(determine_category)
+
     col1, col2, col3 = st.columns(3)
 
     # Calculate metrics
@@ -175,7 +178,7 @@ with tab1:
             )
             # Update layout to center the title and position the legend at the bottom
             fig_donut.update_layout(
-                title_x=0.2,  # Centers the title
+                title_x=0.1,  # Centers the title
                 legend_title="Indikator",  # Title for the legend
                 legend_orientation="h",  # Horizontal legend
                 legend_yanchor="bottom",  # Aligns legend at the bottom
@@ -318,6 +321,9 @@ with tab2:
         'Pertanyaan': questions,
         'Rata-Rata Skor': avg_scores.values
     })
+
+    # Terapkan fungsi kategori ke setiap nilai skor rata-rata
+    avg_scores_df['Kategori'] = avg_scores_df['Rata-Rata Skor'].apply(determine_category)
 
     col1, col2, col3 = st.columns(3)
 
@@ -574,6 +580,9 @@ with tab3:
         'Pertanyaan': questions,
         'Rata-Rata Skor': avg_scores.values
     })
+
+    # Terapkan fungsi kategori ke setiap nilai skor rata-rata
+    avg_scores_df['Kategori'] = avg_scores_df['Rata-Rata Skor'].apply(determine_category)
 
     col1, col2, col3 = st.columns(3)
 
