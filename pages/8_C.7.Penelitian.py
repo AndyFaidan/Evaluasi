@@ -156,7 +156,7 @@ with col1:
             legend_yanchor="middle",  # Aligns legend at the bottom
         )
         # Display the donut chart
-        st.plotly_chart(fig_donut)
+        st.plotly_chart(fig_donut, use_container_width=True)
     
 
 with col2:
