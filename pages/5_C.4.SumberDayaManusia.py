@@ -139,13 +139,13 @@ with tab1:
                             values='Persentase',
                             names='Status',
                             hole=0.4,
-                            title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Kompetensi {kompetensi}",
+                            title=f"Persentase Kompetensi {kompetensi}",
                             color_discrete_sequence=px.colors.sequential.Sunset
                         )
 
                         # Update layout untuk menyesuaikan tampilan
                         fig_donut.update_layout(
-                            title_x=0.1,  # Centers the title
+                            title_x=0.25,  # Centers the title
                             legend_title="Indikator",  # Title for the legend
                             legend_orientation="h",  # Horizontal legend
                             legend_yanchor="middle",  # Aligns legend in the middle
