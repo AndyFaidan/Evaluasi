@@ -15,20 +15,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.divider()
-
-# Set page configuration
-st.set_page_config(
-    page_title="Penelitian",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
-
-# Menampilkan judul aplikasi di tengah
-st.markdown("""
-    <h2 style="text-align: center;">📊Penelitian</h2>
-""", unsafe_allow_html=True)
-
-st.divider()
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
 def load_data(file_path):
