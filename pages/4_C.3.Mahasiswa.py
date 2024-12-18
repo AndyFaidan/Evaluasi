@@ -234,13 +234,13 @@ with col2:
                 values='Persentase',
                 names='Kategori',  # This should be 'Kategori' as defined in the DataFrame
                 hole=0.4,
-                title="Distribusi Kategori Jawaban (Tanpa Netral)",
+                title="Distribusi Kategori Jawaban",
                 color_discrete_sequence=px.colors.sequential.Purp
             )
 
             # Update layout for better visualization
             fig_donut.update_layout(
-                title_x=0.2,
+                title_x=0.35,
                 legend_title="Kategori",
                 legend_orientation="h",
                 legend_yanchor="bottom",
