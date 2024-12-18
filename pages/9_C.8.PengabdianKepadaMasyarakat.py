@@ -155,8 +155,6 @@ with col1:
             legend_title="Indikator",  # Title for the legend
             legend_orientation="h",  # Horizontal legend
             legend_yanchor="bottom",  # Aligns legend at the bottom
-            legend_y=-0.5,  # Moves the legend below the chart
-               legend_x=0.5,  # Centers the legend horizontally
              legend_xanchor="center"  # Ensures that the legend is anchored in the center
         )
         # Display the donut chart
