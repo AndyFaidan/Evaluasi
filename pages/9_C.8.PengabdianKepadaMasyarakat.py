@@ -4,7 +4,7 @@ import plotly.express as px
 
 # Set page configuration
 st.set_page_config(
-    page_title="Penelitian",
+    page_title="📊Survey Kepuasan Dosen Terhadap Pengelolaan Kegiatan PKM",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
