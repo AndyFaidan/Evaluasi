@@ -173,8 +173,15 @@ with col2:
             height=450,
             hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
         )
-        fig_donut.update_layout(
-            title_x=0.5,  # Centers the title
+        # Update layout untuk menyesuaikan tampilan
+        fig_bar.update_layout(
+            title_x=0.2,  # Centers the title
+            legend_title="Kategori",  # Title for the legend
+            legend_orientation="h",  # Horizontal legend
+            legend_yanchor="bottom",  # Aligns legend at the bottom
+            legend_y=-0.2,  # Moves the legend below the chart
+            legend_x=0.5,  # Centers the legend horizontally
+            legend_xanchor="center"  # Ensures that the legend is anchored in the center
         )
 
         # Display the bar chart
