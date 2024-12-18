@@ -26,6 +26,12 @@ def clean_data(data, start_col=1):
         data[col] = data[col].astype(str).str.extract(r'(\d+)').astype(float)
     return data
 
+
+# Fungsi untuk menghitung rata-rata per kompetensi
+def calculate_avg_score(data, kompetensi_column='Kompetensi', score_column='Rata-rata per Kompetensi'):
+    return data.groupby(kompetensi_column)[score_column].mean()
+
+
 # Menambahkan kolom kategori berdasarkan nilai skor
 def determine_category(score):
     if score < 1.0:
@@ -95,64 +101,62 @@ with tab1:
     if filtered_data.empty:
         st.warning("Tidak ada data yang sesuai dengan filter.")
     else:
-        # Menampilkan metrik untuk setiap kompetensi dalam 4 kolom
+       # Menghitung rata-rata per kompetensi
+        avg_scores_df = calculate_avg_score(filtered_data)
+
+        # Cek apakah ada kompetensi yang tersedia dalam data yang sudah difilter
         kompetensi_list = ['Pedagogik', 'Profesional', 'Kepribadian', 'Sosial']
+        available_kompetensi = [kompetensi for kompetensi in kompetensi_list if kompetensi in filtered_data['Kompetensi'].unique()]
 
-                # Membuat layout dengan 4 kolom untuk menampilkan pie chart
-        cols = st.columns(4)
-        
-        # Loop untuk setiap kompetensi dan membuat pie chart
-        kompetensi_list = ['Pedagogik', 'Profesional', 'Kepribadian', 'Sosial']
+        if not available_kompetensi:
+            st.warning("Tidak ada kompetensi yang tersedia setelah penerapan filter.")
+        else:
+            # Membuat layout dengan 4 kolom untuk menampilkan pie chart
+            cols = st.columns(4)
 
-        for idx, kompetensi in enumerate(kompetensi_list):
-            kompetensi_data = data[data['Kompetensi'] == kompetensi]
-            
-            # Filter data tanpa netral (skor == 3 dianggap netral)
-            non_neutral_data = kompetensi_data[kompetensi_data['Rata-rata per Kompetensi'] != 3]
-            
-            # Hitung jumlah kategori
-            categories_count = {
-                "Sangat Kurang": (non_neutral_data['Rata-rata per Kompetensi'] == 1).sum(),
-                "Kurang": (non_neutral_data['Rata-rata per Kompetensi'] == 2).sum(),
-                "Baik": (non_neutral_data['Rata-rata per Kompetensi'] == 4).sum(),
-                "Sangat Baik": (non_neutral_data['Rata-rata per Kompetensi'] == 5).sum(),
-            }
-            
-            # Hitung total jawaban yang relevan
-            total_non_neutral = sum(categories_count.values())
-            
-            # Hitung persentase untuk setiap kategori
-            fulfillment_data = pd.DataFrame({
-                'Kategori': categories_count.keys(),
-                'Jumlah': categories_count.values(),
-                'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
-            })
-            
-            # Buat diagram pie dengan persentase
-            fig_donut = px.pie(
-                fulfillment_data,
-                values='Persentase',
-                names='Kategori',
-                hole=0.4,
-                title=f"Distribusi Kategori Jawaban ({kompetensi})",
-                color_discrete_sequence=px.colors.sequential.Sunsetdark
-            )
+            # Menampilkan Pie Chart untuk setiap kompetensi yang tersedia
+            for i, kompetensi in enumerate(available_kompetensi):
+                # Filter data untuk kompetensi tertentu
+                kompetensi_data = filtered_data[filtered_data['Kompetensi'] == kompetensi]
+                
+                # Menghitung rata-rata skor untuk kompetensi ini
+                avg_score = kompetensi_data['Rata-rata per Kompetensi'].mean()
+                fulfilled_percentage = (avg_score / 5) * 100
+                not_fulfilled_percentage = 100 - fulfilled_percentage
 
-            # Update layout untuk menyesuaikan tampilan
-            fig_donut.update_layout(
-                title_x=0.1,  # Centers the title
-                legend_title="Kategori",  # Title for the legend
-                legend_orientation="h",  # Horizontal legend
-                legend_yanchor="bottom",  # Aligns legend at the bottom
-                legend_y=-0.3,  # Moves the legend below the chart
-                legend_x=0.5,  # Centers the legend horizontally
-                legend_xanchor="center"  # Ensures that the legend is anchored in the center
-            )
-            
-            # Tampilkan diagram pie
-            with cols[idx]:
-                with st.container(border=True):
-                    st.plotly_chart(fig_donut, use_container_width=True)
+                # Persiapkan data untuk donut chart
+                fulfillment_data = pd.DataFrame({
+                    'Status': ['Puas', 'Tidak Puas'],
+                    'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+                })
+
+                # Membuat container dengan border untuk setiap pie chart
+                with cols[i]:
+                    with st.container(border=True):
+                        
+                        fig_donut = px.pie(
+                            fulfillment_data,
+                            values='Persentase',
+                            names='Status',
+                            hole=0.4,
+                            title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Kompetensi {kompetensi}",
+                            color_discrete_sequence=px.colors.sequential.Sunset
+                        )
+
+                        # Update layout untuk menyesuaikan tampilan
+                        fig_donut.update_layout(
+                            title_x=0.1,  # Centers the title
+                            legend_title="Indikator",  # Title for the legend
+                            legend_orientation="h",  # Horizontal legend
+                            legend_yanchor="middle",  # Aligns legend in the middle
+                            legend_y=-0.3,  # Moves the legend below the chart
+                            legend_x=0.5,  # Centers the legend horizontally
+                            legend_xanchor="center"  # Ensures that the legend is anchored in the center
+                        )
+
+                        # Display the donut chart in the corresponding container
+                        st.plotly_chart(fig_donut, use_container_width=True)
+
 
         col1, col2 = st.columns(2)
 
@@ -184,7 +188,7 @@ with tab1:
                     names='Kategori',
                     hole=0.4,
                     title="Distribusi Kategori Jawaban (Seluruh Kompetensi)",
-                    color_discrete_sequence=px.colors.sequential.Purp
+                    color_discrete_sequence=px.colors.sequential.Sunsetdark
                 )
 
                 # Update layout untuk menyesuaikan tampilan
