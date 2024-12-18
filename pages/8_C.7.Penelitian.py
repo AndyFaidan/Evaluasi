@@ -109,7 +109,7 @@ with col3:
         </div>""".format(max_score), unsafe_allow_html=True)
 
 # Tambahkan opsi "All" di awal daftar pertanyaan
-all_questions = ["All"] + questions
+all_questions = ["Semua Pertanyaan"] + questions
 
 # Perbarui selectbox untuk menyertakan opsi "All"
 selected_question_index = st.selectbox(
