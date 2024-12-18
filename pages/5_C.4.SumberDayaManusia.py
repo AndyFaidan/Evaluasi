@@ -14,13 +14,33 @@ st.markdown("""
     <h2 style="text-align: center;">📊Survey Evaluasi Tingkat Kepuasan Dosen Dan Tenaga Kependidikan Terhadap Sistem Pengelolaan SDM</h2>
 """, unsafe_allow_html=True)
 
+
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
 def load_data(file_path):
     return pd.read_csv(file_path)
 
+# Fungsi untuk membersihkan data
+def clean_data(data, start_col=1):
+    for col in data.columns[start_col:]:
+        data[col] = data[col].astype(str).str.extract(r'(\d+)').astype(float)
+    return data
+
+# Menambahkan kolom kategori berdasarkan nilai skor
+def determine_category(score):
+    if score < 1.0:
+        return "Sangat Kurang"
+    elif score < 2.0:
+        return "Kurang"
+    elif score < 3.0:
+        return "Netral"
+    elif score < 4.0:
+        return "Baik"
+    else:
+        return "Sangat Baik"
+
 # Tampilkan deskripsi survei dan grafik
-tab1, tab2 = st.tabs(["👨‍🏫 Survey Kepuasan Dosen", "🎓 Survey Kepuasan Tenaga Pendidik"])
+tab1, tab2 = st.tabs(["Survey Kepuasan Dosen", "Survey Kepuasan Tenaga Pendidik"])
 
 with tab1:
 
@@ -78,53 +98,130 @@ with tab1:
         # Menampilkan metrik untuk setiap kompetensi dalam 4 kolom
         kompetensi_list = ['Pedagogik', 'Profesional', 'Kepribadian', 'Sosial']
 
-        # Membuat layout dengan 4 kolom
+                # Membuat layout dengan 4 kolom untuk menampilkan pie chart
         cols = st.columns(4)
+        
+        # Loop untuk setiap kompetensi dan membuat pie chart
+        kompetensi_list = ['Pedagogik', 'Profesional', 'Kepribadian', 'Sosial']
 
         for idx, kompetensi in enumerate(kompetensi_list):
-            kompetensi_data = filtered_data[filtered_data['Kompetensi'] == kompetensi]
-            avg_value = kompetensi_data['Rata-rata per Kompetensi'].mean()
+            kompetensi_data = data[data['Kompetensi'] == kompetensi]
+            
+            # Filter data tanpa netral (skor == 3 dianggap netral)
+            non_neutral_data = kompetensi_data[kompetensi_data['Rata-rata per Kompetensi'] != 3]
+            
+            # Hitung jumlah kategori
+            categories_count = {
+                "Sangat Kurang": (non_neutral_data['Rata-rata per Kompetensi'] == 1).sum(),
+                "Kurang": (non_neutral_data['Rata-rata per Kompetensi'] == 2).sum(),
+                "Baik": (non_neutral_data['Rata-rata per Kompetensi'] == 4).sum(),
+                "Sangat Baik": (non_neutral_data['Rata-rata per Kompetensi'] == 5).sum(),
+            }
+            
+            # Hitung total jawaban yang relevan
+            total_non_neutral = sum(categories_count.values())
+            
+            # Hitung persentase untuk setiap kategori
+            fulfillment_data = pd.DataFrame({
+                'Kategori': categories_count.keys(),
+                'Jumlah': categories_count.values(),
+                'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+            })
+            
+            # Buat diagram pie dengan persentase
+            fig_donut = px.pie(
+                fulfillment_data,
+                values='Persentase',
+                names='Kategori',
+                hole=0.4,
+                title=f"Distribusi Kategori Jawaban ({kompetensi})",
+                color_discrete_sequence=px.colors.sequential.Sunsetdark
+            )
 
+            # Update layout untuk menyesuaikan tampilan
+            fig_donut.update_layout(
+                title_x=0.1,  # Centers the title
+                legend_title="Kategori",  # Title for the legend
+                legend_orientation="h",  # Horizontal legend
+                legend_yanchor="bottom",  # Aligns legend at the bottom
+                legend_y=-0.3,  # Moves the legend below the chart
+                legend_x=0.5,  # Centers the legend horizontally
+                legend_xanchor="center"  # Ensures that the legend is anchored in the center
+            )
+            
+            # Tampilkan diagram pie
             with cols[idx]:
-                # Menampilkan metrik dengan styling tambahan menggunakan HTML dan CSS
-                st.markdown("""
-                <style>
-                    .metric-container {
-                        display: flex;
-                        flex-direction: column;  /* Mengubah arah flex menjadi kolom */
-                        justify-content: center;
-                        align-items: center;
-                        padding: 20px;
-                        background-color: #f5bf4a;
-                        border-radius: 10px;
-                        border: 2px solid #ddd;
-                        margin-bottom: 10px;
-                    }
-                    .metric-label {
-                        font-size: 1rem;
-                        color: black;
-                        margin-bottom: 10px;  /* Memberikan jarak antara label dan nilai */
-                    }
-                    .metric-text {
-                        font-size: 2rem;
-                        color: black;
-                    }
-                </style>
-                """, unsafe_allow_html=True)
-
-                # Tampilan menggunakan flexbox dengan arah kolom untuk menampilkan label di atas nilai
-                st.markdown(f"""
-                <div class="metric-container">
-                    <div class="metric-label">Rata-rata Nilai {kompetensi}</div>
-                    <div class="metric-text">{avg_value:.2f}</div>
-                </div>
-                """, unsafe_allow_html=True)
+                with st.container(border=True):
+                    st.plotly_chart(fig_donut, use_container_width=True)
 
         col1, col2 = st.columns(2)
 
         with col1:
-            # Tampilkan tabel dengan kolom Progress (Rata-rata per Kompetensi)
-            st.data_editor(
+            with st.container(border=True):
+                # Menggabungkan seluruh data kompetensi menjadi satu distribusi
+                # Menghitung distribusi nilai untuk seluruh data kompetensi
+                categories_count_all = {
+                    "Sangat Kurang": (data['Rata-rata per Kompetensi'] == 1).sum(),
+                    "Kurang": (data['Rata-rata per Kompetensi'] == 2).sum(),
+                    "Baik": (data['Rata-rata per Kompetensi'] == 4).sum(),
+                    "Sangat Baik": (data['Rata-rata per Kompetensi'] == 5).sum(),
+                }
+
+                # Hitung total jawaban yang relevan
+                total_non_neutral_all = sum(categories_count_all.values())
+
+                # Hitung persentase untuk setiap kategori
+                fulfillment_data_all = pd.DataFrame({
+                    'Kategori': categories_count_all.keys(),
+                    'Jumlah': categories_count_all.values(),
+                    'Persentase': [count / total_non_neutral_all * 100 for count in categories_count_all.values()]
+                })
+
+                # Buat diagram pie untuk distribusi seluruh kompetensi
+                fig_donut_all = px.pie(
+                    fulfillment_data_all,
+                    values='Persentase',
+                    names='Kategori',
+                    hole=0.4,
+                    title="Distribusi Kategori Jawaban (Seluruh Kompetensi)",
+                    color_discrete_sequence=px.colors.sequential.Purp
+                )
+
+                # Update layout untuk menyesuaikan tampilan
+                fig_donut_all.update_layout(
+                    title_x=0.1,  # Centers the title
+                    legend_title="Kategori",  # Title for the legend
+                    legend_orientation="h",  # Horizontal legend
+                    legend_yanchor="bottom",  # Aligns legend at the bottom
+                    legend_y=-0.2,  # Moves the legend below the chart
+                    legend_x=0.5,  # Centers the legend horizontally
+                    legend_xanchor="center"  # Ensures that the legend is anchored in the center
+                )
+
+                # Menampilkan diagram pie untuk seluruh kompetensi
+                st.plotly_chart(fig_donut_all, use_container_width=True)
+
+                        
+        with col2:
+            with st.container(border=True):
+                barchart = px.bar(
+                    filtered_data,
+                    x='Rata-rata per Kompetensi',
+                    y='Tahun Akademik',
+                    color='Kompetensi',
+                    barmode='group',
+                    title='Rata-rata Nilai Kompetensi per Tahun Akademik',
+                    labels={
+                        'Rata-rata per Kompetensi': 'Rata-rata Nilai',
+                        'Tahun Akademik': 'Tahun Akademik',
+                        'Kompetensi': 'Kompetensi'
+                    },
+                    height=450
+                )
+                st.plotly_chart(barchart)
+
+    # Tampilkan tabel dengan kolom Progress (Rata-rata per Kompetensi)
+        st.data_editor(
                 filtered_data[['Tahun Akademik', 'Nama Dosen', 'Matakuliah', 'Kompetensi', 'Rata-rata per Kompetensi', 'Kategori per Kompetensi']],
                 column_config={
                     "Rata-rata per Kompetensi": st.column_config.ProgressColumn(
@@ -136,25 +233,8 @@ with tab1:
                     ),
                 },
                 hide_index=True,
+               use_container_width=True  
             )
-
-        with col2:
-            
-            barchart = px.bar(
-                filtered_data,
-                x='Rata-rata per Kompetensi',
-                y='Tahun Akademik',
-                color='Kompetensi',
-                barmode='group',
-                title='Rata-rata Nilai Kompetensi per Tahun Akademik',
-                labels={
-                    'Rata-rata per Kompetensi': 'Rata-rata Nilai',
-                    'Tahun Akademik': 'Tahun Akademik',
-                    'Kompetensi': 'Kompetensi'
-                },
-                height=480
-            )
-            st.plotly_chart(barchart)
 
   # Tab 3: SARANA TENDIK
 with tab2:
@@ -174,6 +254,10 @@ with tab2:
         'Pertanyaan': questions,
         'Rata-Rata Skor': avg_scores.values
     })
+
+    
+    # Terapkan fungsi kategori ke setiap nilai skor rata-rata
+    avg_scores_df['Kategori'] = avg_scores_df['Rata-Rata Skor'].apply(determine_category)
 
     col1, col2, col3 = st.columns(3)
 
