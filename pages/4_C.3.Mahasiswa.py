@@ -57,6 +57,9 @@ avg_scores_df = pd.DataFrame({
         'Rata-Rata Skor': avg_scores.values
     })
 
+# Terapkan fungsi kategori ke setiap nilai skor rata-rata
+avg_scores_df['Kategori'] = avg_scores_df['Rata-Rata Skor'].apply(determine_category)
+
 col1, col2, col3 = st.columns(3)
 
     # Calculate metrics
