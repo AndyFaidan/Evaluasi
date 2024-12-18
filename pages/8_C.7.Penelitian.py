@@ -149,16 +149,6 @@ with col1:
             title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
             color_discrete_sequence=px.colors.sequential.Sunset
         )
-        # Update layout to center the title and position the legend at the bottom
-        fig_donut.update_layout(
-            title_x=0.1,  # Centers the title
-            legend_title="Indikator",  # Title for the legend
-            legend_orientation="h",  # Horizontal legend
-            legend_yanchor="bottom",  # Aligns legend at the bottom
-            legend_y=-0.2,  # Moves the legend below the chart
-            legend_x=0.5,  # Centers the legend horizontally
-            legend_xanchor="center"  # Ensures that the legend is anchored in the center
-        )
         # Display the donut chart
         st.plotly_chart(fig_donut)
     
