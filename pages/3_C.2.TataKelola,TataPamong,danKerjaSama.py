@@ -102,8 +102,32 @@ with tab1:
 
     with col[2]:
 
+        # Hitung rata-rata skor untuk pertanyaan yang dipilih
+        avg_score = filtered_data2[pertanyaan_filter].mean()
 
+            # Cek nilai rata-rata sebelumnya dan hitung delta
+        if "previous_avg_score" not in st.session_state:
+            st.session_state.previous_avg_score = avg_score  # Menyimpan nilai pertama kali
 
+        delta = avg_score - st.session_state.previous_avg_score
+        delta_label = "Naik" if delta > 0 else "Turun"
+
+        # Tentukan delta_color berdasarkan delta
+        delta_color = "normal" if delta > 0 else "inverse"  # "normal" untuk kenaikan (hijau), "inverse" untuk penurunan (merah)
+
+        # Update nilai rata-rata sebelumnya
+        st.session_state.previous_avg_score = avg_score
+
+        # Membungkus komponen metric dengan HTML untuk menambahkan border
+        st.markdown(f"""
+                <div style="border: 1px solid {'green' if delta > 0 else 'red'}; padding: 10px; border-radius: 8px; display: inline-block; text-align: center;">
+                    <p style="font-size: 15px; margin: 0;">Rata-Rata Skor untuk {pertanyaan_filter}</p>
+                    <p style="font-size: 30px; margin: 0; font-weight: bold;">{avg_score:.2f}</p>
+                    <p style="font-size: 16px; color: {'green' if delta > 0 else 'red'};">{delta:.2f} {delta_label}</p>
+                </div>
+            """, unsafe_allow_html=True)    
+        st.divider()
+        
         st.data_editor(
             avg_scores1,
             column_config={
@@ -119,48 +143,11 @@ with tab1:
             use_container_width=True  # Menggunakan lebar kontainer penuh untuk tabel
         )
 
-        fig_pie_simple = px.pie(
-            avg_scores1,
-            names='Indikator',  # Kategori
-            values='Rata-Rata Skor',  # Nilai kontribusi
-            hole=0.5, 
-            title='Distribusi Rata-Rata Skor per Indikator',
-            color_discrete_sequence=px.colors.sequential.Blues,  # Warna gradasi biru
-            
-        )
+        
 
-        # Menampilkan Pie Chart
-        st.plotly_chart(fig_pie_simple, use_container_width=True)
-
-
-
-    # Hitung rata-rata skor untuk pertanyaan yang dipilih
-    avg_score = filtered_data2[pertanyaan_filter].mean()
-
-        # Cek nilai rata-rata sebelumnya dan hitung delta
-    if "previous_avg_score" not in st.session_state:
-        st.session_state.previous_avg_score = avg_score  # Menyimpan nilai pertama kali
-
-    delta = avg_score - st.session_state.previous_avg_score
-    delta_label = "Naik" if delta > 0 else "Turun"
-
-    # Tentukan delta_color berdasarkan delta
-    delta_color = "normal" if delta > 0 else "inverse"  # "normal" untuk kenaikan (hijau), "inverse" untuk penurunan (merah)
-
-    # Update nilai rata-rata sebelumnya
-    st.session_state.previous_avg_score = avg_score
+        
 
     with col[0]:
-        # Membungkus komponen metric dengan HTML untuk menambahkan border
-        st.markdown(f"""
-            <div style="border: 1px solid {'green' if delta > 0 else 'red'}; padding: 10px; border-radius: 8px; display: inline-block; text-align: center;">
-                <p style="font-size: 15px; margin: 0;">Rata-Rata Skor untuk {pertanyaan_filter}</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{avg_score:.2f}</p>
-                <p style="font-size: 16px; color: {'green' if delta > 0 else 'red'};">{delta:.2f} {delta_label}</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-
             
         # Mengonversi rata-rata skor menjadi persentase
         percentage_score = (avg_score / 5) * 100  # Konversi ke persentase dari skor 1-5
@@ -200,8 +187,6 @@ with tab1:
         
         # Tampilkan Donut Chart
         st.plotly_chart(fig_donut, use_container_width=True)
-
-        
 
 
 # Tab SARANA MAHASISWA
