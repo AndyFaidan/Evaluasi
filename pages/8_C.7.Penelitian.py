@@ -175,7 +175,7 @@ with col2:
         )
 
         # Display the bar chart
-        st.plotly_chart(fig_bar)
+        st.plotly_chart(fig_bar, use_container_width=True)
 
 with col3:
     with st.container(border=True):
