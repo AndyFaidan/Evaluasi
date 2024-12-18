@@ -173,6 +173,9 @@ with col2:
             height=450,
             hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
         )
+        fig_donut.update_layout(
+            title_x=0.3,  # Centers the title
+        )
 
         # Display the bar chart
         st.plotly_chart(fig_bar, use_container_width=True)
