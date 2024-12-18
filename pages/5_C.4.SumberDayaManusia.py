@@ -189,7 +189,7 @@ with tab1:
 
                 # Update layout untuk menyesuaikan tampilan
                 fig_donut_all.update_layout(
-                    title_x=0.1,  # Centers the title
+                    title_x=0.25,  # Centers the title
                     legend_title="Kategori",  # Title for the legend
                     legend_orientation="h",  # Horizontal legend
                     legend_yanchor="bottom",  # Aligns legend at the bottom
