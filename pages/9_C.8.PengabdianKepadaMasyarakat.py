@@ -4,7 +4,7 @@ import plotly.express as px
 
 # Set page configuration
 st.set_page_config(
-    page_title="📊Survey Kepuasan Dosen Terhadap Pengelolaan Kegiatan PKM",
+    page_title="Survey Kepuasan Dosen Terhadap Pengelolaan Kegiatan PKM",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -109,7 +109,7 @@ with col3:
         </div>""".format(max_score), unsafe_allow_html=True)
 
 # Tambahkan opsi "All" di awal daftar pertanyaan
-all_questions = ["Semua Pertanyaan"] + questions
+all_questions = ["All"] + questions
 
 # Perbarui selectbox untuk menyertakan opsi "All"
 selected_question_index = st.selectbox(
@@ -149,13 +149,11 @@ with col1:
             title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
             color_discrete_sequence=px.colors.sequential.Sunset
         )
-     # Update layout to center the title and position the legend at the bottom
+        # Update layout to center the title and position the legend at the bottom
         fig_donut.update_layout(
-            title_x=0.2,  # Centers the title
             legend_title="Indikator",  # Title for the legend
             legend_orientation="h",  # Horizontal legend
-            legend_yanchor="bottom",  # Aligns legend at the bottom
-             legend_xanchor="center"  # Ensures that the legend is anchored in the center
+            legend_yanchor="middle",  # Aligns legend at the bottom
         )
         # Display the donut chart
         st.plotly_chart(fig_donut, use_container_width=True)
@@ -176,15 +174,9 @@ with col2:
             hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
         )
         # Update layout untuk menyesuaikan tampilan
-        fig_bar.update_layout(
+        fig_donut.update_layout(
             title_x=0.2,  # Centers the title
-            legend_title="Kategori",  # Title for the legend
-            legend_orientation="h",  # Horizontal legend
-            legend_yanchor="bottom",  # Aligns legend at the bottom
-            legend_y=-0.2,  # Moves the legend below the chart
-            legend_x=0.5,  # Centers the legend horizontally
-            legend_xanchor="center"  # Ensures that the legend is anchored in the center
-        )
+            )
 
         # Display the bar chart
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -218,7 +210,7 @@ with col3:
             values='Persentase',
             names='Kategori',
             hole=0.4,
-            title="Distribusi Kategori Jawaban",
+            title="Distribusi Kategori Jawaban (Tanpa Netral)",
             color_discrete_sequence=px.colors.sequential.Purp
         )
 
