@@ -174,7 +174,7 @@ with col2:
             hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
         )
         fig_donut.update_layout(
-            title_x=0.3,  # Centers the title
+            title_x=0.5,  # Centers the title
         )
 
         # Display the bar chart
