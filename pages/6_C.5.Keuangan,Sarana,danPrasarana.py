@@ -4,18 +4,18 @@ import plotly.express as px
 
 # Set page configuration
 st.set_page_config(
-    page_title="Layanan Mahasiswa",
+    page_title="📊 Survey Evaluasi Kepuasan Dosen Dan Tenaga Kependidikan Dan Mahasiswa Terhadap Ketersediaan Dan Keteraksesan Sarana Prasarana",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">📊 Survey Evaluasi Kepuasan Dosen Dan Tenaga Kependidikan Dan Mahasiswa Terhadap Ketersediaan Dan Keteraksesan Sarana Prasarana
-</h2>
+    <h2 style="text-align: center;">📊 Survey Evaluasi Kepuasan Dosen Dan Tenaga Kependidikan Dan Mahasiswa Terhadap Ketersediaan Dan Keteraksesan Sarana Prasarana</h2>
 """, unsafe_allow_html=True)
 
 st.divider()
+
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
 def load_data(file_path):
@@ -27,12 +27,25 @@ def clean_data(data, start_col=1):
         data[col] = data[col].astype(str).str.extract(r'(\d+)').astype(float)
     return data
 
+# Menambahkan kolom kategori berdasarkan nilai skor
+def determine_category(score):
+    if score < 1.0:
+        return "Sangat Kurang"
+    elif score < 2.0:
+        return "Kurang"
+    elif score < 3.0:
+        return "Netral"
+    elif score < 4.0:
+        return "Baik"
+    else:
+        return "Sangat Baik"
+
 # Tampilkan deskripsi survey dan grafik
 tab1, tab2, tab3 = st.tabs(["SARANA DOSEN", "SARANA MAHASISWA", "SARANA TENDIK"])
 
 # Tab 1: SARANA DOSEN
 with tab1:
-        # Load data
+    # Load data
     data1 = load_data("C5.saranadosen-prep.csv")
 
     # Calculate average scores for each question
@@ -51,13 +64,12 @@ with tab1:
 
     col1, col2, col3 = st.columns(3)
 
-            # Calculate metrics
+    # Calculate metrics
     min_score = avg_scores_df['Rata-Rata Skor'].min()
     max_score = avg_scores_df['Rata-Rata Skor'].max()
     mean_score = avg_scores_df['Rata-Rata Skor'].mean()
 
-        
-        # Display metrics with individual borders
+    # Display metrics with individual borders
     st.markdown("""<style>
         .metric-box {
             text-align: center;
@@ -79,433 +91,113 @@ with tab1:
         }
         </style>""", unsafe_allow_html=True)
     with col1:
-            st.markdown("""<div class="metric-box">
-                <h3>{:.2f}</h3>
-                <p>Minimum Skor</p>
-            </div>""".format(min_score), unsafe_allow_html=True)
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Minimum Skor</p>
+        </div>""".format(min_score), unsafe_allow_html=True)
     with col2:
-            st.markdown("""<div class="metric-box">
-                <h3>{:.2f}</h3>
-                <p>Rata-Rata Skor</p>
-            </div>""".format(mean_score), unsafe_allow_html=True)
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Rata-Rata Skor</p>
+        </div>""".format(mean_score), unsafe_allow_html=True)
     with col3:
-            st.markdown("""<div class="metric-box">
-                <h3>{:.2f}</h3>
-                <p>Maksimum Skor</p>
-            </div>""".format(max_score), unsafe_allow_html=True)
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Maksimum Skor</p>
+        </div>""".format(max_score), unsafe_allow_html=True)
 
-    selected_question_index = st.selectbox("🔎Pilih Pertanyaan :", range(len(questions)), format_func=lambda x: questions[x])
+        # Tambahkan opsi "All" di awal daftar pertanyaan
+    all_questions = ["All"] + questions
 
-    # Get the average score for the selected question
-    selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index]
-    fulfilled_percentage = (selected_question_avg_score / 5) * 100
-    not_fulfilled_percentage = 100 - fulfilled_percentage
+    # Perbarui selectbox untuk menyertakan opsi "All"
+    selected_question_index = st.selectbox(
+        "🔎 Pilih Pertanyaan :",
+        range(len(all_questions)),
+        format_func=lambda x: all_questions[x]
+    )
 
-
-    col1, col2, = st.columns(2)
-    with col1:
-        st.data_editor(
-                    avg_scores_df,
-                    column_config={
-                        "Rata-Rata Skor": st.column_config.ProgressColumn(
-                            "Rata-Rata Skor",
-                            help="Skor rata-rata berdasarkan indikator",
-                            format="{:.2f}",  # Format angka dengan 2 desimal
-                            min_value=0,  # Skor minimal
-                            max_value=5,  # Skor maksimal (asumsi skor 1-5)
-                        ),
-                    },
-                    hide_index=True,
-                    use_container_width=True  # Menggunakan lebar kontainer penuh untuk tabel
-                )
-
-    with col2:
-            # Line Chart for the average scores of each indicator
-        fig_line = px.line(
-            avg_scores_df,
-            x='Indikator',
-            y='Rata-Rata Skor',
-            labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
-            title="Perubahan Skor Rata-Rata untuk Setiap Indikator",
-            markers=True
-        )
-
-        # Update the line color to use the sunset color scale
-        fig_line.update_traces(
-            line=dict(color='rgba(255, 99, 71, 1)'),  # Default line color if you want specific color
-            marker=dict(color=avg_scores_df['Rata-Rata Skor'], colorscale='sunset')  # Applying color scale to markers
-        )
-
-        # Update layout for line chart
-        fig_line.update_layout(
-            title_x=0.2,  # Centers the title
-            title_y=0.95,  # Adjusts the title position vertically
-            title_font=dict(size=20, color="white"),  # Title font size and color
-            xaxis_title="Indikator",
-            yaxis_title="Rata-Rata Skor",
-            xaxis=dict(
-                tickmode='array', 
-                tickvals=avg_scores_df['Indikator'],  # Use the actual indicator names for ticks
-                showgrid=True,
-                gridcolor='#cecdcd',  # Light grid color for x-axis
-            ),
-            yaxis=dict(
-                showgrid=True,
-                gridcolor='#cecdcd',  # Light grid color for y-axis
-            ),
-            plot_bgcolor='rgba(0, 0, 0, 0)',  # Transparent plot background
-            paper_bgcolor='rgba(0, 0, 0, 0)',  # Transparent paper background
-            font=dict(color='#cecdcd'),  # Font color for the chart
-        )
-
-        # Display the line chart
-        st.plotly_chart(fig_line)
-        
-
-
-    # Prepare data for the donut chart
-    fulfillment_data = pd.DataFrame({
-        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
-        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
-    })
-
-    # Membuat layout kolom
-    col1, col2 = st.columns(2)
-
-
-
-    with col1:
-        # Create the donut chart
-        fig_donut = px.pie(
-            fulfillment_data,
-            values='Persentase',
-            names='Status',
-            hole=0.4,
-            title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
-            color_discrete_sequence=px.colors.sequential.Sunset
-        )
-        # Update layout to center the title and position the legend at the bottom
-        fig_donut.update_layout(
-            title_x=0.2,  # Centers the title
-            legend_title="Indikator",  # Title for the legend
-            legend_orientation="h",  # Horizontal legend
-            legend_yanchor="bottom",  # Aligns legend at the bottom
-            legend_y=-0.5,  # Moves the legend below the chart
-            legend_x=0.5,  # Centers the legend horizontally
-            legend_xanchor="center"  # Ensures that the legend is anchored in the center
-        )
-        # Display the donut chart
-        st.plotly_chart(fig_donut)
-
-
-
-    with col2:
-    
-        # Plot a bar chart for average scores
-        fig_bar = px.bar(
-            avg_scores_df,
-            x='Indikator',
-            y='Rata-Rata Skor',
-            labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
-            title="Rata-Rata Skor untuk Setiap Indikator",
-            color='Rata-Rata Skor',
-            color_continuous_scale='sunset',
-            height=400,
-            hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
-        )
-                # Mengatur posisi judul agar berada di tengah
-        fig_bar.update_layout(
-            title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
-        )
-
-        # Display the bar chart
-        st.plotly_chart(fig_bar)
-
-with tab2:
-    data1 = load_data("C5.saranamahasiswa-prep.csv")
-
-    # Calculate average scores for each question
-    avg_scores = data1.mean()
-
-    # Prepare the indicator names (letters for X-axis)
-    questions = data1.columns.tolist()  # Assuming questions are column names
-    letters = [chr(i) for i in range(97, 97 + len(avg_scores))]  # ['a', 'b', 'c', ...]
-
-    # Create a DataFrame with letters as 'Indikator', average scores, and questions
-    avg_scores_df = pd.DataFrame({
-        'Indikator': letters,
-        'Pertanyaan': questions,
-        'Rata-Rata Skor': avg_scores.values
-    })
-
-    col1, col2, col3 = st.columns(3)
-
-            # Calculate metrics
-    min_score = avg_scores_df['Rata-Rata Skor'].min()
-    max_score = avg_scores_df['Rata-Rata Skor'].max()
-    mean_score = avg_scores_df['Rata-Rata Skor'].mean()
-
-        
-        # Display metrics with individual borders
-    st.markdown("""<style>
-        .metric-box {
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: #f5bf4a ;
-        }
-        .metric-box h3 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: black;
-        }
-        .metric-box p {
-            margin: 5px 0 0;
-            font-size: 1rem;
-            color: black ;
-        }
-        </style>""", unsafe_allow_html=True)
-    with col1:
-            st.markdown("""<div class="metric-box">
-                <h3>{:.2f}</h3>
-                <p>Minimum Skor</p>
-            </div>""".format(min_score), unsafe_allow_html=True)
-    with col2:
-            st.markdown("""<div class="metric-box">
-                <h3>{:.2f}</h3>
-                <p>Rata-Rata Skor</p>
-            </div>""".format(mean_score), unsafe_allow_html=True)
-    with col3:
-            st.markdown("""<div class="metric-box">
-                <h3>{:.2f}</h3>
-                <p>Maksimum Skor</p>
-            </div>""".format(max_score), unsafe_allow_html=True)
-
-    selected_question_index = st.selectbox("🔎Pilih Pertanyaan :", range(len(questions)), format_func=lambda x: questions[x])
-
-    # Get the average score for the selected question
-    selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index]
-    fulfilled_percentage = (selected_question_avg_score / 5) * 100
-    not_fulfilled_percentage = 100 - fulfilled_percentage
-
-
-    col1, col2, = st.columns(2)
-    with col1:
-        st.data_editor(
-                    avg_scores_df,
-                    column_config={
-                        "Rata-Rata Skor": st.column_config.ProgressColumn(
-                            "Rata-Rata Skor",
-                            help="Skor rata-rata berdasarkan indikator",
-                            format="{:.2f}",  # Format angka dengan 2 desimal
-                            min_value=0,  # Skor minimal
-                            max_value=5,  # Skor maksimal (asumsi skor 1-5)
-                        ),
-                    },
-                    hide_index=True,
-                    use_container_width=True  # Menggunakan lebar kontainer penuh untuk tabel
-                )
-
-    with col2:
-            # Line Chart for the average scores of each indicator
-        fig_line = px.line(
-            avg_scores_df,
-            x='Indikator',
-            y='Rata-Rata Skor',
-            labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
-            title="Perubahan Skor Rata-Rata untuk Setiap Indikator",
-            markers=True
-        )
-
-        # Update the line color to use the sunset color scale
-        fig_line.update_traces(
-            line=dict(color='rgba(255, 99, 71, 1)'),  # Default line color if you want specific color
-            marker=dict(color=avg_scores_df['Rata-Rata Skor'], colorscale='sunset')  # Applying color scale to markers
-        )
-
-        # Update layout for line chart
-        fig_line.update_layout(
-            title_x=0.2,  # Centers the title
-            title_y=0.95,  # Adjusts the title position vertically
-            title_font=dict(size=20, color="white"),  # Title font size and color
-            xaxis_title="Indikator",
-            yaxis_title="Rata-Rata Skor",
-            xaxis=dict(
-                tickmode='array', 
-                tickvals=avg_scores_df['Indikator'],  # Use the actual indicator names for ticks
-                showgrid=True,
-                gridcolor='#cecdcd',  # Light grid color for x-axis
-            ),
-            yaxis=dict(
-                showgrid=True,
-                gridcolor='#cecdcd',  # Light grid color for y-axis
-            ),
-            plot_bgcolor='rgba(0, 0, 0, 0)',  # Transparent plot background
-            paper_bgcolor='rgba(0, 0, 0, 0)',  # Transparent paper background
-            font=dict(color='#cecdcd'),  # Font color for the chart
-        )
-
-        # Display the line chart
-        st.plotly_chart(fig_line)
-        
-
-
-    # Prepare data for the donut chart
-    fulfillment_data = pd.DataFrame({
-        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
-        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
-    })
-
-    # Membuat layout kolom
-    col1, col2 = st.columns(2)
-
-
-
-    with col1:
-        # Create the donut chart
-        fig_donut = px.pie(
-            fulfillment_data,
-            values='Persentase',
-            names='Status',
-            hole=0.4,
-            title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
-            color_discrete_sequence=px.colors.sequential.Sunset
-        )
-        # Update layout to center the title and position the legend at the bottom
-        fig_donut.update_layout(
-            title_x=0.2,  # Centers the title
-            legend_title="Indikator",  # Title for the legend
-            legend_orientation="h",  # Horizontal legend
-            legend_yanchor="bottom",  # Aligns legend at the bottom
-            legend_y=-0.5,  # Moves the legend below the chart
-            legend_x=0.5,  # Centers the legend horizontally
-            legend_xanchor="center"  # Ensures that the legend is anchored in the center
-        )
-        # Display the donut chart
-        st.plotly_chart(fig_donut)
-
-
-
-    with col2:
-    
-        # Plot a bar chart for average scores
-        fig_bar = px.bar(
-            avg_scores_df,
-            x='Indikator',
-            y='Rata-Rata Skor',
-            labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
-            title="Rata-Rata Skor untuk Setiap Indikator",
-            color='Rata-Rata Skor',
-            color_continuous_scale='sunset',
-            height=400,
-            hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
-        )
-                # Mengatur posisi judul agar berada di tengah
-        fig_bar.update_layout(
-            title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
-        )
-
-        # Display the bar chart
-        st.plotly_chart(fig_bar)
-
-    with tab3:
-        data1 = load_data("C5.saranatendik-prep.csv")
-
-        # Calculate average scores for each question
-        avg_scores = data1.mean()
-
-        # Prepare the indicator names (letters for X-axis)
-        questions = data1.columns.tolist()  # Assuming questions are column names
-        letters = [chr(i) for i in range(97, 97 + len(avg_scores))]  # ['a', 'b', 'c', ...]
-
-        # Create a DataFrame with letters as 'Indikator', average scores, and questions
-        avg_scores_df = pd.DataFrame({
-            'Indikator': letters,
-            'Pertanyaan': questions,
-            'Rata-Rata Skor': avg_scores.values
-        })
-
-        col1, col2, col3 = st.columns(3)
-
-                # Calculate metrics
-        min_score = avg_scores_df['Rata-Rata Skor'].min()
-        max_score = avg_scores_df['Rata-Rata Skor'].max()
-        mean_score = avg_scores_df['Rata-Rata Skor'].mean()
-
-            
-            # Display metrics with individual borders
-        st.markdown("""<style>
-            .metric-box {
-                text-align: center;
-                border: 2px solid #ddd;
-                border-radius: 10px;
-                padding: 15px;
-                margin-bottom: 10px;
-                background-color: #f5bf4a ;
-            }
-            .metric-box h3 {
-                margin: 0;
-                font-size: 1.5rem;
-                color: black;
-            }
-            .metric-box p {
-                margin: 5px 0 0;
-                font-size: 1rem;
-                color: black ;
-            }
-            </style>""", unsafe_allow_html=True)
-        with col1:
-                st.markdown("""<div class="metric-box">
-                    <h3>{:.2f}</h3>
-                    <p>Minimum Skor</p>
-                </div>""".format(min_score), unsafe_allow_html=True)
-        with col2:
-                st.markdown("""<div class="metric-box">
-                    <h3>{:.2f}</h3>
-                    <p>Rata-Rata Skor</p>
-                </div>""".format(mean_score), unsafe_allow_html=True)
-        with col3:
-                st.markdown("""<div class="metric-box">
-                    <h3>{:.2f}</h3>
-                    <p>Maksimum Skor</p>
-                </div>""".format(max_score), unsafe_allow_html=True)
-
-        selected_question_index = st.selectbox("🔎Pilih Pertanyaan :", range(len(questions)), format_func=lambda x: questions[x])
-
-        # Get the average score for the selected question
-        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index]
+    # Jika "All" dipilih, hitung data gabungan, jika tidak, ambil pertanyaan spesifik
+    if selected_question_index == 0:  # "All" dipilih
+        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].mean()
+        fulfilled_percentage = (selected_question_avg_score / 5) * 100
+        not_fulfilled_percentage = 100 - fulfilled_percentage
+    else:
+        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index - 1]
         fulfilled_percentage = (selected_question_avg_score / 5) * 100
         not_fulfilled_percentage = 100 - fulfilled_percentage
 
+    # Persiapkan data untuk donut chart
+    fulfillment_data = pd.DataFrame({
+        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+    })
 
-        col1, col2, = st.columns(2)
-        with col1:
-            st.data_editor(
-                        avg_scores_df,
-                        column_config={
-                            "Rata-Rata Skor": st.column_config.ProgressColumn(
-                                "Rata-Rata Skor",
-                                help="Skor rata-rata berdasarkan indikator",
-                                format="{:.2f}",  # Format angka dengan 2 desimal
-                                min_value=0,  # Skor minimal
-                                max_value=5,  # Skor maksimal (asumsi skor 1-5)
-                            ),
-                        },
-                        hide_index=True,
-                        use_container_width=True  # Menggunakan lebar kontainer penuh untuk tabel
-                    )
+        # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data1[data1.apply(lambda row: ~row.isin([3]), axis=1)]
 
-        with col2:
-                # Line Chart for the average scores of each indicator
+    # Hitung jumlah kategori
+    categories_count = {
+        "Sangat Kurang": (non_neutral_data == 1).sum().sum(),
+        "Kurang": (non_neutral_data == 2).sum().sum(),
+        "Baik": (non_neutral_data == 4).sum().sum(),
+        "Sangat Baik": (non_neutral_data == 5).sum().sum(),
+    }
+
+    # Hitung total jawaban yang relevan
+    total_non_neutral = sum(categories_count.values())
+
+    # Hitung persentase untuk setiap kategori
+    fulfillment_data1 = pd.DataFrame({
+        'Kategori': categories_count.keys(),
+        'Jumlah': categories_count.values(),
+        'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+    })
+
+            # Create the fulfillment_data DataFrame
+    fulfillment_data = pd.DataFrame({
+        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],  # Change 'Kategori' to 'Status'
+        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+    })
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        
+        with st.container(border=True): 
+            # Create the donut chart
+            fig_donut = px.pie(
+                fulfillment_data,
+                values='Persentase',
+                names='Status',
+                hole=0.4,
+                title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                color_discrete_sequence=px.colors.sequential.Sunset
+            )
+            # Update layout to center the title and position the legend at the bottom
+            fig_donut.update_layout(
+                title_x=0.2,  # Centers the title
+                legend_title="Indikator",  # Title for the legend
+                legend_orientation="h",  # Horizontal legend
+                legend_yanchor="bottom",  # Aligns legend at the bottom
+                legend_y=-0.5,  # Moves the legend below the chart
+                legend_x=0.5,  # Centers the legend horizontally
+                legend_xanchor="center"  # Ensures that the legend is anchored in the center
+            )
+            # Display the donut chart
+            st.plotly_chart(fig_donut,use_container_width=True)
+
+ 
+        
+        with st.container(border=True):    # Line Chart for the average scores of each indicator
+
             fig_line = px.line(
                 avg_scores_df,
                 x='Indikator',
                 y='Rata-Rata Skor',
                 labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
                 title="Perubahan Skor Rata-Rata untuk Setiap Indikator",
-                markers=True
+                markers=True,
+                height=400,
             )
 
             # Update the line color to use the sunset color scale
@@ -537,22 +229,198 @@ with tab2:
             )
 
             # Display the line chart
-            st.plotly_chart(fig_line)
-            
+            st.plotly_chart(fig_line,use_container_width=True)
+
+    with col2:
+        with st.container(border=True):
+            # Donut chart with the correct names column
+            fig_donut = px.pie(
+                fulfillment_data1,
+                values='Persentase',
+                names='Kategori',  # This should be 'Kategori' as defined in the DataFrame
+                hole=0.4,
+                title="Distribusi Kategori Jawaban (Tanpa Netral)",
+                color_discrete_sequence=px.colors.sequential.Purp
+            )
+
+            # Update layout for better visualization
+            fig_donut.update_layout(
+                title_x=0.2,
+                legend_title="Kategori",
+                legend_orientation="h",
+                legend_yanchor="bottom",
+                legend_y=-0.2,
+                legend_x=0.5,
+                legend_xanchor="center"
+            )
+
+            # Display the donut chart
+            st.plotly_chart(fig_donut, use_container_width=True)
+        
+
+        with st.container(border=True):
+            # Plot a bar chart for average scores
+            fig_bar = px.bar(
+                avg_scores_df,
+                x='Indikator',
+                y='Rata-Rata Skor',
+                labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
+                title="Rata-Rata Skor untuk Setiap Indikator",
+                color='Rata-Rata Skor',
+                color_continuous_scale='sunset',
+                height=400,
+                hover_data=["Rata-Rata Skor"]
+            )
+
+            fig_bar.update_layout(
+                title_x=0.2
+            )
+
+            st.plotly_chart(fig_bar,use_container_width=True)
+
+    # Display data editor with category column
+    st.container(border=True)
+    st.data_editor(
+        avg_scores_df,
+        column_config={
+            "Rata-Rata Skor": st.column_config.ProgressColumn(
+                "Rata-rata Skor",
+                help="Menampilkan nilai rata-rata jawaban",
+                min_value=0,
+                max_value=5,
+                format="%.2f",
+            ),
+            "Kategori": st.column_config.TextColumn(
+                "Kategori",
+                help="Kategori berdasarkan skor"
+            )
+        },
+        hide_index=True,
+        use_container_width=True
+    )
 
 
-        # Prepare data for the donut chart
-        fulfillment_data = pd.DataFrame({
-            'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
-            'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
-        })
+# Tab 1: SARANA MAHASISWA
+with tab2:
+    # Load data
+    data1 = load_data("C5.saranamahasiswa-prep.csv")
 
-        # Membuat layout kolom
-        col1, col2 = st.columns(2)
+    # Calculate average scores for each question
+    avg_scores = data1.mean()
 
+    # Prepare the indicator names (letters for X-axis)
+    questions = data1.columns.tolist()  # Assuming questions are column names
+    letters = [chr(i) for i in range(97, 97 + len(avg_scores))]  # ['a', 'b', 'c', ...]
 
+    # Create a DataFrame with letters as 'Indikator', average scores, and questions
+    avg_scores_df = pd.DataFrame({
+        'Indikator': letters,
+        'Pertanyaan': questions,
+        'Rata-Rata Skor': avg_scores.values
+    })
 
-        with col1:
+    col1, col2, col3 = st.columns(3)
+
+    # Calculate metrics
+    min_score = avg_scores_df['Rata-Rata Skor'].min()
+    max_score = avg_scores_df['Rata-Rata Skor'].max()
+    mean_score = avg_scores_df['Rata-Rata Skor'].mean()
+
+    # Display metrics with individual borders
+    st.markdown("""<style>
+        .metric-box {
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f5bf4a ;
+        }
+        .metric-box h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: black;
+        }
+        .metric-box p {
+            margin: 5px 0 0;
+            font-size: 1rem;
+            color: black ;
+        }
+        </style>""", unsafe_allow_html=True)
+    with col1:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Minimum Skor</p>
+        </div>""".format(min_score), unsafe_allow_html=True)
+    with col2:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Rata-Rata Skor</p>
+        </div>""".format(mean_score), unsafe_allow_html=True)
+    with col3:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Maksimum Skor</p>
+        </div>""".format(max_score), unsafe_allow_html=True)
+
+        # Tambahkan opsi "All" di awal daftar pertanyaan
+    all_questions = ["All"] + questions
+
+    # Perbarui selectbox untuk menyertakan opsi "All"
+    selected_question_index = st.selectbox(
+        "🔎 Pilih Pertanyaan :",
+        range(len(all_questions)),
+        format_func=lambda x: all_questions[x]
+    )
+
+    # Jika "All" dipilih, hitung data gabungan, jika tidak, ambil pertanyaan spesifik
+    if selected_question_index == 0:  # "All" dipilih
+        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].mean()
+        fulfilled_percentage = (selected_question_avg_score / 5) * 100
+        not_fulfilled_percentage = 100 - fulfilled_percentage
+    else:
+        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index - 1]
+        fulfilled_percentage = (selected_question_avg_score / 5) * 100
+        not_fulfilled_percentage = 100 - fulfilled_percentage
+
+    # Persiapkan data untuk donut chart
+    fulfillment_data = pd.DataFrame({
+        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+    })
+
+        # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data1[data1.apply(lambda row: ~row.isin([3]), axis=1)]
+
+    # Hitung jumlah kategori
+    categories_count = {
+        "Sangat Kurang": (non_neutral_data == 1).sum().sum(),
+        "Kurang": (non_neutral_data == 2).sum().sum(),
+        "Baik": (non_neutral_data == 4).sum().sum(),
+        "Sangat Baik": (non_neutral_data == 5).sum().sum(),
+    }
+
+    # Hitung total jawaban yang relevan
+    total_non_neutral = sum(categories_count.values())
+
+    # Hitung persentase untuk setiap kategori
+    fulfillment_data1 = pd.DataFrame({
+        'Kategori': categories_count.keys(),
+        'Jumlah': categories_count.values(),
+        'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+    })
+
+            # Create the fulfillment_data DataFrame
+    fulfillment_data = pd.DataFrame({
+        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],  # Change 'Kategori' to 'Status'
+        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+    })
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        
+        with st.container(border=True): 
             # Create the donut chart
             fig_donut = px.pie(
                 fulfillment_data,
@@ -573,12 +441,81 @@ with tab2:
                 legend_xanchor="center"  # Ensures that the legend is anchored in the center
             )
             # Display the donut chart
-            st.plotly_chart(fig_donut)
+            st.plotly_chart(fig_donut,use_container_width=True)
 
-
-
-        with col2:
+ 
         
+        with st.container(border=True):    # Line Chart for the average scores of each indicator
+
+            fig_line = px.line(
+                avg_scores_df,
+                x='Indikator',
+                y='Rata-Rata Skor',
+                labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
+                title="Perubahan Skor Rata-Rata untuk Setiap Indikator",
+                markers=True,
+                height=400,
+            )
+
+            # Update the line color to use the sunset color scale
+            fig_line.update_traces(
+                line=dict(color='rgba(255, 99, 71, 1)'),  # Default line color if you want specific color
+                marker=dict(color=avg_scores_df['Rata-Rata Skor'], colorscale='sunset')  # Applying color scale to markers
+            )
+
+            # Update layout for line chart
+            fig_line.update_layout(
+                title_x=0.2,  # Centers the title
+                title_y=0.95,  # Adjusts the title position vertically
+                title_font=dict(size=20, color="white"),  # Title font size and color
+                xaxis_title="Indikator",
+                yaxis_title="Rata-Rata Skor",
+                xaxis=dict(
+                    tickmode='array', 
+                    tickvals=avg_scores_df['Indikator'],  # Use the actual indicator names for ticks
+                    showgrid=True,
+                    gridcolor='#cecdcd',  # Light grid color for x-axis
+                ),
+                yaxis=dict(
+                    showgrid=True,
+                    gridcolor='#cecdcd',  # Light grid color for y-axis
+                ),
+                plot_bgcolor='rgba(0, 0, 0, 0)',  # Transparent plot background
+                paper_bgcolor='rgba(0, 0, 0, 0)',  # Transparent paper background
+                font=dict(color='#cecdcd'),  # Font color for the chart
+            )
+
+            # Display the line chart
+            st.plotly_chart(fig_line,use_container_width=True)
+
+    with col2:
+        with st.container(border=True):
+            # Donut chart with the correct names column
+            fig_donut = px.pie(
+                fulfillment_data1,
+                values='Persentase',
+                names='Kategori',  # This should be 'Kategori' as defined in the DataFrame
+                hole=0.4,
+                title="Distribusi Kategori Jawaban (Tanpa Netral)",
+                color_discrete_sequence=px.colors.sequential.Purp
+            )
+
+            # Update layout for better visualization
+            fig_donut.update_layout(
+                title_x=0.2,
+                legend_title="Kategori",
+                legend_orientation="h",
+                legend_yanchor="bottom",
+                legend_y=-0.2,
+                legend_x=0.5,
+                legend_xanchor="center"
+            )
+
+            # Display the donut chart
+            st.plotly_chart(fig_donut, use_container_width=True)
+        
+
+        with st.container(border=True):
             # Plot a bar chart for average scores
             fig_bar = px.bar(
                 avg_scores_df,
@@ -589,12 +526,288 @@ with tab2:
                 color='Rata-Rata Skor',
                 color_continuous_scale='sunset',
                 height=400,
-                hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
-            )
-                    # Mengatur posisi judul agar berada di tengah
-            fig_bar.update_layout(
-                title_x=0.2  # Menempatkan judul di tengah (0.5 artinya di tengah dari grafik)
+                hover_data=["Rata-Rata Skor"]
             )
 
-            # Display the bar chart
-            st.plotly_chart(fig_bar)
+            fig_bar.update_layout(
+                title_x=0.2
+            )
+
+            st.plotly_chart(fig_bar,use_container_width=True)
+
+    # Display data editor with category column
+    st.container(border=True)
+    st.data_editor(
+        avg_scores_df,
+        column_config={
+            "Rata-Rata Skor": st.column_config.ProgressColumn(
+                "Rata-rata Skor",
+                help="Menampilkan nilai rata-rata jawaban",
+                min_value=0,
+                max_value=5,
+                format="%.2f",
+            ),
+            "Kategori": st.column_config.TextColumn(
+                "Kategori",
+                help="Kategori berdasarkan skor"
+            )
+        },
+        hide_index=True,
+        use_container_width=True
+    )
+
+    # Tab 3: SARANA TENDIK
+with tab3:
+    # Load data
+    data1 = load_data("C5.saranatendik-prep.csv")
+
+    # Calculate average scores for each question
+    avg_scores = data1.mean()
+
+    # Prepare the indicator names (letters for X-axis)
+    questions = data1.columns.tolist()  # Assuming questions are column names
+    letters = [chr(i) for i in range(97, 97 + len(avg_scores))]  # ['a', 'b', 'c', ...]
+
+    # Create a DataFrame with letters as 'Indikator', average scores, and questions
+    avg_scores_df = pd.DataFrame({
+        'Indikator': letters,
+        'Pertanyaan': questions,
+        'Rata-Rata Skor': avg_scores.values
+    })
+
+    col1, col2, col3 = st.columns(3)
+
+    # Calculate metrics
+    min_score = avg_scores_df['Rata-Rata Skor'].min()
+    max_score = avg_scores_df['Rata-Rata Skor'].max()
+    mean_score = avg_scores_df['Rata-Rata Skor'].mean()
+
+    # Display metrics with individual borders
+    st.markdown("""<style>
+        .metric-box {
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f5bf4a ;
+        }
+        .metric-box h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: black;
+        }
+        .metric-box p {
+            margin: 5px 0 0;
+            font-size: 1rem;
+            color: black ;
+        }
+        </style>""", unsafe_allow_html=True)
+    with col1:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Minimum Skor</p>
+        </div>""".format(min_score), unsafe_allow_html=True)
+    with col2:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Rata-Rata Skor</p>
+        </div>""".format(mean_score), unsafe_allow_html=True)
+    with col3:
+        st.markdown("""<div class="metric-box">
+            <h3>{:.2f}</h3>
+            <p>Maksimum Skor</p>
+        </div>""".format(max_score), unsafe_allow_html=True)
+
+        # Tambahkan opsi "All" di awal daftar pertanyaan
+    all_questions = ["All"] + questions
+
+    # Perbarui selectbox untuk menyertakan opsi "All"
+    selected_question_index = st.selectbox(
+        "🔎 Pilih Pertanyaan :",
+        range(len(all_questions)),
+        format_func=lambda x: all_questions[x]
+    )
+
+    # Jika "All" dipilih, hitung data gabungan, jika tidak, ambil pertanyaan spesifik
+    if selected_question_index == 0:  # "All" dipilih
+        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].mean()
+        fulfilled_percentage = (selected_question_avg_score / 5) * 100
+        not_fulfilled_percentage = 100 - fulfilled_percentage
+    else:
+        selected_question_avg_score = avg_scores_df['Rata-Rata Skor'].iloc[selected_question_index - 1]
+        fulfilled_percentage = (selected_question_avg_score / 5) * 100
+        not_fulfilled_percentage = 100 - fulfilled_percentage
+
+    # Persiapkan data untuk donut chart
+    fulfillment_data = pd.DataFrame({
+        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+    })
+
+        # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data1[data1.apply(lambda row: ~row.isin([3]), axis=1)]
+
+    # Hitung jumlah kategori
+    categories_count = {
+        "Sangat Kurang": (non_neutral_data == 1).sum().sum(),
+        "Kurang": (non_neutral_data == 2).sum().sum(),
+        "Baik": (non_neutral_data == 4).sum().sum(),
+        "Sangat Baik": (non_neutral_data == 5).sum().sum(),
+    }
+
+    # Hitung total jawaban yang relevan
+    total_non_neutral = sum(categories_count.values())
+
+    # Hitung persentase untuk setiap kategori
+    fulfillment_data1 = pd.DataFrame({
+        'Kategori': categories_count.keys(),
+        'Jumlah': categories_count.values(),
+        'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+    })
+
+            # Create the fulfillment_data DataFrame
+    fulfillment_data = pd.DataFrame({
+        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],  # Change 'Kategori' to 'Status'
+        'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
+    })
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        
+        with st.container(border=True): 
+            # Create the donut chart
+            fig_donut = px.pie(
+                fulfillment_data,
+                values='Persentase',
+                names='Status',
+                hole=0.4,
+                title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                color_discrete_sequence=px.colors.sequential.Sunset
+            )
+            # Update layout to center the title and position the legend at the bottom
+            fig_donut.update_layout(
+                title_x=0.2,  # Centers the title
+                legend_title="Indikator",  # Title for the legend
+                legend_orientation="h",  # Horizontal legend
+                legend_yanchor="bottom",  # Aligns legend at the bottom
+                legend_y=-0.5,  # Moves the legend below the chart
+                legend_x=0.5,  # Centers the legend horizontally
+                legend_xanchor="center"  # Ensures that the legend is anchored in the center
+            )
+            # Display the donut chart
+            st.plotly_chart(fig_donut,use_container_width=True)
+
+ 
+        
+        with st.container(border=True):    # Line Chart for the average scores of each indicator
+
+            fig_line = px.line(
+                avg_scores_df,
+                x='Indikator',
+                y='Rata-Rata Skor',
+                labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
+                title="Perubahan Skor Rata-Rata untuk Setiap Indikator",
+                markers=True,
+                height=400,
+            )
+
+            # Update the line color to use the sunset color scale
+            fig_line.update_traces(
+                line=dict(color='rgba(255, 99, 71, 1)'),  # Default line color if you want specific color
+                marker=dict(color=avg_scores_df['Rata-Rata Skor'], colorscale='sunset')  # Applying color scale to markers
+            )
+
+            # Update layout for line chart
+            fig_line.update_layout(
+                title_x=0.2,  # Centers the title
+                title_y=0.95,  # Adjusts the title position vertically
+                title_font=dict(size=20, color="white"),  # Title font size and color
+                xaxis_title="Indikator",
+                yaxis_title="Rata-Rata Skor",
+                xaxis=dict(
+                    tickmode='array', 
+                    tickvals=avg_scores_df['Indikator'],  # Use the actual indicator names for ticks
+                    showgrid=True,
+                    gridcolor='#cecdcd',  # Light grid color for x-axis
+                ),
+                yaxis=dict(
+                    showgrid=True,
+                    gridcolor='#cecdcd',  # Light grid color for y-axis
+                ),
+                plot_bgcolor='rgba(0, 0, 0, 0)',  # Transparent plot background
+                paper_bgcolor='rgba(0, 0, 0, 0)',  # Transparent paper background
+                font=dict(color='#cecdcd'),  # Font color for the chart
+            )
+
+            # Display the line chart
+            st.plotly_chart(fig_line,use_container_width=True)
+
+    with col2:
+        with st.container(border=True):
+            # Donut chart with the correct names column
+            fig_donut = px.pie(
+                fulfillment_data1,
+                values='Persentase',
+                names='Kategori',  # This should be 'Kategori' as defined in the DataFrame
+                hole=0.4,
+                title="Distribusi Kategori Jawaban (Tanpa Netral)",
+                color_discrete_sequence=px.colors.sequential.Purp
+            )
+
+            # Update layout for better visualization
+            fig_donut.update_layout(
+                title_x=0.2,
+                legend_title="Kategori",
+                legend_orientation="h",
+                legend_yanchor="bottom",
+                legend_y=-0.2,
+                legend_x=0.5,
+                legend_xanchor="center"
+            )
+
+            # Display the donut chart
+            st.plotly_chart(fig_donut, use_container_width=True)
+        
+
+        with st.container(border=True):
+            # Plot a bar chart for average scores
+            fig_bar = px.bar(
+                avg_scores_df,
+                x='Indikator',
+                y='Rata-Rata Skor',
+                labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
+                title="Rata-Rata Skor untuk Setiap Indikator",
+                color='Rata-Rata Skor',
+                color_continuous_scale='sunset',
+                height=400,
+                hover_data=["Rata-Rata Skor"]
+            )
+
+            fig_bar.update_layout(
+                title_x=0.2
+            )
+
+            st.plotly_chart(fig_bar,use_container_width=True)
+
+    # Display data editor with category column
+    st.container(border=True)
+    st.data_editor(
+        avg_scores_df,
+        column_config={
+            "Rata-Rata Skor": st.column_config.ProgressColumn(
+                "Rata-rata Skor",
+                help="Menampilkan nilai rata-rata jawaban",
+                min_value=0,
+                max_value=5,
+                format="%.2f",
+            ),
+            "Kategori": st.column_config.TextColumn(
+                "Kategori",
+                help="Kategori berdasarkan skor"
+            )
+        },
+        hide_index=True,
+        use_container_width=True
+    )
