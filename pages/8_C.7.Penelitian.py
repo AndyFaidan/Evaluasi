@@ -206,7 +206,7 @@ with col3:
             values='Persentase',
             names='Kategori',
             hole=0.4,
-            title="Distribusi Kategori Jawaban (Tanpa Netral)",
+            title="Distribusi Kategori Jawaban",
             color_discrete_sequence=px.colors.sequential.Purp
         )
 
