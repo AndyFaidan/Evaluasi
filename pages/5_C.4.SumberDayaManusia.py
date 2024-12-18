@@ -145,7 +145,7 @@ with tab1:
 
                         # Update layout untuk menyesuaikan tampilan
                         fig_donut.update_layout(
-                            title_x=0.25,  # Centers the title
+                            title_x=0.2,  # Centers the title
                             legend_title="Indikator",  # Title for the legend
                             legend_orientation="h",  # Horizontal legend
                             legend_yanchor="middle",  # Aligns legend in the middle
