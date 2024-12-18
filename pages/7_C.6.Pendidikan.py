@@ -21,13 +21,13 @@ def load_data(file_path):
 
 # Fungsi untuk menambahkan kolom kategori berdasarkan skor
 def assign_category(score):
-    if score < 2.0:
+    if score < 1.0:
         return "Sangat Kurang"
-    elif score < 3.0:
+    elif score < 2.0:
         return "Kurang"
-    elif score < 3.5:
+    elif score < 3.0:
         return "Cukup"
-    elif score < 4.5:
+    elif score < 4.0:
         return "Baik"
     else:
         return "Sangat Baik"
