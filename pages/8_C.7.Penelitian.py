@@ -156,7 +156,7 @@ with col1:
             legend_yanchor="middle",  # Aligns legend at the bottom
         )
         # Display the donut chart
-        st.plotly_chart(fig_donut)
+        st.plotly_chart(fig_donut,use_container_width=True)
     
 
 with col2:
@@ -185,7 +185,7 @@ with col2:
         )
 
         # Display the bar chart
-        st.plotly_chart(fig_bar)
+        st.plotly_chart(fig_bar, use_container_width=True)
 
 with col3:
     with st.container(border=True):
@@ -232,7 +232,7 @@ with col3:
         )
 
         # Tampilkan diagram pie
-        st.plotly_chart(fig_donut)
+        st.plotly_chart(fig_donut,use_container_width=True)
 
 
 # Tampilkan data editor dengan kolom kategori
