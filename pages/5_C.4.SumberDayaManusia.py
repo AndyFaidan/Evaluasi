@@ -152,6 +152,8 @@ with tab1:
                             legend_y=-0.3,  # Moves the legend below the chart
                             legend_x=0.5,  # Centers the legend horizontally
                             legend_xanchor="center"  # Ensures that the legend is anchored in the center
+                            height=400,  # Reduce height
+                            width=200   # Reduce width
                         )
 
                         # Display the donut chart in the corresponding container
