@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 # Set page configuration
 st.set_page_config(
@@ -14,6 +15,70 @@ st.set_page_config(
 st.markdown("""
     <h2 style="text-align: center;">📊Survey Kepuasan Dosen, Tenaga Kependidikan Dan Mahasiswa Terhadap Tata Kelola Organisasi UPPS dan PS</h2>
 """, unsafe_allow_html=True)
+
+# Fungsi untuk memuat data dengan multi-header
+def load_data_with_multi_header(file_path):
+    data = pd.read_csv(file_path, header=[0, 1], encoding="utf-8")
+    data.columns = ['_'.join(col).strip() for col in data.columns.values]
+    return data
+
+# Fungsi untuk menghitung rata-rata per kategori dan pertanyaan
+def calculate_avg_score(data, kategori_column='kategori', score_column='nilai', pertanyaan_column='pertanyaan'):
+    return data.groupby([kategori_column, pertanyaan_column])[score_column].mean().reset_index()
+
+def calculate_avg_score_permanent(data, kategori_column='kategori', score_column='nilai'):
+    if kategori_column not in data.columns or score_column not in data.columns:
+        st.warning("Kolom 'kategori' atau 'nilai' tidak ditemukan dalam data.")
+        return pd.DataFrame()
+    
+    # Drop NaN values untuk menghindari error
+    data = data.dropna(subset=[kategori_column, score_column])
+    return data.groupby(kategori_column)[score_column].mean().reset_index()
+
+
+def create_gauge_chart(avg_score, kategori):
+    # Menentukan rating berdasarkan nilai rata-rata
+    if avg_score < 1.5:
+        rating = "Sangat Kurang"
+        color = "red"
+    elif avg_score < 2.5:
+        rating = "Cukup"
+        color = "orange"
+    elif avg_score < 3.5:
+        rating = "Baik"
+        color = "yellow"
+    else:
+        rating = "Sangat Baik"
+        color = "green"
+
+    # Membuat chart gauge
+    gauge = go.Figure(go.Indicator(
+         mode="gauge+number",
+            value=avg_score,
+            title={'text': f"{kategori}: {rating}", 'font': {'size': 16}},  # Ukuran judul lebih kecil
+            number={'font': {'size': 18}},  # Ukuran angka lebih kecil
+            gauge={
+            'axis': {'range': [0, 4], 'tickwidth': 1, 'tickcolor': "darkgray"},
+            'bar': {'color': "rgba(255, 99, 71, 0.8)"},  # Transparansi bar
+            'steps': [
+                {'range': [0, 1.49], 'color': "rgba(255, 69, 0, 0.5)"},   # Merah Sunset
+                {'range': [1.5, 2.49], 'color': "rgba(255, 165, 0, 0.6)"}, # Jingga
+                {'range': [2.5, 3.49], 'color': "rgba(255, 215, 0, 0.7)"}, # Kuning Emas
+                {'range': [3.5, 4], 'color': "rgba(255, 236, 139, 0.8)"}   # Kuning Muda Sunset
+            ],
+            'threshold': {
+                'line': {'color': "rgba(255, 99, 71, 1)", 'width': 4},
+                'thickness': 0.75,
+                'value': avg_score
+            }
+        }
+        )).update_layout(
+            height=190,  # Tinggi chart lebih kecil
+            margin=dict(l=20, r=10, t=40, b=10)  # Margin lebih kecil
+        )
+
+   
+    return gauge
 
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
@@ -126,338 +191,355 @@ with tab1:
         """, unsafe_allow_html=True)
 
 
-st.divider()
-    
-
-# Layout: Create three columns for the components
-col1, col2, col3 = st.columns([2, 2, 4])
-
-# Column 1: Donut chart and evaluation category
-with col1:
-    with st.container(border=True):
-        # Calculate average score for all questions or specific question
-        if pertanyaan_filter == "All Pertanyaan":
-            avg_score = avg_scores1['Rata-Rata Skor'].mean()
-        else:
-            avg_score = filtered_data1[pertanyaan_filter].mean()
-
-        # Calculate percentage and category
-        percentage_score = (avg_score / 5) * 100 if avg_score > 0 else 0
-        category = 'Puas' if percentage_score > 60 else 'Tidak Puas'
-
-        # Prepare data for donut chart
-        donut_data = pd.DataFrame({
-            "Kategori": [category, "Tidak Puas" if category == "Puas" else "Puas"],
-            "Persentase": [percentage_score, 100 - percentage_score]
-        })
-
-        # Create and style donut chart
-        fig_donut = px.pie(
-            donut_data,
-            names='Kategori',
-            values='Persentase',
-            hole=0.5,
-            color='Kategori',
-            color_discrete_sequence=["#36A2EB", "#FFCE56"],
-            title="Rata-rata Nilai Jawaban per Pertanyaan"
-        )
-        fig_donut.update_layout(
-            height=400,  # Reduce height,
-            width=200,  # Reduce width
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=-0.2,
-                xanchor="center",
-                x=0.5
-
-            ),
-            title_x=0.1
-        )
-
-        # Display the donut chart
-        st.plotly_chart(fig_donut, use_container_width=True)
-
-# Column 3: Pie chart showing distribution of non-neutral answers
-with col2:
-    with st.container(border=True):
-        # Filter out "Netral" answers (score == 3)
-        non_neutral_data = data1[data1.apply(lambda row: ~row.isin([3]), axis=1)]
-
-        # Count the occurrences of each category
-        categories_count = {
-            "Sangat Kurang": (non_neutral_data == 1).sum().sum(),
-            "Kurang": (non_neutral_data == 2).sum().sum(),
-            "Baik": (non_neutral_data == 4).sum().sum(),
-            "Sangat Baik": (non_neutral_data == 5).sum().sum(),
-        }
-
-        # Calculate the total number of relevant answers
-        total_non_neutral = sum(categories_count.values())
-
-        # Prepare data for the pie chart
-        fulfillment_data = pd.DataFrame({
-            'Kategori': categories_count.keys(),
-            'Jumlah': categories_count.values(),
-            'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
-        })
-
-        # Create and style the pie chart
-        fig_donut = px.pie(
-            fulfillment_data,
-            values='Persentase',
-            names='Kategori',
-            hole=0.5,
-            title="Distribusi Kategori Jawaban",
-            color_discrete_sequence=px.colors.sequential.Purp
-        )
+    st.divider()
         
-        # Update layout for the pie chart
-        fig_donut.update_layout(
-            title_x=0.2,
-            legend_title="Kategori",
-            legend_orientation="h",
-            legend_yanchor="bottom",
-            legend_y=-0.3,
-            legend_x=0.5,
-            legend_xanchor="center",
-            height=400,  # Reduce height
-            width=200   # Reduce width
-        )
 
-        # Display the pie chart
-        st.plotly_chart(fig_donut, use_container_width=True)
+    # Layout: Create three columns for the components
+    col1, col2, col3 = st.columns([2, 2, 4])
 
-# Column 2: Bar chart visualization for average scores
-with col3:
-    with st.container(border=True):
-        # Create bar chart for average scores by indicator
-        fig_bar = px.bar(
-            avg_scores1,
-            x='Indikator',
-            y='Rata-Rata Skor',
-            title="Distribusi Rata-Rata Skor Berdasarkan Indikator",
-            color='Rata-Rata Skor',
-            color_continuous_scale='Blues',
-            hover_data={'Pertanyaan': True},
-            height=400
-        )
-        fig_bar.update_layout(title_x=0.2)
-        
-        # Add a horizontal line for the average score
-        fig_bar.add_hline(
-            y=avg_scores1['Rata-Rata Skor'].mean(),
-            line_dash="dash",
-            line_color="red",
-            annotation_text=f"Rata-rata {avg_scores1['Rata-Rata Skor'].mean():.2f}",
-            annotation_position="top left"
-        )
+    # Column 1: Donut chart and evaluation category
+    with col1:
+        with st.container(border=True):
+            # Calculate average score for all questions or specific question
+            if pertanyaan_filter == "All Pertanyaan":
+                avg_score = avg_scores1['Rata-Rata Skor'].mean()
+            else:
+                avg_score = filtered_data1[pertanyaan_filter].mean()
 
-        # Display the bar chart
-        st.plotly_chart(fig_bar, use_container_width=True)
+            # Calculate percentage and category
+            percentage_score = (avg_score / 5) * 100 if avg_score > 0 else 0
+            category = 'Puas' if percentage_score > 60 else 'Tidak Puas'
 
-# Menampilkan tabel rata-rata skor dengan kategori
-st.container(border=True)
-st.data_editor(
-            avg_scores1,
-            column_config={
-                "Rata-Rata Skor": st.column_config.ProgressColumn(
-                    "Rata-rata Skor",
-                    help="Menampilkan nilai rata-rata jawaban",
-                    min_value=0,
-                    max_value=5,  # Asumsikan skala 1-5
-                    format="%.2f",  # Format nilai
-                    ),
-                "Kategori": st.column_config.TextColumn(
-                "Kategori",
-                help="Kategori berdasarkan skor"
-                )
-                },
-                hide_index=True,
-                use_container_width=True
-            )      
+            # Prepare data for donut chart
+            donut_data = pd.DataFrame({
+                "Kategori": [category, "Tidak Puas" if category == "Puas" else "Puas"],
+                "Persentase": [percentage_score, 100 - percentage_score]
+            })
+
+            # Create and style donut chart
+            fig_donut = px.pie(
+                donut_data,
+                names='Kategori',
+                values='Persentase',
+                hole=0.5,
+                color='Kategori',
+                color_discrete_sequence=["#36A2EB", "#FFCE56"],
+                title="Rata-rata Nilai Jawaban per Pertanyaan"
+            )
+            fig_donut.update_layout(
+                height=400,  # Reduce height,
+                width=200,  # Reduce width
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=-0.2,
+                    xanchor="center",
+                    x=0.5
+
+                ),
+                title_x=0.1
+            )
+
+            # Display the donut chart
+            st.plotly_chart(fig_donut, use_container_width=True)
+
+    # Column 3: Pie chart showing distribution of non-neutral answers
+    with col2:
+        with st.container(border=True):
+            # Filter out "Netral" answers (score == 3)
+            non_neutral_data = data1[data1.apply(lambda row: ~row.isin([3]), axis=1)]
+
+            # Count the occurrences of each category
+            categories_count = {
+                "Sangat Kurang": (non_neutral_data == 1).sum().sum(),
+                "Kurang": (non_neutral_data == 2).sum().sum(),
+                "Baik": (non_neutral_data == 4).sum().sum(),
+                "Sangat Baik": (non_neutral_data == 5).sum().sum(),
+            }
+
+            # Calculate the total number of relevant answers
+            total_non_neutral = sum(categories_count.values())
+
+            # Prepare data for the pie chart
+            fulfillment_data = pd.DataFrame({
+                'Kategori': categories_count.keys(),
+                'Jumlah': categories_count.values(),
+                'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+            })
+
+            # Create and style the pie chart
+            fig_donut = px.pie(
+                fulfillment_data,
+                values='Persentase',
+                names='Kategori',
+                hole=0.5,
+                title="Distribusi Kategori Jawaban",
+                color_discrete_sequence=px.colors.sequential.Purp
+            )
+            
+            # Update layout for the pie chart
+            fig_donut.update_layout(
+                title_x=0.2,
+                legend_title="Kategori",
+                legend_orientation="h",
+                legend_yanchor="bottom",
+                legend_y=-0.3,
+                legend_x=0.5,
+                legend_xanchor="center",
+                height=400,  # Reduce height
+                width=200   # Reduce width
+            )
+
+            # Display the pie chart
+            st.plotly_chart(fig_donut, use_container_width=True)
+
+    # Column 2: Bar chart visualization for average scores
+    with col3:
+        with st.container(border=True):
+            # Create bar chart for average scores by indicator
+            fig_bar = px.bar(
+                avg_scores1,
+                x='Indikator',
+                y='Rata-Rata Skor',
+                title="Distribusi Rata-Rata Skor Berdasarkan Indikator",
+                color='Rata-Rata Skor',
+                color_continuous_scale='Blues',
+                hover_data={'Pertanyaan': True},
+                height=400
+            )
+            fig_bar.update_layout(title_x=0.2)
+            
+            # Add a horizontal line for the average score
+            fig_bar.add_hline(
+                y=avg_scores1['Rata-Rata Skor'].mean(),
+                line_dash="dash",
+                line_color="red",
+                annotation_text=f"Rata-rata {avg_scores1['Rata-Rata Skor'].mean():.2f}",
+                annotation_position="top left"
+            )
+
+            # Display the bar chart
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+    # Menampilkan tabel rata-rata skor dengan kategori
+    st.container(border=True)
+    st.data_editor(
+                avg_scores1,
+                column_config={
+                    "Rata-Rata Skor": st.column_config.ProgressColumn(
+                        "Rata-rata Skor",
+                        help="Menampilkan nilai rata-rata jawaban",
+                        min_value=0,
+                        max_value=5,  # Asumsikan skala 1-5
+                        format="%.2f",  # Format nilai
+                        ),
+                    "Kategori": st.column_config.TextColumn(
+                    "Kategori",
+                    help="Kategori berdasarkan skor"
+                    )
+                    },
+                    hide_index=True,
+                    use_container_width=True
+                )      
 
 # Tab SARANA MAHASISWA
 with tab2:
-    # Load dataset dengan header di baris pertama dan kedua
-    def load_data_with_multi_header(file_path):
-        data = pd.read_csv(file_path, header=[0, 1], encoding="utf-8")  # Pastikan encoding UTF-8
-        data.columns = ['_'.join(col).strip() for col in data.columns.values]
-        return data
+        # Load data
+    file_path = "C2.tatakelolamhs-preprossesing.csv"  # Ganti dengan path ke file Anda
+    data = load_data_with_multi_header(file_path)  # Memuat data dengan multi-header
 
-    # Load dan bersihkan data
-    data2 = load_data_with_multi_header("C2.tatakelolamhs-preprossesing.csv")
-    data2 = clean_data(data2)  # Jika ada fungsi clean_data, tetap digunakan
+    # Pisahkan kategori dan nilai dari kolom multi-header
+    data_long = data.melt(var_name='kolom_asli', value_name='nilai')
 
-    # Hitung rata-rata skor untuk setiap pertanyaan
-    avg_scores2 = data2.iloc[:, 1:].mean().reset_index()
-    avg_scores2.columns = ['Pertanyaan', 'Rata-Rata Skor']
+    # Ekstraksi kategori dan pertanyaan dari nama kolom
+    data_long['kategori'] = data_long['kolom_asli'].str.split('_').str[0]
+    data_long['pertanyaan'] = data_long['kolom_asli'].str.split('_').str[1]
 
-    # Menyiapkan huruf untuk sumbu X (a, b, c, ...)
-    letters = [chr(i) for i in range(97, 97 + len(avg_scores2))]
-    avg_scores2['Letter'] = letters
+    # Drop kolom yang tidak diperlukan
+    data_long = data_long.drop(columns=['kolom_asli'])
 
-            # Calculate metrics
-    min_score = avg_scores2['Rata-Rata Skor'].min()
-    max_score = avg_scores2['Rata-Rata Skor'].max()
-    mean_score = avg_scores2['Rata-Rata Skor'].mean()
+    # Menghitung rata-rata nilai per kategori
+    avg_scores_permanent = calculate_avg_score_permanent(data_long, kategori_column='kategori', score_column='nilai')
 
-        
-        # Display metrics with individual borders
-    st.markdown("""<style>
-        .metric-box {
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: #f5bf4a ;
-        }
-        .metric-box h3 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: black;
-        }
-        .metric-box p {
-            margin: 5px 0 0;
-            font-size: 1rem;
-            color: black ;
-        }
-        </style>""", unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
+
+    # Inisialisasi session_state untuk semua filter jika belum ada
+    if 'selected_kategori' not in st.session_state:
+        st.session_state['selected_kategori'] = 'All'
+    if 'selected_pertanyaan' not in st.session_state:
+        st.session_state['selected_pertanyaan'] = 'All'
+
+    # FILTER 1: Kategori
+    kategori_list = ['All'] + sorted(data.columns.str.split('_').str[0].unique())  # Ambil kategori dari level pertama
+    selected_kategori = st.selectbox(
+        'Pilih Kategori',
+        options=kategori_list,
+        index=kategori_list.index(st.session_state['selected_kategori']) if st.session_state['selected_kategori'] in kategori_list else 0
+    )
+    st.session_state['selected_kategori'] = selected_kategori
+
+    # Filter data berdasarkan Kategori yang dipilih
+    if selected_kategori == 'All':
+        filtered_data = data
+    else:
+        # Pilih kolom yang sesuai dengan kategori
+        filtered_data = data.loc[:, data.columns.str.startswith(selected_kategori)]
+
+    # FILTER 2: Pertanyaan
+    pertanyaan_list = ['All'] + sorted(filtered_data.columns.str.split('_').str[1].unique())  # Ambil pertanyaan dari level kedua
+    selected_pertanyaan = st.selectbox(
+        'Pilih Pertanyaan',
+        options=pertanyaan_list,
+        index=pertanyaan_list.index(st.session_state['selected_pertanyaan']) if st.session_state['selected_pertanyaan'] in pertanyaan_list else 0
+    )
+    st.session_state['selected_pertanyaan'] = selected_pertanyaan
+
+    # Filter data berdasarkan Pertanyaan yang dipilih
+    if selected_pertanyaan == 'All':
+        filtered_data = filtered_data
+    else:
+        # Pilih kolom yang sesuai dengan pertanyaan
+        filtered_data = filtered_data.loc[:, filtered_data.columns.str.contains(f"_{selected_pertanyaan}$")]
+
+    # Layout kolom untuk gauge chart
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    # Iterasi kategori dan nilai rata-rata
+    for idx, row in avg_scores_permanent.iterrows():
+        kategori = row['kategori']
+        avg_score = row['nilai']
+
+        # Membuat gauge chart
+        gauge = create_gauge_chart(avg_score, kategori)
+
+        # Menempatkan gauge ke dalam kolom
+        if idx % 5 == 0:
+            col1.plotly_chart(gauge, use_container_width=True)
+        elif idx % 5 == 1:
+            col2.plotly_chart(gauge, use_container_width=True)
+        elif idx % 5 == 2:
+            col3.plotly_chart(gauge, use_container_width=True)
+        elif idx % 5 == 3:
+            col4.plotly_chart(gauge, use_container_width=True)
+        elif idx % 5 == 4:
+            col5.plotly_chart(gauge, use_container_width=True)
+
+
+    # Validasi data kosong
+    if filtered_data.empty:
+        st.warning("Tidak ada data yang sesuai dengan filter.")
+    else:
+        # Menghitung rata-rata per kategori dan pertanyaan
+        kategori_data = filtered_data.columns.str.split('_').str[0]  # Ambil kategori dari nama kolom
+        pertanyaan_data = filtered_data.columns.str.split('_').str[1]  # Ambil pertanyaan dari nama kolom
+        kategori_data_full = []
+        pertanyaan_data_full = []
+
+        # Untuk setiap kolom, tetapkan kategori dan pertanyaan berdasarkan nama kolom
+        for col in filtered_data.columns:
+            kategori = col.split('_')[0]
+            pertanyaan = col.split('_')[1]
+            kategori_data_full.extend([kategori] * len(filtered_data))
+            pertanyaan_data_full.extend([pertanyaan] * len(filtered_data))
+
+        # Menyusun kategori_data_full dan pertanyaan_data_full ke dalam DataFrame yang memiliki jumlah baris yang sesuai
+        filtered_data_long = pd.DataFrame(filtered_data.values.flatten(), columns=['nilai'])
+        filtered_data_long['kategori'] = kategori_data_full
+        filtered_data_long['pertanyaan'] = pertanyaan_data_full
+
+        # Menghitung rata-rata skor per kategori dan pertanyaan
+        avg_scores_df = calculate_avg_score(filtered_data_long, kategori_column='kategori', score_column='nilai', pertanyaan_column='pertanyaan')
+
+
+    # Mengambil data tanpa mempertimbangkan filter yang diterapkan untuk pie chart (menggunakan data penuh)
+    non_neutral_data_full = data[data.apply(lambda row: ~row.isin([]), axis=1)]  # Menghapus nilai netral (skor == 3)
+
+    # Menghitung jumlah kategori berdasarkan data penuh
+    categories_count_full = {
+        "Sangat Kurang": (non_neutral_data_full == 1).sum().sum(),
+        "Kurang": (non_neutral_data_full == 2).sum().sum(),
+        "Baik": (non_neutral_data_full == 3).sum().sum(),
+        "Sangat Baik": (non_neutral_data_full == 4).sum().sum(),
+    }
+
+    # Menghitung total jawaban non-netral pada data penuh
+    total_non_neutral_full = sum(categories_count_full.values())
+
+    # Menghitung persentase untuk setiap kategori
+    fulfillment_data_full = pd.DataFrame({
+        'Kategori': categories_count_full.keys(),
+        'Jumlah': categories_count_full.values(),
+        'Persentase': [count / total_non_neutral_full * 100 for count in categories_count_full.values()]
+    })
+
+
+    # Layout: Create three columns for the components
+    col1, col2, col3 = st.columns([2, 4, 4])
     with col1:
-        st.markdown("""<div class="metric-box">
-        <h3>{:.2f}</h3>
-        <p>Minimum Skor</p>
-        </div>""".format(min_score), unsafe_allow_html=True)
-    with col2:       
-        st.markdown("""<div class="metric-box">
-        <h3>{:.2f}</h3>
-        <p>Rata-Rata Skor</p>
-        </div>""".format(mean_score), unsafe_allow_html=True)
+        with st.container(border=True):
+            # Membuat grafik donat dengan warna gradasi sunset
+            fig_donut = px.pie(
+                fulfillment_data_full,
+                values='Persentase',  # Data persentase
+                names='Kategori',     # Nama kategori
+                hole=0.4,             # Ukuran lubang tengah (donut)
+                title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                color_discrete_sequence=px.colors.sequential.Sunset  # Warna gradasi sunset
+            )
+
+            # Memperbarui tata letak grafik
+            fig_donut.update_layout(
+                title={
+                    'text': "Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                    'y': 0.95,  # Posisi judul vertikal
+                    'x': 0.5,   # Posisi judul horizontal (tengah)
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                },
+                legend_title="Indikator",       # Judul legenda
+                legend_orientation="h",        # Orientasi legenda horizontal
+                legend_yanchor="bottom",       # Penempatan legenda di bawah
+                legend_y=-0.2,                 # Jarak vertikal legenda dari grafik
+                legend_x=0.5,                  # Penempatan legenda di tengah horizontal
+                legend_xanchor="center",       # Penempatan legenda sesuai pusat
+                showlegend=True,               # Menampilkan legenda
+            )
+
+            # Menampilkan grafik donat di Streamlit
+            st.plotly_chart(fig_donut, use_container_width=True)
+
+    with col2:
+        with st.container(border=True):
+            # Menampilkan Bar Chart dengan grup berdasarkan kategori dan pertanyaan
+            bar_chart = px.bar(
+                avg_scores_df,
+                x='kategori',  # Kategori pada sumbu X
+                y='nilai',  # Nilai rata-rata pada sumbu Y
+                color='pertanyaan',  # Kelompokkan berdasarkan pertanyaan
+                barmode='group',  # Group mode
+                title='Rata-rata Nilai per Kategori dan Pertanyaan',
+                labels={'nilai': 'Rata-Rata Nilai', 'kategori': 'Kategori', 'pertanyaan': 'Pertanyaan'},
+                height=450
+            )
+            
+            # Menghilangkan legend dengan update_layout
+            bar_chart.update_layout(showlegend=False)
+
+            # Menampilkan grafik di Streamlit
+            st.plotly_chart(bar_chart)
+
     with col3:
-        st.markdown("""<div class="metric-box">
-        <h3>{:.2f}</h3>
-        <p>Maksimum Skor</p>
-        </div>""".format(max_score), unsafe_allow_html=True)
+        with st.container(border=True):
+            ## Membuat bar chart horizontal dengan warna gradasi sunset
+            fig_bar_horizontal = px.bar(
+                fulfillment_data_full,
+                x='Persentase',  # Nilai persentase pada sumbu X
+                y='Kategori',  # Kategori pada sumbu Y
+                title="Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                color='Kategori',  # Memberikan warna berbeda untuk setiap kategori
+                color_discrete_sequence=px.colors.sequential.Sunset,  # Warna gradasi sunset
+                text='Persentase',  # Menampilkan nilai persentase di setiap bar
+                orientation='h'  # Bar chart horizontal
+            )
 
-    col1, col2 = st.columns(2)
-    with col1:
-        # Visualisasi Bar Chart
-        fig_bar = px.bar(
-            avg_scores2,
-            x='Letter',
-            y='Rata-Rata Skor',
-            title="Rata-Rata Skor untuk Setiap Pertanyaan (SARANA MAHASISWA)",
-            color='Rata-Rata Skor',
-            height=500,
-            hover_data={'Letter': False, 'Rata-Rata Skor': True, 'Pertanyaan': True}
-        )
-
-        # Tampilkan grafik
-        st.plotly_chart(fig_bar, use_container_width=True)
-    with col2:
-        # Visualisasi Line Chart
-        fig_line = px.line(
-            avg_scores2,
-            x='Letter',
-            y='Rata-Rata Skor',
-            title="Rata-Rata Skor (SARANA MAHASISWA) - Line Chart",
-            markers=True,
-            height=500
-        )
-        
-        st.plotly_chart(fig_line, use_container_width=True)
-
-    
-
- # Pilih pertanyaan tertentu untuk ditampilkan
-    selected_question = st.selectbox("🔍 Pilih Pertanyaan untuk Melihat Detail:", avg_scores2['Pertanyaan'])
-    selected_value = avg_scores2[avg_scores2['Pertanyaan'] == selected_question]['Rata-Rata Skor'].values[0]
-
-    col1,col2 = st.columns(2)
-
-    with col1:
-        # Tampilkan tabel
-        st.data_editor(
-            avg_scores2,
-            column_config={
-                "Rata-Rata Skor": st.column_config.ProgressColumn(
-                    "Rata-Rata Skor",
-                    help="Skor rata-rata berdasarkan indikator",
-                    min_value=0,
-                    max_value=5
-                ),
-            },
-            hide_index=True,
-            use_container_width=True
-        )
-    
-    with col2:
-
-        col1,col2 = st.columns(2)
-
-                # Display metrics with individual borders
-        st.markdown("""<style>
-            .metric-box {
-                text-align: center;
-                border: 2px solid #ddd;
-                border-radius: 10px;
-                padding: 15px;
-                margin-bottom: 10px;
-                background-color: #f5bf4a;
-            }
-            .metric-box h3 {
-                margin: 0;
-                font-size: 1.5rem;
-                color: black;
-            }
-            .metric-box p {
-                margin: 5px 0 0;
-                font-size: 1rem;
-                color: black;
-            }
-        </style>""", unsafe_allow_html=True)
-
-        # Tampilkan nilai terpilih dengan border
-        with col1:
-            st.markdown(f"""
-                <div class="metric-box">
-                    <p style="font-size: 24px; margin: 0;"><b>{selected_value:.2f}</b></p>
-                    <p>🎯 Skor untuk {selected_question}</p>
-                    <small style="color: #888;">(Persentase: {percentage_score:.1f}%)</small>
-                </div>
-            """, unsafe_allow_html=True)
-
-
-        with col2:
-            st.markdown(f"""
-                <div class="metric-box">
-                    <p style="font-size: 24px; margin: 0;"><b>{selected_value:.2f}</b></p>
-                    <p>🎯 Skor untuk {selected_question}</p>
-                    <small style="color: #888;">(Persentase: {percentage_score:.1f}%)</small>
-                </div>
-            """, unsafe_allow_html=True)
-
-
-
-        # Data untuk Donut Chart
-        donut_data = pd.DataFrame({
-            "Kategori": ["Terpenuhi", "Belum Terpenuhi"],
-            "Persentase": [percentage_score, 100 - percentage_score]
-        })
-
-        # Visualisasi Donut Chart dengan Plotly
-        fig_donut = px.pie(
-            donut_data,
-            names='Kategori',
-            values='Persentase',
-            title=f"Persentase Skor untuk '{selected_question}' (Skala 1-5)",
-            hole=0.5,  # Membuat tampilan menjadi donut chart
-            color_discrete_sequence=["#36A2EB", "#FFCE56"]  # Warna: Biru untuk Terpenuhi, Kuning untuk Belum Terpenuhi
-        )
-
-        
-        st.plotly_chart(fig_donut, use_container_width=True)
-
+            # Menampilkan grafik donat di Streamlit
+            st.plotly_chart(fig_bar_horizontal, use_container_width=True)
