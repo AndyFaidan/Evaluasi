@@ -111,7 +111,7 @@ with tab1:
 
             # Siapkan data untuk donut chart
             fulfillment_data = pd.DataFrame({
-                'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+                'Status': ['Paham', 'Tidak Paham'],
                 'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
             })
 
@@ -222,7 +222,7 @@ with tab1:
                 ),
                 yaxis_title="Rata-Rata Skor",             # Judul sumbu Y
                 legend_title="Status",                    # Judul legenda
-                title_x=0.5,                              # Pusatkan judul chart
+                title_x=0.25,                              # Pusatkan judul chart
                 font=dict(
                     family="Arial, sans-serif",           # Jenis font
                     size=14,                              # Ukuran font
@@ -244,14 +244,14 @@ with tab1:
                 fulfillment_data,
                 values='Persentase',  # Nilai persentase
                 names='Status',  # Nama kategori
-                hole=0.4,  # Membuat efek donut
-                title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk '{pertanyaan_filter}'",  # Judul chart
+                hole=0.2,  # Membuat efek donut
+                title=f"Persentase Pemahaman Setiap Pertanyaan",  # Judul chart
                 color_discrete_sequence=px.colors.sequential.Sunset  # Warna chart
             )
 
             # Update layout untuk judul dan posisi legenda
             fig_donut.update_layout(
-                title_x=0.5,  # Memusatkan judul
+                title_x=0.0,  # Memusatkan judul
                 legend_title="Status",  # Menambahkan judul untuk legenda
                 legend_orientation="h",  # Membuat legenda horizontal
                 legend_yanchor="bottom",  # Menempatkan legenda di bawah
@@ -273,7 +273,7 @@ with tab1:
                 values='Persentase',
                 names='Kategori',
                 hole=0.5,
-                title="Distribusi Kategori Jawaban",
+                title="Distribusi Setiap Kategori",
                 color_discrete_sequence=px.colors.sequential.Purp
             )
 
@@ -331,7 +331,7 @@ with tab1:
                 xaxis_title="Indikator Pertanyaan",  # X-axis label
                 yaxis_title="Rata-Rata Skor",        # Y-axis label
                 legend_title="Status",               # Title for the legend
-                title_x=0.5,                         # Center the title
+                title_x=0.2,                         # Center the title
                 font=dict(
                     family="Arial, sans-serif",
                     size=14,
@@ -357,14 +357,14 @@ with tab1:
                 x='Persentase',  # The percentage values for the bars
                 y='Kategori',  # The categories for the bars
                 orientation='h',  # Horizontal bar chart
-                title="Distribusi Kategori Jawaban",  # Title of the chart
+                title="Distribusi Setiap Kategori",  # Title of the chart
                 color='Kategori',  # Use 'Kategori' for coloring the bars
                 color_discrete_sequence=px.colors.sequential.Purp  # Color sequence
             )
 
             # Update layout for the bar chart
             fig_bar.update_layout(
-                title_x=0.2,  # Position the title
+                title_x=0.4,  # Position the title
                 legend_title="Kategori",  # Title of the legend
                 legend_orientation="h",  # Horizontal legend
                 legend_yanchor="bottom",  # Position the legend at the bottom
@@ -403,7 +403,7 @@ with tab1:
         
 
 with tab2:
-        # Load data
+    # Load data
     data = load_data("C.1.SurveyPemahamanVisiMisiTIF.csv")
     
 
@@ -473,7 +473,7 @@ with tab2:
 
             # Siapkan data untuk donut chart
             fulfillment_data = pd.DataFrame({
-                'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+                'Status': ['Paham', 'Tidak Paham'],
                 'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
             })
 
@@ -584,7 +584,7 @@ with tab2:
                 ),
                 yaxis_title="Rata-Rata Skor",             # Judul sumbu Y
                 legend_title="Status",                    # Judul legenda
-                title_x=0.5,                              # Pusatkan judul chart
+                title_x=0.25,                              # Pusatkan judul chart
                 font=dict(
                     family="Arial, sans-serif",           # Jenis font
                     size=14,                              # Ukuran font
@@ -606,14 +606,14 @@ with tab2:
                 fulfillment_data,
                 values='Persentase',  # Nilai persentase
                 names='Status',  # Nama kategori
-                hole=0.4,  # Membuat efek donut
-                title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk '{pertanyaan_filter}'",  # Judul chart
+                hole=0.2,  # Membuat efek donut
+                title=f"Persentase Pemahaman Setiap Pertanyaan",  # Judul chart
                 color_discrete_sequence=px.colors.sequential.Sunset  # Warna chart
             )
 
             # Update layout untuk judul dan posisi legenda
             fig_donut.update_layout(
-                title_x=0.5,  # Memusatkan judul
+                title_x=0.0,  # Memusatkan judul
                 legend_title="Status",  # Menambahkan judul untuk legenda
                 legend_orientation="h",  # Membuat legenda horizontal
                 legend_yanchor="bottom",  # Menempatkan legenda di bawah
@@ -635,7 +635,7 @@ with tab2:
                 values='Persentase',
                 names='Kategori',
                 hole=0.5,
-                title="Distribusi Kategori Jawaban",
+                title="Distribusi Setiap Kategori",
                 color_discrete_sequence=px.colors.sequential.Purp
             )
 
@@ -693,7 +693,7 @@ with tab2:
                 xaxis_title="Indikator Pertanyaan",  # X-axis label
                 yaxis_title="Rata-Rata Skor",        # Y-axis label
                 legend_title="Status",               # Title for the legend
-                title_x=0.5,                         # Center the title
+                title_x=0.2,                         # Center the title
                 font=dict(
                     family="Arial, sans-serif",
                     size=14,
@@ -719,14 +719,14 @@ with tab2:
                 x='Persentase',  # The percentage values for the bars
                 y='Kategori',  # The categories for the bars
                 orientation='h',  # Horizontal bar chart
-                title="Distribusi Kategori Jawaban",  # Title of the chart
+                title="Distribusi Setiap Kategori",  # Title of the chart
                 color='Kategori',  # Use 'Kategori' for coloring the bars
                 color_discrete_sequence=px.colors.sequential.Purp  # Color sequence
             )
 
             # Update layout for the bar chart
             fig_bar.update_layout(
-                title_x=0.2,  # Position the title
+                title_x=0.4,  # Position the title
                 legend_title="Kategori",  # Title of the legend
                 legend_orientation="h",  # Horizontal legend
                 legend_yanchor="bottom",  # Position the legend at the bottom
@@ -760,4 +760,6 @@ with tab2:
                     },
                     hide_index=True,
                     use_container_width=True
-                )    
+                )      
+
+        
