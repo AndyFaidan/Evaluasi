@@ -4,14 +4,15 @@ import plotly.express as px
 
 # Set page configuration
 st.set_page_config(
-    page_title="Visi dan Misi",
+    page_title="📊Survey Kepuasan Dosen, Tenaga Kependidikan Dan Mahasiswa Terhadap Tata Kelola Organisasi UPPS dan PS",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
+
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">📊 Dashboard Tata Kelola, Tata Pamong & Kerja Sama</h2>
+    <h2 style="text-align: center;">📊Survey Kepuasan Dosen, Tenaga Kependidikan Dan Mahasiswa Terhadap Tata Kelola Organisasi UPPS dan PS</h2>
 """, unsafe_allow_html=True)
 
 # Fungsi untuk memuat data dengan caching
@@ -98,7 +99,7 @@ with tab1:
         # Display Min Score with Progress Bar
         color = 'green' if min_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
+            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
                 <p style="font-size: 15px; margin: 0;">Minimal Skor</p>
                 <p style="font-size: 30px; margin: 0; font-weight: bold;">{min_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
@@ -142,11 +143,11 @@ with col1:
 
         # Calculate percentage and category
         percentage_score = (avg_score / 5) * 100 if avg_score > 0 else 0
-        category = 'Terpenuhi' if percentage_score > 60 else 'Belum Terpenuhi'
+        category = 'Puas' if percentage_score > 60 else 'Tidak Puas'
 
         # Prepare data for donut chart
         donut_data = pd.DataFrame({
-            "Kategori": [category, "Belum Terpenuhi" if category == "Terpenuhi" else "Terpenuhi"],
+            "Kategori": [category, "Tidak Puas" if category == "Puas" else "Puas"],
             "Persentase": [percentage_score, 100 - percentage_score]
         })
 
@@ -158,7 +159,7 @@ with col1:
             hole=0.5,
             color='Kategori',
             color_discrete_sequence=["#36A2EB", "#FFCE56"],
-            title="Evaluasi Capaian"
+            title="Rata-rata Nilai Jawaban per Pertanyaan"
         )
         fig_donut.update_layout(
             height=400,  # Reduce height,
@@ -171,7 +172,7 @@ with col1:
                 x=0.5
 
             ),
-            title_x=0.3
+            title_x=0.1
         )
 
         # Display the donut chart
