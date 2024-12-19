@@ -9,8 +9,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Judul aplikasi
-st.title("📊 Survey Pemahaman Dosen, Tendik Dan Mahasiswa Terhadap VMTS UPPS Dan PS")
+# Menampilkan judul aplikasi di tengah
+st.markdown("""
+    <h2 style="text-align: center;">📊 Survey Pemahaman Dosen, Tendik Dan Mahasiswa Terhadap VMTS UPPS Dan PS</h2>
+""", unsafe_allow_html=True)
+
 
 # Fungsi untuk memuat data dengan caching
 @st.cache_data
