@@ -61,10 +61,10 @@ def create_gauge_chart(avg_score, kategori):
             'axis': {'range': [0, 4], 'tickwidth': 1, 'tickcolor': "darkgray"},
             'bar': {'color': "rgba(255, 99, 71, 0.8)"},  # Transparansi bar
             'steps': [
-                {'range': [0, 1.49], 'color': "rgba(255, 69, 0, 0.5)"},   # Merah Sunset
+                {'range': [0, 1.49], 'color': "rgba(255, 69, 0, 0.5)"},   # Merah Purpor
                 {'range': [1.5, 2.49], 'color': "rgba(255, 165, 0, 0.6)"}, # Jingga
                 {'range': [2.5, 3.49], 'color': "rgba(255, 215, 0, 0.7)"}, # Kuning Emas
-                {'range': [3.5, 4], 'color': "rgba(255, 236, 139, 0.8)"}   # Kuning Muda Sunset
+                {'range': [3.5, 4], 'color': "rgba(255, 236, 139, 0.8)"}   # Kuning Muda Purpor
             ],
             'threshold': {
                 'line': {'color': "rgba(255, 99, 71, 1)", 'width': 4},
@@ -145,17 +145,20 @@ with tab1:
 
     # Kolom untuk nilai Min, Mean, dan Max
     col1, col2, col3 = st.columns(3)
+
     with col1:
-        # Display Mean Score with Progress Bar
-        color = 'green' if mean_percentage > 60 else 'red'
+        
         st.markdown(f"""
-            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+            <div style="border: px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #9b59b6, #f06292); 
+                        border-image: linear-gradient(to right, #9b59b6, #f06292) 1;">
                 <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
                 <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
-                <p style="font-size: 16px; color: {color};">{mean_percentage:.2f}%</p>
-                <!-- Progress Bar -->
-                <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
-                    <div style="width: {mean_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
+                <p style="font-size: 16px; ">{mean_percentage:.2f}%</p>
+                <!-- Progress Bar with White and Gray Colors -->
+                <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+                    <div style="width: {mean_percentage}%; height: 100%; background-color: white; 
+                            border-radius: 10px;"></div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -164,13 +167,16 @@ with tab1:
         # Display Min Score with Progress Bar
         color = 'green' if min_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+            <div style="border: px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #ff5733, #ff8c00);
+                        border-image: linear-gradient(to right, #ff5733, #ff8c00) 1;">
                 <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
                 <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
-                <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
-                <!-- Progress Bar -->
-                <div style="height: 10px; background-color: #e0e0e0; border-radius: 10px;">
-                    <div style="width: {min_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
+                <p style="font-size: 16px;">{min_percentage:.2f}%</p>
+                <!-- Progress Bar with White and Gray Colors -->
+                <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+                    <div style="width: {min_percentage}%; height: 100%; background-color: white; 
+                            border-radius: 10px;"></div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
@@ -179,17 +185,19 @@ with tab1:
         # Display Max Score with Progress Bar
         color = 'green' if max_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+            <div style="border: 0px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #00b0ff, #04c778); 
+                        border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
                 <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
                 <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
-                <p style="font-size: 16px; color: {color};">{max_percentage:.2f}%</p>
-                <!-- Progress Bar -->
-                <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
-                    <div style="width: {max_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
+                <p style="font-size: 16px; color: ">{max_percentage:.2f}%</p>
+                <!-- Progress Bar with White and Gray Colors -->
+                <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+                    <div style="width: {max_percentage}%; height: 100%; background-color: white; 
+                            border-radius: 10px;"></div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
-
 
     st.divider()
         
@@ -223,7 +231,7 @@ with tab1:
                 values='Persentase',
                 hole=0.5,
                 color='Kategori',
-                color_discrete_sequence=["#36A2EB", "#FFCE56"],
+                color_discrete_sequence=px.colors.sequential.Purpor,
                 title="Rata-rata Nilai Jawaban per Pertanyaan"
             )
             fig_donut.update_layout(
@@ -274,7 +282,7 @@ with tab1:
                 names='Kategori',
                 hole=0.5,
                 title="Persentase Survey Distribusi",
-                color_discrete_sequence=px.colors.sequential.Purp
+                color_discrete_sequence=px.colors.sequential.Purpor
             )
             
             # Update layout for the pie chart
@@ -303,7 +311,7 @@ with tab1:
                 y='Rata-Rata Skor',
                 title="Distribusi Rata-Rata Skor Berdasarkan Indikator",
                 color='Rata-Rata Skor',
-                color_continuous_scale='Blues',
+                color_continuous_scale='Purpor',
                 hover_data={'Pertanyaan': True},
                 height=400
             )
@@ -476,14 +484,14 @@ with tab2:
     col1, col2, col3 = st.columns([2, 4, 4])
     with col1:
         with st.container(border=True):
-            # Membuat grafik donat dengan warna gradasi sunset
+            # Membuat grafik donat dengan warna gradasi Purpor
             fig_donut = px.pie(
                 fulfillment_data_full,
                 values='Persentase',  # Data persentase
                 names='Kategori',     # Nama kategori
                 hole=0.4,             # Ukuran lubang tengah (donut)
                 title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
-                color_discrete_sequence=px.colors.sequential.Sunset  # Warna gradasi sunset
+                color_discrete_sequence=px.colors.sequential.Purpor  # Warna gradasi Purpor
             )
 
             # Memperbarui tata letak grafik
@@ -543,14 +551,14 @@ with tab2:
 
     with col3:
         with st.container(border=True):
-            ## Membuat bar chart horizontal dengan warna gradasi sunset
+            ## Membuat bar chart horizontal dengan warna gradasi Purpor
             fig_bar_horizontal = px.bar(
                 fulfillment_data_full,
                 x='Persentase',  # Nilai persentase pada sumbu X
                 y='Kategori',  # Kategori pada sumbu Y
                 title="Distribusi Persentase Survey",
                 color='Kategori',  # Memberikan warna berbeda untuk setiap kategori
-                color_discrete_sequence=px.colors.sequential.Sunset,  # Warna gradasi sunset
+                color_discrete_sequence=px.colors.sequential.Purpor,  # Warna gradasi Purpor
                 orientation='h'  # Bar chart horizontal
             )
 
