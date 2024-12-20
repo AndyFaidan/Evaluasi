@@ -149,9 +149,9 @@ with tab1:
         # Display Mean Score with Progress Bar
         color = 'green' if mean_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid ; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Rata-Rata Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{mean_score:.2f}</p>
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{mean_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
@@ -164,9 +164,9 @@ with tab1:
         # Display Min Score with Progress Bar
         color = 'green' if min_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Minimal Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{min_score:.2f}</p>
+            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 10px;">
@@ -179,9 +179,9 @@ with tab1:
         # Display Max Score with Progress Bar
         color = 'green' if max_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Maksimal Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{max_score:.2f}</p>
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{max_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
@@ -511,9 +511,9 @@ with tab2:
         # Display Mean Score with Progress Bar
         color = 'green' if mean_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid ; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Rata-Rata Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{mean_score:.2f}</p>
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{mean_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
@@ -526,9 +526,9 @@ with tab2:
         # Display Min Score with Progress Bar
         color = 'green' if min_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Minimal Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{min_score:.2f}</p>
+            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 10px;">
@@ -541,9 +541,9 @@ with tab2:
         # Display Max Score with Progress Bar
         color = 'green' if max_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Maksimal Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{max_score:.2f}</p>
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{max_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
