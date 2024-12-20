@@ -149,9 +149,9 @@ with tab1:
         # Display Mean Score with Progress Bar
         color = 'green' if mean_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid ; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Rata-Rata Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{mean_score:.2f}</p>
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{mean_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
@@ -164,9 +164,9 @@ with tab1:
         # Display Min Score with Progress Bar
         color = 'green' if min_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Minimal Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{min_score:.2f}</p>
+            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 10px;">
@@ -179,9 +179,9 @@ with tab1:
         # Display Max Score with Progress Bar
         color = 'green' if max_percentage > 60 else 'red'
         st.markdown(f"""
-            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a ">
-                <p style="font-size: 15px; margin: 0;">Maksimal Skor</p>
-                <p style="font-size: 30px; margin: 0; font-weight: bold;">{max_score:.2f}</p>
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
                 <p style="font-size: 16px; color: {color};">{max_percentage:.2f}%</p>
                 <!-- Progress Bar -->
                 <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
@@ -273,7 +273,7 @@ with tab1:
                 values='Persentase',
                 names='Kategori',
                 hole=0.5,
-                title="Distribusi Kategori Jawaban",
+                title="Persentase Survey Distribusi",
                 color_discrete_sequence=px.colors.sequential.Purp
             )
             
@@ -489,7 +489,7 @@ with tab2:
             # Memperbarui tata letak grafik
             fig_donut.update_layout(
                 title={
-                    'text': "Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                    'text': "Distribusi Persentase Survey",
                     'y': 0.95,  # Posisi judul vertikal
                     'x': 0.5,   # Posisi judul horizontal (tengah)
                     'xanchor': 'center',
@@ -498,34 +498,48 @@ with tab2:
                 legend_title="Indikator",       # Judul legenda
                 legend_orientation="h",        # Orientasi legenda horizontal
                 legend_yanchor="bottom",       # Penempatan legenda di bawah
-                legend_y=-0.2,                 # Jarak vertikal legenda dari grafik
+                legend_y=-0.3,                 # Jarak vertikal legenda dari grafik
                 legend_x=0.5,                  # Penempatan legenda di tengah horizontal
                 legend_xanchor="center",       # Penempatan legenda sesuai pusat
-                showlegend=True,               # Menampilkan legenda
+                showlegend=True,   
+                height=400,  # Height of the chart
+                width=600  # Width of the chart            # Menampilkan legenda
             )
 
             # Menampilkan grafik donat di Streamlit
             st.plotly_chart(fig_donut, use_container_width=True)
 
-    with col2:
-        with st.container(border=True):
-            # Menampilkan Bar Chart dengan grup berdasarkan kategori dan pertanyaan
-            bar_chart = px.bar(
-                avg_scores_df,
-                x='kategori',  # Kategori pada sumbu X
-                y='nilai',  # Nilai rata-rata pada sumbu Y
-                color='pertanyaan',  # Kelompokkan berdasarkan pertanyaan
-                barmode='group',  # Group mode
-                title='Rata-rata Nilai per Kategori dan Pertanyaan',
-                labels={'nilai': 'Rata-Rata Nilai', 'kategori': 'Kategori', 'pertanyaan': 'Pertanyaan'},
-                height=450
-            )
-            
-            # Menghilangkan legend dengan update_layout
-            bar_chart.update_layout(showlegend=False)
+        with col2:
+            with st.container(border=True):
+                # Menampilkan Bar Chart dengan grup berdasarkan kategori dan pertanyaan
+                bar_chart = px.bar(
+                    avg_scores_df,
+                    x='kategori',  # Kategori pada sumbu X
+                    y='nilai',  # Nilai rata-rata pada sumbu Y
+                    color='pertanyaan',  # Kelompokkan berdasarkan pertanyaan
+                    barmode='group',  # Group mode
+                    title='Rata-rata Nilai per Kategori dan Pertanyaan',
+                    labels={'nilai': 'Rata-Rata Nilai', 'kategori': 'Kategori', 'pertanyaan': 'Pertanyaan'},
+                    height=450
+                )
+                # Update layout for the bar chart
+                bar_chart.update_layout(
+                    title_x=0.25,  # Position the title at the center
+                    legend_title="Kategori",  # Title of the legend
+                    legend_orientation="h",  # Horizontal legend
+                    legend_yanchor="bottom",  # Position the legend at the bottom
+                    legend_y=-0.3,  # Lower the legend
+                    legend_x=0.5,  # Center the legend horizontally
+                    legend_xanchor="center",  # Anchor the legend to the center
+                    height=400,  # Height of the chart
+                    width=600,  # Width of the chart
+                )
+                # Menghilangkan legend dengan update_layout
+                bar_chart.update_layout(showlegend=False)
+                
+                # Menampilkan chart pada Streamlit
+                st.plotly_chart(bar_chart, use_container_width=True)
 
-            # Menampilkan grafik di Streamlit
-            st.plotly_chart(bar_chart, use_container_width=True )
 
     with col3:
         with st.container(border=True):
@@ -534,12 +548,45 @@ with tab2:
                 fulfillment_data_full,
                 x='Persentase',  # Nilai persentase pada sumbu X
                 y='Kategori',  # Kategori pada sumbu Y
-                title="Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                title="Distribusi Persentase Survey",
                 color='Kategori',  # Memberikan warna berbeda untuk setiap kategori
                 color_discrete_sequence=px.colors.sequential.Sunset,  # Warna gradasi sunset
-                text='Persentase',  # Menampilkan nilai persentase di setiap bar
                 orientation='h'  # Bar chart horizontal
             )
 
-            # Menampilkan grafik donat di Streamlit
+            # Update layout for the bar chart
+            fig_bar_horizontal.update_layout(
+                title_x=0.3,  # Center the title
+                legend_title="Kategori",  # Title of the legend
+                legend_orientation="h",  # Horizontal legend
+                legend_yanchor="bottom",  # Position the legend at the bottom
+                legend_y=-0.3,  # Lower the legend
+                legend_x=0.5,  # Center the legend horizontally
+                legend_xanchor="center",  # Anchor the legend to the center
+                height=400,  # Height of the chart
+                width=600,  # Width of the chart
+            )
+
+            # Menampilkan grafik horizontal bar di Streamlit
             st.plotly_chart(fig_bar_horizontal, use_container_width=True)
+
+    # Menampilkan tabel rata-rata skor dengan kategori
+    st.container(border=True)
+    st.data_editor(
+                avg_scores_df,
+                column_config={
+                    "nilai": st.column_config.ProgressColumn(
+                        "nilai",
+                        help="Menampilkan nilai rata-rata jawaban",
+                        min_value=0,
+                        max_value=5,  # Asumsikan skala 1-5
+                        format="%.2f",  # Format nilai
+                        ),
+                    "Kategori": st.column_config.TextColumn(
+                    "Kategori",
+                    help="Kategori berdasarkan skor"
+                    )
+                    },
+                    hide_index=True,
+                    use_container_width=True
+                )      
