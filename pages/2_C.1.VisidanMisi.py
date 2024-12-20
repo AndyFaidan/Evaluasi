@@ -247,7 +247,7 @@ with tab1:
                 fulfillment_data,
                 values='Persentase',  # Nilai persentase
                 names='Status',  # Nama kategori
-                hole=0.2,  # Membuat efek donut
+                hole=0.5,  # Membuat efek donut
                 title=f"Persentase Pemahaman Setiap Pertanyaan",  # Judul chart
                 color_discrete_sequence=px.colors.sequential.Sunset  # Warna chart
             )
@@ -266,7 +266,7 @@ with tab1:
             )
 
             # Menampilkan donut chart di Streamlit
-            st.plotly_chart(fig_donut)
+            st.plotly_chart(fig_donut, use_container_width=True)
 
     with col3:
         with st.container(border=True):
