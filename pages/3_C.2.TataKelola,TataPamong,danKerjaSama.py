@@ -525,7 +525,7 @@ with tab2:
             bar_chart.update_layout(showlegend=False)
 
             # Menampilkan grafik di Streamlit
-            st.plotly_chart(bar_chart)
+            st.plotly_chart(bar_chart, use_container_width=True )
 
     with col3:
         with st.container(border=True):
