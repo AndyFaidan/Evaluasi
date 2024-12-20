@@ -132,7 +132,7 @@ else:
             )
 
             # Menampilkan grafik
-    st.plotly_chart(barchart)
+    st.plotly_chart(barchart,use_container_width=True)
 
     # Menampilkan tabel rata-rata skor dengan kategori
 st.data_editor(
