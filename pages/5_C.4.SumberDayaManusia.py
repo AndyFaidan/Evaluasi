@@ -140,7 +140,7 @@ with tab1:
                             names='Status',
                             hole=0.4,
                             title=f"Persentase Kompetensi {kompetensi}",
-                            color_discrete_sequence=px.colors.sequential.Sunset
+                            color_discrete_sequence=px.colors.sequential.Purpor
                         )
 
                         # Update layout untuk menyesuaikan tampilan
@@ -190,7 +190,7 @@ with tab1:
                     names='Kategori',
                     hole=0.4,
                     title="Distribusi Kategori Jawaban (Seluruh Kompetensi)",
-                    color_discrete_sequence=px.colors.sequential.Sunsetdark
+                    color_discrete_sequence=px.colors.sequential.Purpor
                 )
 
                 # Update layout untuk menyesuaikan tampilan
@@ -274,52 +274,61 @@ with tab2:
     max_percentage = (max_score / 5) * 100
     mean_percentage = (mean_score / 5) * 100
 
-        # Kolom untuk nilai Min, Mean, dan Max
+    # Kolom untuk nilai Min, Mean, dan Max
     col1, col2, col3 = st.columns(3)
+
     with col1:
-            # Display Mean Score with Progress Bar
-            color = 'green' if mean_percentage > 60 else 'red'
-            st.markdown(f"""
-                <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
-                    <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
-                    <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
-                    <p style="font-size: 16px; color: {color};">{mean_percentage:.2f}%</p>
-                    <!-- Progress Bar -->
-                    <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
-                        <div style="width: {mean_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
-                    </div>
+        
+        st.markdown(f"""
+            <div style="border: px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #9b59b6, #f06292); 
+                        border-image: linear-gradient(to right, #9b59b6, #f06292) 1;">
+                <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
+                <p style="font-size: 16px; ">{mean_percentage:.2f}%</p>
+                <!-- Progress Bar with White and Gray Colors -->
+                <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+                    <div style="width: {mean_percentage}%; height: 100%; background-color: white; 
+                            border-radius: 10px;"></div>
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-            # Display Min Score with Progress Bar
-            color = 'green' if min_percentage > 60 else 'red'
-            st.markdown(f"""
-                <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
-                    <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
-                    <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
-                    <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
-                    <!-- Progress Bar -->
-                    <div style="height: 10px; background-color: #e0e0e0; border-radius: 10px;">
-                        <div style="width: {min_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
-                    </div>
+        # Display Min Score with Progress Bar
+        color = 'green' if min_percentage > 60 else 'red'
+        st.markdown(f"""
+            <div style="border: px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #ff5733, #ff8c00);
+                        border-image: linear-gradient(to right, #ff5733, #ff8c00) 1;">
+                <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
+                <p style="font-size: 16px;">{min_percentage:.2f}%</p>
+                <!-- Progress Bar with White and Gray Colors -->
+                <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+                    <div style="width: {min_percentage}%; height: 100%; background-color: white; 
+                            border-radius: 10px;"></div>
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
 
     with col3:
-            # Display Max Score with Progress Bar
-            color = 'green' if max_percentage > 60 else 'red'
-            st.markdown(f"""
-                <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
-                    <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
-                    <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
-                    <p style="font-size: 16px; color: {color};">{max_percentage:.2f}%</p>
-                    <!-- Progress Bar -->
-                    <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
-                        <div style="width: {max_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
-                    </div>
+        # Display Max Score with Progress Bar
+        color = 'green' if max_percentage > 60 else 'red'
+        st.markdown(f"""
+            <div style="border: 0px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #00b0ff, #04c778); 
+                        border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
+                <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
+                <p style="font-size: 16px; color: ">{max_percentage:.2f}%</p>
+                <!-- Progress Bar with White and Gray Colors -->
+                <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+                    <div style="width: {max_percentage}%; height: 100%; background-color: white; 
+                            border-radius: 10px;"></div>
                 </div>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
 
     st.divider()
         # Tambahkan opsi "All" di awal daftar pertanyaan
@@ -387,7 +396,7 @@ with tab2:
                 names='Status',
                 hole=0.4,
                 title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
-                color_discrete_sequence=px.colors.sequential.Sunset
+                color_discrete_sequence=px.colors.sequential.Purpor
             )
             # Update layout to center the title and position the legend at the bottom
             fig_donut.update_layout(
@@ -416,10 +425,10 @@ with tab2:
                 height=400,
             )
 
-            # Update the line color to use the sunset color scale
+            # Update the line color to use the Purpor color scale
             fig_line.update_traces(
                 line=dict(color='rgba(255, 99, 71, 1)'),  # Default line color if you want specific color
-                marker=dict(color=avg_scores_df['Rata-Rata Skor'], colorscale='sunset')  # Applying color scale to markers
+                marker=dict(color=avg_scores_df['Rata-Rata Skor'], colorscale='Purpor')  # Applying color scale to markers
             )
 
             # Update layout for line chart
@@ -483,7 +492,7 @@ with tab2:
                 labels={'Indikator': 'Indikator', 'Rata-Rata Skor': 'Rata-Rata Skor'},
                 title="Rata-Rata Skor untuk Setiap Indikator",
                 color='Rata-Rata Skor',
-                color_continuous_scale='sunset',
+                color_continuous_scale='Purpor',
                 height=400,
                 hover_data=["Rata-Rata Skor"]
             )
