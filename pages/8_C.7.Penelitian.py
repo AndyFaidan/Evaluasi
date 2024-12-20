@@ -63,51 +63,62 @@ avg_scores_df = pd.DataFrame({
 avg_scores_df['Kategori'] = avg_scores_df['Rata-Rata Skor'].apply(determine_category)
 
 
-col1, col2, col3 = st.columns(3)
-
-        # Calculate metrics
+# Calculate metrics for 'Rata-Rata Skor' column in avg_scores_df
 min_score = avg_scores_df['Rata-Rata Skor'].min()
 max_score = avg_scores_df['Rata-Rata Skor'].max()
 mean_score = avg_scores_df['Rata-Rata Skor'].mean()
 
-    
-    # Display metrics with individual borders
-st.markdown("""<style>
-    .metric-box {
-        text-align: center;
-        border: 2px solid #ddd;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 10px;
-        background-color: #f5bf4a ;
-    }
-    .metric-box h3 {
-        margin: 0;
-        font-size: 1.5rem;
-        color: black;
-    }
-    .metric-box p {
-        margin: 5px 0 0;
-        font-size: 1rem;
-        color: black ;
-    }
-    </style>""", unsafe_allow_html=True)
-with col1:
-        st.markdown("""<div class="metric-box">
-            <h3>{:.2f}</h3>
-            <p>Minimum Skor</p>
-        </div>""".format(min_score), unsafe_allow_html=True)
-with col2:
-        st.markdown("""<div class="metric-box">
-            <h3>{:.2f}</h3>
-            <p>Rata-Rata Skor</p>
-        </div>""".format(mean_score), unsafe_allow_html=True)
-with col3:
-        st.markdown("""<div class="metric-box">
-            <h3>{:.2f}</h3>
-            <p>Maksimum Skor</p>
-        </div>""".format(max_score), unsafe_allow_html=True)
+# Calculate percentage for each metric based on the maximum possible score (5)
+min_percentage = (min_score / 5) * 100
+max_percentage = (max_score / 5) * 100
+mean_percentage = (mean_score / 5) * 100
 
+    # Kolom untuk nilai Min, Mean, dan Max
+col1, col2, col3 = st.columns(3)
+with col1:
+        # Display Mean Score with Progress Bar
+        color = 'green' if mean_percentage > 60 else 'red'
+        st.markdown(f"""
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Rata-Rata Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{mean_score:.2f}</p>
+                <p style="font-size: 16px; color: {color};">{mean_percentage:.2f}%</p>
+                <!-- Progress Bar -->
+                <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
+                    <div style="width: {mean_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+with col2:
+        # Display Min Score with Progress Bar
+        color = 'green' if min_percentage > 60 else 'red'
+        st.markdown(f"""
+            <div style="border: 0.5px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Minimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{min_score:.2f}</p>
+                <p style="font-size: 16px; color: {color};">{min_percentage:.2f}%</p>
+                <!-- Progress Bar -->
+                <div style="height: 10px; background-color: #e0e0e0; border-radius: 10px;">
+                    <div style="width: {min_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+
+with col3:
+        # Display Max Score with Progress Bar
+        color = 'green' if max_percentage > 60 else 'red'
+        st.markdown(f"""
+            <div style="border: 1px solid; padding: 10px; border-radius: 8px; text-align: center; background-color: #f5bf4a;">
+                <p style="font-size: 15px; margin: 0; color: black;">Maksimal Skor</p>
+                <p style="font-size: 30px; margin: 0; font-weight: bold; color: black;">{max_score:.2f}</p>
+                <p style="font-size: 16px; color: {color};">{max_percentage:.2f}%</p>
+                <!-- Progress Bar -->
+                <div style="height: 10px; background-color: #e0e0e0; border-radius: 5px;">
+                    <div style="width: {max_percentage}%; height: 100%; background-color: {color}; border-radius: 5px;"></div>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 # Tambahkan opsi "All" di awal daftar pertanyaan
 all_questions = ["All"] + questions
 
