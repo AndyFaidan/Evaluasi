@@ -438,50 +438,33 @@ with tab2:
 
     with col1:
         with st.container(border=True):
-            # Membuat grouped bar chart yang lebih interaktif
-            barchart = px.bar(
-                avg_scores_long,
-                x="Indikator",                            # Sumbu X: Indikator
-                y="Rata-Rata Skor",                       # Sumbu Y: Skor Rata-Rata
-                color="1. Status Bpk/Ibu/Saudara/i:",     # Warna berdasarkan Status
-                barmode="group",                          # Gunakan mode group saja
-                text="Rata-Rata Skor",                    # Tampilkan skor pada bar
-                labels={
-                    "Indikator": "Indikator Pertanyaan",
-                    "Rata-Rata Skor": "Rata-Rata Skor",
-                    "1. Status Bpk/Ibu/Saudara/i:": "Status"
-                },
-                hover_data={"Rata-Rata Skor": ":.2f"},    # Format hover dengan 2 desimal
-                title="Rata-Rata Skor Berdasarkan Status dan Pertanyaan"
+            # Create and style the bar chart (horizontal)
+            fig_bar = px.bar(
+                fulfillment_data1,
+                x='Persentase',  # The percentage values for the bars
+                y='Kategori',  # The categories for the bars
+                orientation='h',  # Horizontal bar chart
+                title="Distribusi Setiap Kategori",  # Title of the chart
+                color='Kategori',  # Use 'Kategori' for coloring the bars
+                color_discrete_sequence=px.colors.sequential.Purpor  # Color sequence
             )
 
-            barchart.update_traces(
-                texttemplate='%{text:.2f}',               # Format angka pada bar (2 desimal)
-                textposition='outside'                   # Tampilkan teks di atas bar
+            # Update layout for the bar chart
+            fig_bar.update_layout(
+                title_x=0.4,  # Position the title
+                legend_title="Kategori",  # Title of the legend
+                legend_orientation="h",  # Horizontal legend
+                legend_yanchor="bottom",  # Position the legend at the bottom
+                legend_y=-0.3,  # Lower the legend
+                legend_x=0.5,  # Center the legend horizontally
+                legend_xanchor="center",  # Anchor the legend to the center
+                height=400,  # Height of the chart
+                width=600,  # Width of the chart
             )
 
-            barchart.update_layout(
-                hovermode="closest",                      # Tooltip hanya muncul pada bar yang difokuskan
-                xaxis_title="",                           # Hapus label sumbu X
-                xaxis=dict(
-                    showticklabels=False,                 # Menyembunyikan kategori indikator di sumbu X
-                ),
-                yaxis_title="Rata-Rata Skor",             # Judul sumbu Y
-                legend_title="Status",                    # Judul legenda
-                title_x=0.25,                              # Pusatkan judul chart
-                font=dict(
-                    family="Arial, sans-serif",           # Jenis font
-                    size=14,                              # Ukuran font
-                    color="black"                         # Warna font
-                ),
-                margin=dict(l=40, r=40, t=60, b=40),      # Margin kiri, kanan, atas, bawah
-                height=400,                               # Tinggi chart
-                width=1000                                 # Lebar chart
-            )
-
-
-            st.plotly_chart(barchart, use_container_width=True)
-
+            # Display the horizontal bar chart
+            st.plotly_chart(fig_bar, use_container_width=True)
+            
     with col2:
         with st.container(border=True):
        
@@ -597,33 +580,49 @@ with tab2:
 
     with col2:
         with st.container(border=True):
-            # Create and style the bar chart (horizontal)
-            fig_bar = px.bar(
-                fulfillment_data1,
-                x='Persentase',  # The percentage values for the bars
-                y='Kategori',  # The categories for the bars
-                orientation='h',  # Horizontal bar chart
-                title="Distribusi Setiap Kategori",  # Title of the chart
-                color='Kategori',  # Use 'Kategori' for coloring the bars
-                color_discrete_sequence=px.colors.sequential.Purpor  # Color sequence
+            # Membuat grouped bar chart yang lebih interaktif
+            barchart = px.bar(
+                avg_scores_long,
+                x="Indikator",                            # Sumbu X: Indikator
+                y="Rata-Rata Skor",                       # Sumbu Y: Skor Rata-Rata
+                color="1. Status Bpk/Ibu/Saudara/i:",     # Warna berdasarkan Status
+                barmode="group",                          # Gunakan mode group saja
+                text="Rata-Rata Skor",                    # Tampilkan skor pada bar
+                labels={
+                    "Indikator": "Indikator Pertanyaan",
+                    "Rata-Rata Skor": "Rata-Rata Skor",
+                    "1. Status Bpk/Ibu/Saudara/i:": "Status"
+                },
+                hover_data={"Rata-Rata Skor": ":.2f"},    # Format hover dengan 2 desimal
+                title="Rata-Rata Skor Berdasarkan Status dan Pertanyaan"
             )
 
-            # Update layout for the bar chart
-            fig_bar.update_layout(
-                title_x=0.4,  # Position the title
-                legend_title="Kategori",  # Title of the legend
-                legend_orientation="h",  # Horizontal legend
-                legend_yanchor="bottom",  # Position the legend at the bottom
-                legend_y=-0.3,  # Lower the legend
-                legend_x=0.5,  # Center the legend horizontally
-                legend_xanchor="center",  # Anchor the legend to the center
-                height=400,  # Height of the chart
-                width=600,  # Width of the chart
+            barchart.update_traces(
+                texttemplate='%{text:.2f}',               # Format angka pada bar (2 desimal)
+                textposition='outside'                   # Tampilkan teks di atas bar
             )
 
-            # Display the horizontal bar chart
-            st.plotly_chart(fig_bar, use_container_width=True)
+            barchart.update_layout(
+                hovermode="closest",                      # Tooltip hanya muncul pada bar yang difokuskan
+                xaxis_title="",                           # Hapus label sumbu X
+                xaxis=dict(
+                    showticklabels=False,                 # Menyembunyikan kategori indikator di sumbu X
+                ),
+                yaxis_title="Rata-Rata Skor",             # Judul sumbu Y
+                legend_title="Status",                    # Judul legenda
+                title_x=0.25,                              # Pusatkan judul chart
+                font=dict(
+                    family="Arial, sans-serif",           # Jenis font
+                    size=14,                              # Ukuran font
+                    color="black"                         # Warna font
+                ),
+                margin=dict(l=40, r=40, t=60, b=40),      # Margin kiri, kanan, atas, bawah
+                height=400,                               # Tinggi chart
+                width=1000                                 # Lebar chart
+            )
 
+
+            st.plotly_chart(barchart, use_container_width=True)
 
     # Menampilkan tabel rata-rata skor dengan kategori
     st.container(border=True)
