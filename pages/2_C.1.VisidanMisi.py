@@ -492,7 +492,7 @@ with tab2:
             )
 
             # Menampilkan donut chart di Streamlit
-            st.plotly_chart(fig_donut)
+            st.plotly_chart(fig_donut, use_container_width=True)
 
     with col3:
         with st.container(border=True):
