@@ -51,7 +51,7 @@ tab1, tab2 = st.tabs(["Survey Kepuasan Dosen", "Survey Kepuasan Tenaga Pendidik"
 with tab1:
 
     # Load data
-    data = load_data("C.4.Kepuasandosen-prep.csv")
+    data = load_data("C.6.Kepuasandosen-prep.csv")
 
     # Inisialisasi session_state untuk semua filter jika belum ada
     if 'selected_tahun' not in st.session_state:
@@ -244,7 +244,7 @@ with tab1:
   # Tab 3: SARANA TENDIK
 with tab2:
     # Load data
-    data1 = load_data("C.4-Kepuasan-tendik-prep.csv")
+    data1 = load_data("C.6.Kepuasantendik-prep.csv")
 
     # Calculate average scores for each question
     avg_scores = data1.mean()
