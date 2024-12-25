@@ -415,9 +415,9 @@ with c7:
 
     # Tampilkan progres bar dengan dua bagian
     st.markdown(f"""
-        <div style="border: 0px solid; padding: 15px; border-radius: 20px; text-align: center;
-                    background: linear-gradient(to right, #00b0ff, #04c778); 
-                    border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
+        <div style="border: 0px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #00b0ff, #04c778); 
+                        border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
             <p style="font-size: 18px; margin: 0; color: black; ">Penelitian</p>
             <p style="font-size: 25px; margin: 5px 0; font-weight: bold; color: black;"> {puas_percentage:.2f}%</p>
             <p style="font-size: 16px; color: white; ">Puas: {puas_percentage:.2f}% | Tidak Puas: {tidak_puas_percentage:.2f}%</p>
@@ -437,9 +437,9 @@ with c8:
 
     # Tampilkan progres bar dengan dua bagian
     st.markdown(f"""
-        <div style="border: 0px solid; padding: 15px; border-radius: 20px; text-align: center;
-                    background: linear-gradient(to right, #00b0ff, #04c778); 
-                    border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
+        <div style="border: 0px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #fd1dd4, #32a4c9); 
+                        border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
             <p style="font-size: 18px; margin: 0; color: black; ">Pengabdian Kepada Masyarakat</p>
             <p style="font-size: 25px; margin: 5px 0; font-weight: bold; color: black;"> {puas_percentage:.2f}%</p>
             <p style="font-size: 16px; color: white; ">Puas: {puas_percentage:.2f}% | Tidak Puas: {tidak_puas_percentage:.2f}%</p>
