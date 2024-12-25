@@ -1,167 +1,440 @@
-import streamlit as st
 import pandas as pd
-from streamlit_apexjs import st_apexcharts
-import altair as alt
 import plotly.express as px
+import streamlit as st
 
 
 # Set page configuration
 st.set_page_config(
-    page_title="Beranda",
+    page_title="📊 Survey Pemahaman Dosen, Tendik Dan Mahasiswa Terhadap VMTS UPPS Dan PS",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# Fungsi pembantu untuk memuat data survei
-@st.cache_data
-# Load dataset function (if it's not defined elsewhere)
+# Menampilkan judul aplikasi di tengah
+st.markdown("""
+    <h2 style="text-align: center;">Dashboard Evaluasi </h2>
+""", unsafe_allow_html=True)
+
+st.divider()
+
+# Fungsi untuk memuat data dari file CSV
 def load_data(file_path):
-    return pd.read_csv(file_path)
+    try:
+        return pd.read_csv(file_path)
+    except Exception as e:
+        st.error(f"Gagal memuat data dari {file_path}: {e}")
+        return pd.DataFrame()
 
-def load_survey_data(file_path):
-    survey_data = pd.read_csv(file_path)  # Mengambil data dari file CSV
-    # Mengonversi timestamp ke format datetime dengan infer_format=True
-    survey_data['Timestamp'] = pd.to_datetime(survey_data['Timestamp'], errors='coerce', infer_datetime_format=True)
-    return survey_data
+# Fungsi untuk memuat data dengan multi-header
+def load_data_with_multi_header(file_path):
+    try:
+        return pd.read_csv(file_path, header=[0, 1])  # Contoh untuk header multi-barisan
+    except Exception as e:
+        st.error(f"Gagal memuat data multi-header dari {file_path}: {e}")
+        return pd.DataFrame()
 
-# Memuat data survei untuk dua file yang berbeda
-survey_df_1 = load_survey_data("C.1.HasilSurveyPemahamanVMTSPS2024.csv")  # File pertama
-survey_df_2 = load_survey_data("C.1.HasilSurveyPemahamanVMTSUPPS2024.csv")  # File kedua
+# Memuat data untuk masing-masing kategori
+data_c1_stt = load_data("C.1.SurveyPemahamanVisiMisiSTTWastukancana.csv")
+data_c1_tif = load_data("C.1.SurveyPemahamanVisiMisiTIF.csv")
+data_c2_dosen = load_data("C2.tatakeloladosendantendik-prep.csv")
+data_c2_mhs = load_data_with_multi_header("C2.tatakelolamhs-preprossesing.csv")
+data_c3 = load_data("C3.-layanan-mahasiswa-prep.csv")
+data_c4 = load_data("C3.-layanan-mahasiswa-prep.csv")
+data_c5_dosen = load_data("C5.saranadosen-prep.csv")
+data_c5_mhs = load_data("C5.saranamahasiswa-prep.csv")
+data_c5_tendik = load_data("C5.saranatendik-prep.csv")
+data_c6_dosen = load_data("C.6.Kepuasandosen-prep.csv")
+data_c6_tendik = load_data("C.6.Kepuasantendik-prep.csv")
+data_c7 = load_data("penelitian-prep.csv")
+data_c8 = load_data("pengabdian-prep.csv")
 
-# Fungsi untuk mengonversi kolom menjadi numerik dan menangani nilai yang hilang
-def convert_to_numeric(df, columns):
-    for col in columns:
-        # Mengonversi menjadi numerik dan meng-coerce nilai yang tidak valid menjadi NaN
-        df[col] = pd.to_numeric(df[col], errors='coerce')  
-    return df
-
-# Mengonversi kolom pertanyaan 5 hingga 9 menjadi numerik pada kedua file
-survey_df_1 = convert_to_numeric(survey_df_1, survey_df_1.columns[5:10])
-survey_df_2 = convert_to_numeric(survey_df_2, survey_df_2.columns[5:10])
-
-# Menghitung rata-rata untuk masing-masing dataset pada pertanyaan 5 hingga 9 untuk kedua file
-rata_rata_pertanyaan_1 = survey_df_1.iloc[:, 5:10].mean()
-rata_rata_pertanyaan_2 = survey_df_2.iloc[:, 5:10].mean()
-
-# Menyiapkan opsi donut chart dan seri untuk rata-rata penilaian
-options = {
-    "chart": {
-        "id": "donut_chart",
-        "toolbar": {
-            "show": False
+# Fungsi untuk memproses data kategori C1
+def process_c1(data_stt, data_tif):
+    # Contoh: Menghitung distribusi Faham dan Tidak Faham
+    def calculate_understanding(data, label):
+        non_neutral_data = data[data.apply(lambda row: ~row.isin([3]), axis=1)]
+        understanding_count = {
+            "Tidak Faham": ((non_neutral_data == 1) | (non_neutral_data == 2)).sum().sum(),
+            "Faham": ((non_neutral_data == 4) | (non_neutral_data == 5)).sum().sum(),
         }
-    },
-    "legend": {
-        "show": True,
-        "position": "bottom",
-    },
-    "plotOptions": {
-        "pie": {
-            "donut": {
-                "size": "65%"
-            }
+        total = sum(understanding_count.values())
+        return pd.DataFrame({
+            'Kategori': understanding_count.keys(),
+            'Jumlah': understanding_count.values(),
+            'Persentase': [count / total * 100 for count in understanding_count.values()],
+            'Sumber': label
+        })
+    
+    df_stt = calculate_understanding(data_stt, "STT Wastukancana")
+    df_tif = calculate_understanding(data_tif, "TIF")
+    return pd.concat([df_stt, df_tif], ignore_index=True)
+
+
+# Fungsi untuk memproses data kategori C2 (dosen, tendik, mahasiswa)
+def process_c2(data_dosen_tendik, data_mhs):
+    # Pastikan data numerik
+    data_dosen_tendik = data_dosen_tendik.apply(pd.to_numeric, errors='coerce')
+    data_mhs = data_mhs.apply(pd.to_numeric, errors='coerce')
+
+    # Proses data Dosen & Tendik (nilai 1, 2, 4, 5)
+    non_neutral_data_dosen_tendik = data_dosen_tendik[data_dosen_tendik.apply(lambda row: ~row.isin([3]), axis=1)]
+    
+    # Hitung jumlah kategori untuk Dosen&Tendik
+    categories_count_dosen_tendik = {
+        "Puas": (non_neutral_data_dosen_tendik >= 4).sum().sum(),
+        "Tidak Puas": (non_neutral_data_dosen_tendik <= 2).sum().sum(),
+    }
+
+    # Proses data Mahasiswa
+    non_neutral_data_mhs = data_mhs[data_mhs.apply(lambda row: ~row.isin([3]), axis=1)]
+    
+    # Hitung jumlah kategori untuk Mahasiswa
+    categories_count_mhs = {
+        "Puas": (non_neutral_data_mhs >= 4).sum().sum(),
+        "Tidak Puas": (non_neutral_data_mhs <= 2).sum().sum(),
+    }
+
+    # Gabungkan data Dosen&Tendik dan Mahasiswa
+    combined_categories_count = {
+        "Puas": categories_count_dosen_tendik["Puas"] + categories_count_mhs["Puas"],
+        "Tidak Puas": categories_count_dosen_tendik["Tidak Puas"] + categories_count_mhs["Tidak Puas"],
+    }
+
+    # Hitung total kategori
+    total_responses = sum(combined_categories_count.values())
+
+    # Persentase
+    fulfillment_data = pd.DataFrame({
+        'Kategori': combined_categories_count.keys(),
+        'Jumlah': combined_categories_count.values(),
+        'Persentase': [count / total_responses * 100 for count in combined_categories_count.values()]
+    })
+
+    return fulfillment_data
+
+# Fungsi untuk memproses data kategori C3
+def process_c3(data):
+    # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data[data.apply(lambda row: ~row.isin([3]), axis=1)]
+
+    # Hitung jumlah kategori Puas dan Tidak Puas
+    categories_count = {
+        "Puas": (non_neutral_data >= 4).sum().sum(),  # Skor 4 dan 5
+        "Tidak Puas": (non_neutral_data <= 2).sum().sum(),  # Skor 1 dan 2
+    }
+
+    # Hitung total jawaban yang relevan (tanpa netral)
+    total_non_neutral = sum(categories_count.values())
+
+    # Hitung persentase untuk setiap kategori
+    fulfillment_data = pd.DataFrame({
+        'Status': categories_count.keys(),
+        'Jumlah': categories_count.values(),
+        'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+    })
+
+    return fulfillment_data
+  
+
+# Fungsi untuk memproses data kategori C4
+def process_c4(data):
+    # Logika khusus untuk C4
+    return data
+
+# Fungsi untuk memproses data kategori C5 (Dosen, Mahasiswa, Tendik)
+def process_c5(data_dosen, data_mhs, data_tendik):
+    # Fungsi untuk menghitung kategori Puas dan Tidak Puas
+    def calculate_satisfaction(data):
+        # Filter data tanpa netral (skor == 3 dianggap netral)
+        non_neutral_data = data[data.apply(lambda row: ~row.isin([3]), axis=1)]
+
+        # Hitung jumlah kategori Puas dan Tidak Puas
+        categories_count = {
+            "Puas": (non_neutral_data >= 4).sum().sum(),  # Skor 4 dan 5
+            "Tidak Puas": (non_neutral_data <= 2).sum().sum(),  # Skor 1 dan 2
         }
-    },
-    "labels": ["Mengerti", "Tidak Mengerti"],  # Menambahkan label untuk bagian-bagian
-    "colors": ["#ADD8E6", "#00008B"]  # Biru muda untuk "Mengerti", Biru tua untuk "Tidak Mengerti"
+
+        # Hitung total jawaban yang relevan (tanpa netral)
+        total_non_neutral = sum(categories_count.values())
+
+        # Hitung persentase untuk setiap kategori
+        satisfaction_data = pd.DataFrame({
+            'Status': categories_count.keys(),
+            'Jumlah': categories_count.values(),
+            'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+        })
+
+        return satisfaction_data
+
+    # Proses data untuk masing-masing kategori
+    dosen_satisfaction = calculate_satisfaction(data_dosen)
+    mhs_satisfaction = calculate_satisfaction(data_mhs)
+    tendik_satisfaction = calculate_satisfaction(data_tendik)
+
+    # Gabungkan semua data menjadi satu
+    combined_satisfaction = pd.concat([dosen_satisfaction, mhs_satisfaction, tendik_satisfaction], ignore_index=True)
+
+    return combined_satisfaction
+
+# Fungsi untuk memproses data kategori C6
+def process_c6(data):
+    # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data[data.apply(lambda row: ~row.isin([3]), axis=1)]
+
+    # Hitung jumlah kategori
+    categories_count = {
+        "Sangat Kurang": (non_neutral_data == 1).sum().sum(),
+        "Kurang": (non_neutral_data == 2).sum().sum(),
+        "Baik": (non_neutral_data == 4).sum().sum(),
+        "Sangat Baik": (non_neutral_data == 5).sum().sum(),
+    }
+
+    return categories_count
+
+# Proses data untuk Dosen dan Tendik
+categories_count_dosen = process_c6(data_c6_dosen)
+categories_count_tendik = process_c6(data_c6_tendik)
+
+# Gabungkan hasil kategori dari kedua dataset
+combined_categories_count = {
+    category: categories_count_dosen.get(category, 0) + categories_count_tendik.get(category, 0)
+    for category in set(categories_count_dosen.keys()).union(categories_count_tendik.keys())
 }
 
+# Hitung total jawaban yang relevan
+total_combined = sum(combined_categories_count.values())
 
-# Membuat layout kolom
-col = st.columns((2, 7), gap='medium')
+# Hitung persentase untuk setiap kategori
+fulfillment_data_combined = pd.DataFrame({
+    'Kategori': combined_categories_count.keys(),
+    'Jumlah': combined_categories_count.values(),
+    'Persentase': [count / total_combined * 100 for count in combined_categories_count.values()]
+})
 
-with col[0]:
-    # Bar chart pertama (Donut Chart untuk rata-rata dari file pertama)
-    series_1 = [rata_rata_pertanyaan_1.mean(), 5 - rata_rata_pertanyaan_1.mean()]  # Menghitung rata-rata total untuk file pertama
-    st_apexcharts(options, series_1, 'donut', '100%', 'Visi dan Misi Teknik Informatika')
+# Buat diagram pie untuk distribusi gabungan
+fig_combined_donut = px.pie(
+    fulfillment_data_combined,
+    values='Persentase',
+    names='Kategori',
+    hole=0.4,
+    title="Distribusi Kategori Jawaban (Gabungan Dosen dan Tendik)",
+    color_discrete_sequence=px.colors.sequential.Purpor
+)
 
-    # Bar chart kedua (Donut Chart untuk rata-rata dari file kedua)
-    series_2 = [rata_rata_pertanyaan_2.mean(), 5 - rata_rata_pertanyaan_2.mean()]  # Menghitung rata-rata total untuk file kedua
-    st_apexcharts(options, series_2, 'donut', '100%', 'Visi dan Misi STT Wastukancana')
+# Update layout untuk menyesuaikan tampilan
+fig_combined_donut.update_layout(
+    title_x=0.25,  # Memusatkan judul
+    legend_title="Kategori",  # Judul untuk legenda
+    legend_orientation="h",  # Legend secara horizontal
+    legend_yanchor="bottom",  # Menyelaraskan legend di bagian bawah
+    legend_y=-0.2,  # Memindahkan legend ke bawah chart
+    legend_x=0.5,  # Memusatkan legend secara horizontal
+    legend_xanchor="center"  # Memastikan legend ter-anchor di tengah
+)
 
-with col[1]:
+
+# Fungsi untuk memproses data kategori C7 (Penelitian)
+def process_c7(data):
+    # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data[data.apply(lambda row: ~row.isin([3]), axis=1)]
+
+    # Hitung jumlah kategori Puas dan Tidak Puas
+    categories_count = {
+        "Puas": (non_neutral_data >= 4).sum().sum(),  # Skor 4 dan 5
+        "Tidak Puas": (non_neutral_data <= 2).sum().sum(),  # Skor 1 dan 2
+    }
+
+    # Hitung total jawaban yang relevan (tanpa netral)
+    total_non_neutral = sum(categories_count.values())
+
+    # Hitung persentase untuk setiap kategori
+    satisfaction_data = pd.DataFrame({
+        'Status': categories_count.keys(),
+        'Jumlah': categories_count.values(),
+        'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+    })
+
+    return satisfaction_data
+
+# Fungsi untuk memproses data kategori C8 (Pengabdian)
+def process_c8(data):
+    # Filter data tanpa netral (skor == 3 dianggap netral)
+    non_neutral_data = data[data.apply(lambda row: ~row.isin([3]), axis=1)]
+
+    # Hitung jumlah kategori Puas dan Tidak Puas
+    categories_count = {
+        "Puas": (non_neutral_data >= 4).sum().sum(),  # Skor 4 dan 5
+        "Tidak Puas": (non_neutral_data <= 2).sum().sum(),  # Skor 1 dan 2
+    }
+
+    # Hitung total jawaban yang relevan (tanpa netral)
+    total_non_neutral = sum(categories_count.values())
+
+    # Hitung persentase untuk setiap kategori
+    satisfaction_data = pd.DataFrame({
+        'Status': categories_count.keys(),
+        'Jumlah': categories_count.values(),
+        'Persentase': [count / total_non_neutral * 100 for count in categories_count.values()]
+    })
+
+    return satisfaction_data
+
+
+
+
+# Membagi layout untuk tampilan Streamlit
+c3, c5,c7,c8 = st.columns(4)
+c1, c2, c6 = st.columns(3)
+
+# Contoh penggunaan data (Tampilkan bentuk data jika diperlukan)
+with c1:
+    with st.container(border=True):
+        # Proses data C1
+        processed_c1 = process_c1(data_c1_stt, data_c1_tif)
+        
+        # Menampilkan bar chart
+        fig_c1 = px.bar(
+            processed_c1,
+            x="Persentase",
+            y="Kategori",
+            color="Sumber",
+            orientation="h",
+            title="Distribusi Faham dan Tidak Faham (C1)",
+            color_discrete_sequence=px.colors.sequential.Purpor
+        )
+        fig_c1.update_layout(bargap=0.2)
+        st.plotly_chart(fig_c1,use_container_width=True)
+
+# (Tampilkan data lainnya sesuai kebutuhan)
+with c2:
+    with st.container(border=True):
+
+        processed_data_c2 = process_c2(data_c2_dosen, data_c2_mhs)
+            # Membuat grafik pie chart
+        fig_donut = px.pie(
+            processed_data_c2,
+            values='Persentase',
+            names='Kategori',
+            hole=0.5,
+            title="Distribusi Persentase Puas dan Tidak Puas untuk Dosen, Tendik, dan Mahasiswa",
+            color_discrete_sequence=px.colors.sequential.Purpor
+        )
+
+        # Memperbarui tata letak grafik
+        fig_donut.update_layout(
+            title_x=0.5,
+            legend_title="Kategori",
+            legend_orientation="h",
+            legend_yanchor="bottom",
+            legend_y=-0.3,
+            legend_x=0.5,
+            legend_xanchor="center",
+            height=400,
+            width=600
+        )
+
+        # Menampilkan grafik di Streamlit
+        st.plotly_chart(fig_donut, use_container_width=True)
+
+
     
-    # Load dataset
-    data1 = load_data("C2.tatakeloladosendantendik-prep.csv")
+
+with c3:
+
+    # Proses data C3 untuk mendapatkan kategori Puas dan Tidak Puas
+    fulfillment_data_c3 = process_c3(data_c3)  # Pastikan data_c3 sudah terdefinisi sebelumnya
+
+    # Ambil persentase kategori
+    puas_percentage = fulfillment_data_c3.loc[fulfillment_data_c3['Status'] == 'Puas', 'Persentase'].values[0]
+    tidak_puas_percentage = fulfillment_data_c3.loc[fulfillment_data_c3['Status'] == 'Tidak Puas', 'Persentase'].values[0]
+
+    # Tampilkan progres bar dengan dua bagian
+    st.markdown(f"""
+        <div style="border: px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #9b59b6, #f06292); 
+                        border-image: linear-gradient(to right, #9b59b6, #f06292) 1;">
+            <p style="font-size: 18px; margin: 0; color: black; ">Mahasiswa</p>
+            <p style="font-size: 25px; margin: 5px 0; font-weight: bold; color: black;"> {puas_percentage:.2f}%</p>
+            <p style="font-size: 16px; color: white; ">Puas: {puas_percentage:.2f}% | Tidak Puas: {tidak_puas_percentage:.2f}%</p>
+            <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+            <div style="width: {puas_percentage}%; height: 100%; background-color: white; border-radius: 10px;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 
-    # Ekstraksi angka dari kolom yang relevan
-    for col in data1.columns[1:-1]:  # Hindari kolom pertama (deskripsi) dan terakhir (status)
-        data1[col] = data1[col].astype(str).str.extract(r'(\d+)').astype(float)
+with c5:
 
-    # Remove question text from indicator names (before the question mark or text after it)
-    cleaned_columns = data1.columns[1:-1].str.replace(r"\?.*", "", regex=True)
+    # Proses data C5 untuk Dosen, Mahasiswa, dan Tendik
+    fulfillment_data_c5 = process_c5(data_c5_dosen, data_c5_mhs, data_c5_tendik)
 
-    # Assign cleaned column names back to the DataFrame
-    data1.columns = ['Deskripsi'] + cleaned_columns.tolist() + ['Status Bpk/Ibu/Saudara/i.']
+    # Ambil persentase kategori
+    puas_percentage = fulfillment_data_c5.loc[fulfillment_data_c5['Status'] == 'Puas', 'Persentase'].values[0]
+    tidak_puas_percentage = fulfillment_data_c5.loc[fulfillment_data_c5['Status'] == 'Tidak Puas', 'Persentase'].values[0]
 
-    # Creating a mapping of letters (a, b, c, etc.) to each indicator
-    indicator_mapping = {col: chr(97 + idx) for idx, col in enumerate(data1.columns[1:-1])}
+    # Tampilkan progres bar dengan dua bagian
+    st.markdown(f"""
+        <div style="border: px solid; padding: 10px; border-radius: 15px; text-align: center;
+                        background: linear-gradient(to right, #ff5733, #ff8c00);
+                        border-image: linear-gradient(to right, #ff5733, #ff8c00) 1;">
+            <p style="font-size: 18px; margin: 0; color: black; ">Keuangan, Sarana & Prasarana</p>
+            <p style="font-size: 25px; margin: 5px 0; font-weight: bold; color: black;"> {puas_percentage:.2f}%</p>
+            <p style="font-size: 16px; color: white; ">Puas: {puas_percentage:.2f}% | Tidak Puas: {tidak_puas_percentage:.2f}%</p>
+            <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+            <div style="width: {puas_percentage}%; height: 100%; background-color: white; border-radius: 10px;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # Map the indicator names to letters (a, b, c, etc.)
-    mapped_indicators = data1.columns[1:-1].map(indicator_mapping)
+with c6:
+    with st.container(border=True):
+        # Menampilkan diagram pie untuk gabungan Dosen dan Tendik
+        st.plotly_chart(fig_combined_donut, use_container_width=True)
 
-    # Hitung rata-rata skor untuk setiap kolom di seluruh data
-    avg_scores_all = data1.iloc[:, 1:-1].mean()
+with c7:
+    # Proses data C7 untuk Penelitian
+    fulfillment_data_c7 = process_c7(data_c7)
 
-    # Convert the average scores to a DataFrame for easier plotting
-    avg_scores_all_df = pd.DataFrame({
-        'Indikator': mapped_indicators,
-        'Rata-Rata Skor': avg_scores_all.values,
-        'Full Question': data1.columns[1:-1]
-    })
+    # Ambil persentase kategori
+    puas_percentage = fulfillment_data_c7.loc[fulfillment_data_c7['Status'] == 'Puas', 'Persentase'].values[0]
+    tidak_puas_percentage = fulfillment_data_c7.loc[fulfillment_data_c7['Status'] == 'Tidak Puas', 'Persentase'].values[0]
 
-    # Create Altair bar chart with tooltips
-    chart = alt.Chart(avg_scores_all_df).mark_bar().encode(
-        x=alt.X('Indikator:N', title='Indikator'),  # Nominal scale for the indicators
-        y=alt.Y('Rata-Rata Skor:Q', title='Rata-Rata Skor'),  # Quantitative scale for the average scores
-        color=alt.Color('Indikator:N', scale=alt.Scale(scheme='category20')),  # Use 'category20' for colors
-        tooltip=['Rata-Rata Skor:Q', 'Full Question:N']  # Only show the score and full question in tooltip
-    ).properties(
-        title="Tata Kelola Dosen & Tenaga Pendidik",
-        width=400,
-        height=300
-    ).configure_title(
-        anchor='middle'  # This centers the title
-    )
+    # Tampilkan progres bar dengan dua bagian
+    st.markdown(f"""
+        <div style="border: 0px solid; padding: 15px; border-radius: 20px; text-align: center;
+                    background: linear-gradient(to right, #00b0ff, #04c778); 
+                    border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
+            <p style="font-size: 18px; margin: 0; color: black; ">Penelitian</p>
+            <p style="font-size: 25px; margin: 5px 0; font-weight: bold; color: black;"> {puas_percentage:.2f}%</p>
+            <p style="font-size: 16px; color: white; ">Puas: {puas_percentage:.2f}% | Tidak Puas: {tidak_puas_percentage:.2f}%</p>
+            <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+            <div style="width: {puas_percentage}%; height: 100%; background-color: white; border-radius: 10px;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # Show the chart in Streamlit
-    st.altair_chart(chart, use_container_width=True)
+with c8:
+    # Proses data C8 untuk Pengabdian
+    fulfillment_data_c8 = process_c8(data_c8)
 
-    data2 = load_data("C2.tatakelolamhs-preprossesing.csv")
+    # Ambil persentase kategori
+    puas_percentage = fulfillment_data_c8.loc[fulfillment_data_c8['Status'] == 'Puas', 'Persentase'].values[0]
+    tidak_puas_percentage = fulfillment_data_c8.loc[fulfillment_data_c8['Status'] == 'Tidak Puas', 'Persentase'].values[0]
 
-    # Ekstraksi angka dari kolom yang relevan (skor)
-    # Menghapus kolom pertama (Deskripsi) dan memproses skor dari kolom kedua dan seterusnya
-    for col in data2.columns[1:]:  # Mulai dari kolom kedua yang berisi skor
-        data2[col] = data2[col].apply(lambda x: pd.to_numeric(x, errors='coerce'))
+    # Tampilkan progres bar dengan dua bagian
+    st.markdown(f"""
+        <div style="border: 0px solid; padding: 15px; border-radius: 20px; text-align: center;
+                    background: linear-gradient(to right, #00b0ff, #04c778); 
+                    border-image: linear-gradient(to right, #00b0ff, #04c778) 1;">
+            <p style="font-size: 18px; margin: 0; color: black; ">Pengabdian Kepada Masyarakat</p>
+            <p style="font-size: 25px; margin: 5px 0; font-weight: bold; color: black;"> {puas_percentage:.2f}%</p>
+            <p style="font-size: 16px; color: white; ">Puas: {puas_percentage:.2f}% | Tidak Puas: {tidak_puas_percentage:.2f}%</p>
+            <div style="height: 10px; background-color: #d3d3d3; border-radius: 10px;">
+            <div style="width: {puas_percentage}%; height: 100%; background-color: white; border-radius: 10px;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)  # Pastikan unsafe_allow_html=True
 
-    # Hitung rata-rata skor untuk setiap kolom (pertanyaan)
-    avg_scores2 = data2.iloc[:, 1:].mean()
 
-    # Membuat DataFrame dengan rata-rata skor dan nama indikator
-    avg_scores2_df = pd.DataFrame({
-        'Indikator': data2.columns[1:],  # Nama kolom sebagai indikator
-        'Rata-Rata Skor': avg_scores2.values
-    })
-
-    #Membuat peta (mapping) untuk mengganti nama indikator dengan a, b, c, d, ...
-    indicator_mapping = {col: chr(97 + idx) for idx, col in enumerate(data2.columns[1:])}
-
-    # Ganti nama indikator dengan huruf (a, b, c, d, ...)
-    avg_scores2_df['Indikator'] = avg_scores2_df['Indikator'].map(indicator_mapping)
-
-    # Membuat Plotly Express Line Chart interaktif
-    fig = px.line(avg_scores2_df, x='Indikator', y='Rata-Rata Skor',
-                labels={'Rata-Rata Skor': 'Rata-Rata Skor', 'Indikator': 'Indikator'},
-                markers=True)
-
-    # Menyesuaikan layout untuk memusatkan title
-    fig.update_layout(
-        title="Tata Kelola Mahasiswa",
-        title_x=0.5,  # Memusatkan title
-        title_y=1,    # Posisi title di atas grafik
-        title_xanchor='center',  # Memastikan title di pusat secara horizontal
-    )
-
-    # Menampilkan chart di Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+st.subheader("Data C4")
+st.write(data_c4.head())
