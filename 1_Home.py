@@ -216,20 +216,22 @@ fig_combined_donut = px.pie(
     fulfillment_data_combined,
     values='Persentase',
     names='Kategori',
-    hole=0.4,
-    title="Distribusi Kategori Jawaban (Gabungan Dosen dan Tendik)",
+    hole=0.5,
+    title="Pendidikan",
     color_discrete_sequence=px.colors.sequential.Purpor
 )
 
 # Update layout untuk menyesuaikan tampilan
 fig_combined_donut.update_layout(
-    title_x=0.25,  # Memusatkan judul
+    title_x=0.35,  # Memusatkan judul
     legend_title="Kategori",  # Judul untuk legenda
     legend_orientation="h",  # Legend secara horizontal
     legend_yanchor="bottom",  # Menyelaraskan legend di bagian bawah
-    legend_y=-0.2,  # Memindahkan legend ke bawah chart
+    legend_y=-0.3,  # Memindahkan legend ke bawah chart
     legend_x=0.5,  # Memusatkan legend secara horizontal
-    legend_xanchor="center"  # Memastikan legend ter-anchor di tengah
+    legend_xanchor="center",  # Memastikan legend ter-anchor di tengah
+    height=400,
+    width=600
 )
 
 
@@ -284,26 +286,38 @@ def process_c8(data):
 
 # Membagi layout untuk tampilan Streamlit
 c3, c5,c7,c8 = st.columns(4)
-c1, c2, c6 = st.columns(3)
+st.divider()
+c1, c2, c6 = st.columns([4, 2, 2])
 
 # Contoh penggunaan data (Tampilkan bentuk data jika diperlukan)
 with c1:
     with st.container(border=True):
-        # Proses data C1
+            # Proses data C1
         processed_c1 = process_c1(data_c1_stt, data_c1_tif)
-        
-        # Menampilkan bar chart
+
+        # Menampilkan grouped bar chart
         fig_c1 = px.bar(
             processed_c1,
-            x="Persentase",
-            y="Kategori",
-            color="Sumber",
-            orientation="h",
-            title="Distribusi Faham dan Tidak Faham (C1)",
+            y="Kategori",  # Kategori pada sumbu x
+            x="Persentase",  # Persentase pada sumbu y
+            color="Sumber",  # Memisahkan berdasarkan 'Sumber'
+            barmode="group",  # Menggunakan barmode 'group' untuk bar yang dikelompokkan
+            title="Visi dan Misi STT Wastukancana & Teknik Informatika",
             color_discrete_sequence=px.colors.sequential.Purpor
         )
-        fig_c1.update_layout(bargap=0.2)
-        st.plotly_chart(fig_c1,use_container_width=True)
+
+        fig_c1.update_layout(
+            title_x=0.2,
+            bargap=0.3,  # Jarak antar bar
+            bargroupgap=0.2,  # Jarak antar bar dalam grup
+            xaxis_title="Kategori",  # Menambahkan label pada sumbu x
+            yaxis_title="Persentase", # Menambahkan label pada sumbu y
+            height=400,
+            width=600
+        )
+
+        st.plotly_chart(fig_c1, use_container_width=True)
+
 
 # (Tampilkan data lainnya sesuai kebutuhan)
 with c2:
@@ -316,13 +330,13 @@ with c2:
             values='Persentase',
             names='Kategori',
             hole=0.5,
-            title="Distribusi Persentase Puas dan Tidak Puas untuk Dosen, Tendik, dan Mahasiswa",
+            title="Tata Kelola, Tata Pamong & Kerja Sama",
             color_discrete_sequence=px.colors.sequential.Purpor
         )
 
         # Memperbarui tata letak grafik
         fig_donut.update_layout(
-            title_x=0.5,
+            title_x=0.1,
             legend_title="Kategori",
             legend_orientation="h",
             legend_yanchor="bottom",
