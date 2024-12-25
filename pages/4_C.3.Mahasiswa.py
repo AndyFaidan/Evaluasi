@@ -41,7 +41,7 @@ def determine_category(score):
         return "Sangat Baik"
 
 
-data1 = load_data("C3. layanan mahasiswa-prep.csv")
+data1 = load_data("C3.-layanan-mahasiswa-prep.csv")
 
 # Calculate average scores for each question
 avg_scores = data1.mean()
