@@ -12,7 +12,7 @@ st.set_page_config(
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">Dashboard Evaluasi </h2>
+    <h2 style="text-align: center;">Dashboard Evaluasi Teknik Informatika </h2>
 """, unsafe_allow_html=True)
 
 st.divider()
@@ -39,7 +39,8 @@ data_c1_tif = load_data("C.1.SurveyPemahamanVisiMisiTIF.csv")
 data_c2_dosen = load_data("C2.tatakeloladosendantendik-prep.csv")
 data_c2_mhs = load_data_with_multi_header("C2.tatakelolamhs-preprossesing.csv")
 data_c3 = load_data("C3.-layanan-mahasiswa-prep.csv")
-data_c4 = load_data("C3.-layanan-mahasiswa-prep.csv")
+data_c4_dosen = load_data_with_multi_header("C.4.KepuasanDosenterhadapSDM-prep.csv")
+data_c4_tendik = load_data_with_multi_header("C.4.KepuasanTendikterhadapSDM-prep.csv")
 data_c5_dosen = load_data("C5.saranadosen-prep.csv")
 data_c5_mhs = load_data("C5.saranamahasiswa-prep.csv")
 data_c5_tendik = load_data("C5.saranatendik-prep.csv")
@@ -137,9 +138,31 @@ def process_c3(data):
   
 
 # Fungsi untuk memproses data kategori C4
-def process_c4(data):
-    # Logika khusus untuk C4
-    return data
+def process_c4(data_dosen, data_tendik):
+    # Fungsi untuk menghitung distribusi kepuasan
+    def calculate_satisfaction(data, label):
+        try:
+            satisfaction_count = {
+                "Tidak Puas": ((data == 1) | (data == 2)).sum().sum(),
+                "Puas": ((data == 4) | (data == 5)).sum().sum(),
+            }
+            total = sum(satisfaction_count.values())
+            if total == 0:  # Menghindari pembagian dengan nol
+                return pd.DataFrame(columns=["Kategori", "Jumlah", "Persentase", "Sumber"])
+            return pd.DataFrame({
+                'Kategori': satisfaction_count.keys(),
+                'Jumlah': satisfaction_count.values(),
+                'Persentase': [count / total * 100 for count in satisfaction_count.values()],
+                'Sumber': label
+            })
+        except Exception as e:
+            st.error(f"Error dalam menghitung kepuasan untuk {label}: {e}")
+            return pd.DataFrame(columns=["Kategori", "Jumlah", "Persentase", "Sumber"])
+
+    df_dosen = calculate_satisfaction(data_dosen, "Dosen")
+    df_tendik = calculate_satisfaction(data_tendik, "Tendik")
+    return pd.concat([df_dosen, df_tendik], ignore_index=True)
+
 
 # Fungsi untuk memproses data kategori C5 (Dosen, Mahasiswa, Tendik)
 def process_c5(data_dosen, data_mhs, data_tendik):
@@ -230,7 +253,7 @@ fig_combined_donut.update_layout(
     legend_y=-0.3,  # Memindahkan legend ke bawah chart
     legend_x=0.5,  # Memusatkan legend secara horizontal
     legend_xanchor="center",  # Memastikan legend ter-anchor di tengah
-    height=400,
+    height=350,
     width=600
 )
 
@@ -287,7 +310,8 @@ def process_c8(data):
 # Membagi layout untuk tampilan Streamlit
 c3, c5,c7,c8 = st.columns(4)
 st.divider()
-c1, c2, c6 = st.columns([4, 2, 2])
+c2, c6 = st.columns([3, 3 ])
+c1, c4 = st.columns([3, 3])
 
 # Contoh penggunaan data (Tampilkan bentuk data jika diperlukan)
 with c1:
@@ -303,11 +327,11 @@ with c1:
             color="Sumber",  # Memisahkan berdasarkan 'Sumber'
             barmode="group",  # Menggunakan barmode 'group' untuk bar yang dikelompokkan
             title="Visi dan Misi STT Wastukancana & Teknik Informatika",
-            color_discrete_sequence=px.colors.sequential.Purpor
+            color_discrete_sequence=px.colors.sequential.Purpor_r
         )
 
         fig_c1.update_layout(
-            title_x=0.2,
+            title_x=0.1,
             bargap=0.3,  # Jarak antar bar
             bargroupgap=0.2,  # Jarak antar bar dalam grup
             xaxis_title="Kategori",  # Menambahkan label pada sumbu x
@@ -330,21 +354,21 @@ with c2:
             values='Persentase',
             names='Kategori',
             hole=0.5,
-            title="Tata Kelola, Tata Pamong & Kerja Sama",
+            title="Tata Kelola,Tata Pamong&Kerja Sama",
             color_discrete_sequence=px.colors.sequential.Purpor
         )
 
         # Memperbarui tata letak grafik
         fig_donut.update_layout(
-            title_x=0.1,
+            title_x=0.3,
             legend_title="Kategori",
             legend_orientation="h",
             legend_yanchor="bottom",
             legend_y=-0.3,
             legend_x=0.5,
             legend_xanchor="center",
-            height=400,
-            width=600
+            height=350,
+            width=400
         )
 
         # Menampilkan grafik di Streamlit
@@ -428,6 +452,7 @@ with c7:
     """, unsafe_allow_html=True)
 
 with c8:
+    
     # Proses data C8 untuk Pengabdian
     fulfillment_data_c8 = process_c8(data_c8)
 
@@ -449,6 +474,31 @@ with c8:
         </div>
     """, unsafe_allow_html=True)  # Pastikan unsafe_allow_html=True
 
+with c4:
+    with st.container(border=True):
+        # Proses data C4
+        processed_c4 = process_c4(data_c4_dosen, data_c4_tendik)
 
-st.subheader("Data C4")
-st.write(data_c4.head())
+                # Visualisasi grouped bar chart untuk C4
+        fig_c4 = px.bar(
+                    processed_c4,
+                    x="Kategori",  # Kategori pada sumbu y
+                    y="Persentase",  # Persentase pada sumbu x
+                    color="Sumber",  # Memisahkan berdasarkan 'Sumber'
+                    barmode="group",  # Menggunakan barmode 'group' untuk bar yang dikelompokkan
+                    title="Kepuasan Dosen dan Tendik terhadap SDM",
+                    color_discrete_sequence=px.colors.sequential.Purpor_r
+                )
+
+        fig_c4.update_layout(
+                    title_x=0.15,
+                    bargap=0.3,  # Jarak antar bar
+                    bargroupgap=0.2,  # Jarak antar bar dalam grup
+                    xaxis_title="Persentase",  # Menambahkan label pada sumbu x
+                    yaxis_title="Kategori",  # Menambahkan label pada sumbu y
+                    height=400,
+                    width=600
+                )
+
+                # Menampilkan chart di Streamlit
+        st.plotly_chart(fig_c4, use_container_width=True)
