@@ -5,14 +5,14 @@ import streamlit as st
 
 # Set page configuration
 st.set_page_config(
-    page_title="📊 Survey Pemahaman Dosen, Tendik Dan Mahasiswa Terhadap VMTS UPPS Dan PS",
+    page_title="📊Dashboard Evaluasi Teknik Informatika",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">Dashboard Evaluasi Teknik Informatika </h2>
+    <h2 style="text-align: center;">📊Dashboard Evaluasi Teknik Informatika </h2>
 """, unsafe_allow_html=True)
 
 st.divider()
