@@ -73,7 +73,7 @@ with tab1 :
     # FILTER 1: Kategori
     kategori_list = ['All'] + sorted(data.columns.str.split('_').str[0].unique())  # Ambil kategori dari level pertama
     selected_kategori = st.selectbox(
-        'Pilih Kategori',
+        '🔎Pilih Kategori :',
         options=kategori_list,
         index=kategori_list.index(st.session_state['selected_kategori']) if st.session_state['selected_kategori'] in kategori_list else 0
     )
@@ -89,7 +89,7 @@ with tab1 :
     # FILTER 2: Pertanyaan
     pertanyaan_list = ['All'] + sorted(filtered_data.columns.str.split('_').str[1].unique())  # Ambil pertanyaan dari level kedua
     selected_pertanyaan = st.selectbox(
-        'Pilih Pertanyaan',
+        '🔎Pilih Pertanyaan :',
         options=pertanyaan_list,
         index=pertanyaan_list.index(st.session_state['selected_pertanyaan']) if st.session_state['selected_pertanyaan'] in pertanyaan_list else 0
     )
@@ -297,7 +297,7 @@ with tab2 :
     # FILTER 1: Kategori
     kategori_list = ['All'] + sorted(data.columns.str.split('_').str[0].unique())  # Ambil kategori dari level pertama
     selected_kategori = st.selectbox(
-        'Pilih Kategori',
+        '🔎Pilih Kategori :',
         options=kategori_list,
         index=kategori_list.index(st.session_state['selected_kategori']) if st.session_state['selected_kategori'] in kategori_list else 0
     )
@@ -313,7 +313,7 @@ with tab2 :
     # FILTER 2: Pertanyaan
     pertanyaan_list = ['All'] + sorted(filtered_data.columns.str.split('_').str[1].unique())  # Ambil pertanyaan dari level kedua
     selected_pertanyaan = st.selectbox(
-        'Pilih Pertanyaan',
+        '🔎Pilih Pertanyaan :',
         options=pertanyaan_list,
         index=pertanyaan_list.index(st.session_state['selected_pertanyaan']) if st.session_state['selected_pertanyaan'] in pertanyaan_list else 0
     )
