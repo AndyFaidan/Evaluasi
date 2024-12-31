@@ -131,7 +131,7 @@ with col2:
         )
         # Update layout untuk menyesuaikan tampilan
         fig_bar.update_layout(
-            title_x=0.25,  # Centers the title
+            title_x=0.2,  # Centers the title
             )
 
         # Display the bar chart
