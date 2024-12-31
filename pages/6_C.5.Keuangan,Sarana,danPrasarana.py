@@ -41,7 +41,7 @@ def determine_category(score):
         return "Sangat Baik"
 
 # Tampilkan deskripsi survey dan grafik
-tab1, tab2, tab3 = st.tabs(["SARANA DOSEN", "SARANA MAHASISWA", "SARANA TENDIK"])
+tab1, tab2, tab3 = st.tabs(["Survey Kepuasan Dosen (Fasilitas Pendukung Mengajar dan Faskes)", "Survey Kepuasan MHS (Tangible)", "Survey Kepuasan Tendik (Sarana dan Prasarana)"])
 
 # Tab 1: SARANA DOSEN
 with tab1:
