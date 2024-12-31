@@ -41,7 +41,7 @@ def assign_category(score):
         return "Sangat Baik"
 
 # Tampilkan deskripsi survei dan grafik
-tab1, tab2 = st.tabs(["👨‍🏫 Survey Pemahaman Visi & Misi STT Wastukancana", "🎓 Survey Pemahaman Visi & Misi Teknik Informatika"])
+tab1, tab2 = st.tabs(["C.1 Survey VMTS UPPS", "C.1 Survey VMTS PS"])
 
 with tab1:
     # Load data
