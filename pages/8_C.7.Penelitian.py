@@ -67,7 +67,7 @@ all_questions = ["All"] + questions
 
 # Perbarui selectbox untuk menyertakan opsi "All"
 selected_question_index = st.selectbox(
-    "Pilih Pertanyaan",
+    "🔎Pilih Pertanyaan :",
     range(len(all_questions)),
     format_func=lambda x: all_questions[x]
 )
