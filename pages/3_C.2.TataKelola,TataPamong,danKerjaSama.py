@@ -105,7 +105,8 @@ def assign_category(score):
         return "Sangat Baik"
 
 # Tampilkan deskripsi survei dan grafik
-tab1, tab2 = st.tabs(["👨‍🏫 TATA KELOLA DOSEN & TENAGA PENDIDIK", "🎓 TATA KELOLA MAHASISWA"])
+tab1, tab2 = st.tabs(["Survey Kepuasan Dosen/Tendik (GUG)", "Survey Kepuasan MHS (TERRA ALL)
+"])
 
 with tab1:
     # Load data
