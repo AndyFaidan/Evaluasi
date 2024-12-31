@@ -286,7 +286,7 @@ with tab2:
 
     # Persiapkan data untuk donut chart
     fulfillment_data = pd.DataFrame({
-        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],
+        'Status': ['Puas', 'Tidak Puas'],
         'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
     })
 
@@ -313,7 +313,7 @@ with tab2:
 
             # Create the fulfillment_data DataFrame
     fulfillment_data = pd.DataFrame({
-        'Status': ['Terpenuhi', 'Tidak Terpenuhi'],  # Change 'Kategori' to 'Status'
+        'Status': ['Puas', 'Tidak Puas'],  # Change 'Kategori' to 'Status'
         'Persentase': [fulfilled_percentage, not_fulfilled_percentage]
     })
 
@@ -328,7 +328,7 @@ with tab2:
                 values='Persentase',
                 names='Status',
                 hole=0.4,
-                title=f"Persentase Terpenuhi dan Tidak Terpenuhi untuk Pertanyaan",
+                title=f"Persentase Puas dan Tidak Puas untuk Pertanyaan",
                 color_discrete_sequence=px.colors.sequential.Purpor
             )
             # Update layout to center the title and position the legend at the bottom
