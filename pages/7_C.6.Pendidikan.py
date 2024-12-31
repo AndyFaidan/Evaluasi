@@ -64,7 +64,7 @@ with tab1:
     # FILTER 1: Tahun Akademik
     tahun_akademik_list = ['All'] + sorted(data['Tahun Akademik'].unique())
     selected_tahun = st.selectbox(
-        'Pilih Tahun Akademik',
+        '🔎Pilih Tahun Akademik :',
         options=tahun_akademik_list,
         index=tahun_akademik_list.index(st.session_state['selected_tahun']) if st.session_state['selected_tahun'] in tahun_akademik_list else 0
     )
@@ -76,7 +76,7 @@ with tab1:
     # FILTER 2: Nama Dosen
     dosen_list = ['All'] + sorted(filtered_data['Nama Dosen'].unique())
     selected_dosen = st.selectbox(
-        'Pilih Nama Dosen',
+        '🔎Pilih Nama Dosen :',
         options=dosen_list,
         index=dosen_list.index(st.session_state['selected_dosen']) if st.session_state['selected_dosen'] in dosen_list else 0
     )
@@ -88,7 +88,7 @@ with tab1:
     # FILTER 3: Mata Kuliah
     matakuliah_list = ['All'] + sorted(filtered_data['Matakuliah'].unique())
     selected_matakuliah = st.selectbox(
-        'Pilih Mata Kuliah',
+        '🔎Pilih Mata Kuliah :',
         options=matakuliah_list,
         index=matakuliah_list.index(st.session_state['selected_matakuliah']) if st.session_state['selected_matakuliah'] in matakuliah_list else 0
     )
