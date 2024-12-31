@@ -43,7 +43,7 @@ def load_data(file_path):
     return pd.read_csv(file_path)
 
 # Tampilkan deskripsi survei dan grafik
-tab1, tab2 = st.tabs(["Kepuasan Dosen Terhadap SDM", "Kepuasan Tendik Terhadap SDM"])
+tab1, tab2 = st.tabs(["Survey Kepuasan Dosen (Pengajaran, Suasana Kerja, Penghargaan) - REV", "Survey Kepuasan Tendik (Kepemimpinan, Kepegawaian, Keuangan) - REV"])
 
 with tab1 :
     # Load data
