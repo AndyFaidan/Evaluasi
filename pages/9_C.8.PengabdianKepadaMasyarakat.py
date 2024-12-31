@@ -4,14 +4,14 @@ import plotly.express as px
 
 # Set page configuration
 st.set_page_config(
-    page_title="Survey Kepuasan Dosen Terhadap Pengelolaan Kegiatan PKM",
+    page_title="Survey Kepuasan Dosen (Pengabdian)",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
 # Menampilkan judul aplikasi di tengah
 st.markdown("""
-    <h2 style="text-align: center;">📊Survey Kepuasan Dosen Terhadap Pengelolaan Kegiatan PKM</h2>
+    <h2 style="text-align: center;">Survey Kepuasan Dosen (Pengabdian)</h2>
 """, unsafe_allow_html=True)
 
 st.divider()
