@@ -106,6 +106,7 @@ with col1:
         )
         # Update layout to center the title and position the legend at the bottom
         fig_donut.update_layout(
+            title_x=0.3,  # Centers the title
             legend_title="Indikator",  # Title for the legend
             legend_orientation="h",  # Horizontal legend
             legend_yanchor="middle",  # Aligns legend at the bottom
@@ -129,8 +130,8 @@ with col2:
             hover_data=["Rata-Rata Skor"]  # Include only non-conflicting fields
         )
         # Update layout untuk menyesuaikan tampilan
-        fig_donut.update_layout(
-            title_x=0.2,  # Centers the title
+        fig_bar.update_layout(
+            title_x=0.3,  # Centers the title
             )
 
         # Display the bar chart
