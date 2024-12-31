@@ -171,7 +171,7 @@ with col3:
 
         # Update layout untuk menyesuaikan tampilan
         fig_donut.update_layout(
-            title_x=0.2,  # Centers the title
+            title_x=0.3,  # Centers the title
             legend_title="Kategori",  # Title for the legend
             legend_orientation="h",  # Horizontal legend
             legend_yanchor="bottom",  # Aligns legend at the bottom
