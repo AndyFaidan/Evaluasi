@@ -1,5 +1,5 @@
-streamlit==1.29.0
-plotly-express==0.4.1
+streamlit
+plotly-express
 pandas
 gdown
 streamlit_apexjs
